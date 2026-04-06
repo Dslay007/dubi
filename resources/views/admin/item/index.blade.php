@@ -6,8 +6,10 @@
 <div style="background: white; border-radius: 0.5rem; border: 1px solid #e2e8f0; overflow: hidden;">
     <div style="padding: 1.5rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
         <h3 style="font-weight: 700; color: #1e293b;">Physical Items</h3>
-        <div>
-            <span style="font-size: 0.875rem; color: #64748b; margin-right: 1rem;">Select items to print barcodes</span>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+             <a href="{{ route('admin.item.import') }}" class="btn" style="background: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; text-decoration: none; font-size: 0.875rem;">Import</a>
+            <a href="{{ route('admin.item.export') }}" class="btn" style="background: #f59e0b; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; text-decoration: none; font-size: 0.875rem;">Export</a>
+            <span style="font-size: 0.875rem; color: #64748b; margin-left: 1rem;">Select items to print barcodes</span>
         </div>
     </div>
 

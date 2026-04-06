@@ -45,34 +45,62 @@ Route::post('/admin/logout', [AdminLoginController::class, 'logout'])->name('adm
 Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     
-    // Bibliography Module
-    Route::get('/biblio', [\App\Http\Controllers\Admin\BiblioController::class, 'index'])->name('biblio.index');
-    Route::get('/biblio/create', [\App\Http\Controllers\Admin\BiblioController::class, 'create'])->name('biblio.create');
-    Route::post('/biblio', [\App\Http\Controllers\Admin\BiblioController::class, 'store'])->name('biblio.store');
-    Route::get('/biblio/{id}/edit', [\App\Http\Controllers\Admin\BiblioController::class, 'edit'])->name('biblio.edit');
-    Route::put('/biblio/{id}', [\App\Http\Controllers\Admin\BiblioController::class, 'update'])->name('biblio.update');
-    Route::delete('/biblio/{id}', [\App\Http\Controllers\Admin\BiblioController::class, 'destroy'])->name('biblio.destroy');
+    // Bibliografi Group
+    Route::prefix('biblio')->name('biblio.')->group(function () {
+        // Main Bibliography
+        Route::get('/', [\App\Http\Controllers\Admin\BiblioController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Admin\BiblioController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Admin\BiblioController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [\App\Http\Controllers\Admin\BiblioController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [\App\Http\Controllers\Admin\BiblioController::class, 'update'])->name('update');
+        Route::delete('/{id}', [\App\Http\Controllers\Admin\BiblioController::class, 'destroy'])->name('destroy');
+        Route::get('/import', [\App\Http\Controllers\Admin\BiblioController::class, 'import'])->name('import');
+        Route::post('/import', [\App\Http\Controllers\Admin\BiblioController::class, 'processImport'])->name('process_import');
+        Route::get('/export', [\App\Http\Controllers\Admin\BiblioController::class, 'export'])->name('export');
+    });
 
-    // Membership Module
+    // Items (Eksemplar)
+    Route::prefix('item')->name('item.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\ItemController::class, 'index'])->name('index');
+        Route::get('/import', [\App\Http\Controllers\Admin\ItemController::class, 'import'])->name('import');
+        Route::get('/export', [\App\Http\Controllers\Admin\ItemController::class, 'export'])->name('export');
+        Route::get('/out', [\App\Http\Controllers\Admin\ItemController::class, 'outList'])->name('out'); // Daftar Eksemplar Keluar
+        Route::get('/barcode', [\App\Http\Controllers\Admin\ItemController::class, 'barcodeIndex'])->name('barcode'); // Cetak Barcode page
+        Route::post('/print-barcodes', [\App\Http\Controllers\Admin\ItemController::class, 'printBarcodes'])->name('print_barcodes');
+        Route::post('/print-barcodes-filter', [\App\Http\Controllers\Admin\ItemController::class, 'printBarcodesByFilter'])->name('print_barcodes_filter');
+    });
+
+    // MARC
+    Route::prefix('marc')->name('marc.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\MarcController::class, 'index'])->name('index');
+        Route::post('/import', [\App\Http\Controllers\Admin\MarcController::class, 'import'])->name('import');
+        Route::get('/export', [\App\Http\Controllers\Admin\MarcController::class, 'export'])->name('export');
+    });
+
+    // Other Modules (Keeping existing ones)
     Route::resource('member', \App\Http\Controllers\Admin\MemberController::class);
+    Route::resource('member_type', \App\Http\Controllers\Admin\MemberTypeController::class); // Added for Loan Rules CRUD
+    
+    Route::prefix('circulation')->name('circulation.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\CirculationController::class, 'index'])->name('index'); // Manual Transaction (Start)
+        Route::post('/start', [\App\Http\Controllers\Admin\CirculationController::class, 'start'])->name('start');
+        Route::get('/transaction/{member_id}', [\App\Http\Controllers\Admin\CirculationController::class, 'transaction'])->name('transaction');
+        Route::post('/loan/{member_id}', [\App\Http\Controllers\Admin\CirculationController::class, 'storeLoan'])->name('loan.store');
+        Route::post('/return/{loan_id}', [\App\Http\Controllers\Admin\CirculationController::class, 'returnLoan'])->name('return');
+        Route::get('/lookup-loan', [\App\Http\Controllers\Admin\CirculationController::class, 'getLoanDetails'])->name('lookup_loan');
+        Route::get('/quick-return', [\App\Http\Controllers\Admin\CirculationController::class, 'quickReturn'])->name('quick_return');
+        Route::get('/history', [\App\Http\Controllers\Admin\CirculationController::class, 'history'])->name('history');
+        Route::get('/overdue', [\App\Http\Controllers\Admin\CirculationController::class, 'overdue'])->name('overdue');
+        Route::post('/overdue/notify/{loan_id}', [\App\Http\Controllers\Admin\CirculationController::class, 'notifyOverdue'])->name('overdue.notify');
+        Route::get('/reservations', [\App\Http\Controllers\Admin\CirculationController::class, 'reservations'])->name('reservations');
+        Route::get('/rules', [\App\Http\Controllers\Admin\CirculationController::class, 'rules'])->name('rules');
+    });
 
-    // Circulation Module
-    Route::get('/circulation', [\App\Http\Controllers\Admin\CirculationController::class, 'index'])->name('circulation.index');
-    Route::post('/circulation/start', [\App\Http\Controllers\Admin\CirculationController::class, 'start'])->name('circulation.start');
-    Route::get('/circulation/transaction/{member_id}', [\App\Http\Controllers\Admin\CirculationController::class, 'transaction'])->name('circulation.transaction');
-    Route::post('/circulation/loan/{member_id}', [\App\Http\Controllers\Admin\CirculationController::class, 'storeLoan'])->name('circulation.loan');
-    Route::post('/circulation/return/{loan_id}', [\App\Http\Controllers\Admin\CirculationController::class, 'returnLoan'])->name('circulation.return');
-
-    // Master Files
     Route::resource('author', \App\Http\Controllers\Admin\AuthorController::class);
     Route::resource('publisher', \App\Http\Controllers\Admin\PublisherController::class);
     Route::resource('gmd', \App\Http\Controllers\Admin\GmdController::class);
     Route::resource('topic', \App\Http\Controllers\Admin\TopicController::class);
     Route::resource('place', \App\Http\Controllers\Admin\PlaceController::class);
     Route::resource('item_status', \App\Http\Controllers\Admin\ItemStatusController::class);
-
-    // Item Management (Barcodes)
-    Route::get('/item', [\App\Http\Controllers\Admin\ItemController::class, 'index'])->name('item.index');
-    Route::post('/item/print-barcodes', [\App\Http\Controllers\Admin\ItemController::class, 'printBarcodes'])->name('item.print_barcodes');
 });
 

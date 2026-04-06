@@ -153,4 +153,21 @@ class BiblioController extends Controller
 
         return redirect()->route('admin.biblio.index')->with('success', 'Book deleted successfully!');
     }
+
+    public function import()
+    {
+        return view('admin.biblio.import');
+    }
+
+    public function processImport(Request $request)
+    {
+        // Placeholder for logic
+        return redirect()->route('admin.biblio.index')->with('success', 'Import successful (stub).');
+    }
+
+    public function export()
+    {
+        // Placeholder for logic
+        return response()->download('path-to-file.csv');
+    }
 }

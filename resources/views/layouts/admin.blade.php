@@ -12,6 +12,7 @@
 
     <!-- Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
 
     <style>
         :root {
@@ -216,22 +217,67 @@
                 <i data-lucide="layout-dashboard"></i> Dashboard
             </a>
 
-            <div class="nav-category">Circulation</div>
-            <a href="{{ route('admin.circulation.index') }}" class="nav-item {{ request()->routeIs('admin.circulation.*') ? 'active' : '' }}">
-                <i data-lucide="repeat"></i> Loans & Returns
-            </a>
+            <!-- Circulation Group (Dropdown) -->
+            <div x-data="{ open: {{ request()->is('admin/circulation*') ? 'true' : 'false' }} }">
+                <button @click="open = !open" class="nav-item" style="width: 100%; justify-content: space-between; background: none; border: none; cursor: pointer;">
+                    <span style="display: flex; align-items: center; gap: 0.75rem;">
+                        <i data-lucide="repeat"></i> Sirkulasi
+                    </span>
+                    <i data-lucide="chevron-down" :style="open ? 'transform: rotate(180deg)' : ''" style="transition: transform 0.2s; width: 1rem; height: 1rem;"></i>
+                </button>
+                
+                <div x-show="open" style="padding-left: 2rem; display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.5rem;" x-transition>
+                    <a href="{{ route('admin.circulation.index') }}" class="nav-item {{ request()->routeIs('admin.circulation.index') || request()->routeIs('admin.circulation.transaction') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
+                        Transaksi
+                    </a>
+                    <a href="{{ route('admin.circulation.quick_return') }}" class="nav-item {{ request()->routeIs('admin.circulation.quick_return') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
+                        Pengembalian Kilat
+                    </a>
+                    <a href="{{ route('admin.circulation.rules') }}" class="nav-item {{ request()->routeIs('admin.circulation.rules') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
+                        Aturan Peminjaman
+                    </a>
+                    <a href="{{ route('admin.circulation.history') }}" class="nav-item {{ request()->routeIs('admin.circulation.history') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
+                        Sejarah Peminjaman
+                    </a>
+                    <a href="{{ route('admin.circulation.overdue') }}" class="nav-item {{ request()->routeIs('admin.circulation.overdue') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
+                        Daftar Keterlambatan
+                    </a>
+                    <a href="{{ route('admin.circulation.reservations') }}" class="nav-item {{ request()->routeIs('admin.circulation.reservations') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
+                        Reservasi
+                    </a>
+                </div>
+            </div>
             <a href="{{ route('admin.member.index') }}" class="nav-item {{ request()->routeIs('admin.member.*') ? 'active' : '' }}">
                 <i data-lucide="users"></i> Membership
             </a>
 
-            <div class="nav-category">Cataloging</div>
-            <a href="{{ route('admin.biblio.index') }}" class="nav-item {{ request()->routeIs('admin.biblio.*') ? 'active' : '' }}">
-                <i data-lucide="book-open"></i> Bibliography
-            </a>
-            <!-- NEW: Item Barcode Link -->
-            <a href="{{ route('admin.item.index') }}" class="nav-item {{ request()->routeIs('admin.item.*') ? 'active' : '' }}">
-                <i data-lucide="barcode"></i> Item Barcodes
-            </a>
+            <!-- Bibliography Group (Dropdown) -->
+            <div x-data="{ open: {{ request()->is('admin/biblio*') || request()->is('admin/item*') || request()->is('admin/marc*') ? 'true' : 'false' }} }">
+                <button @click="open = !open" class="nav-item" style="width: 100%; justify-content: space-between; background: none; border: none; cursor: pointer;">
+                    <span style="display: flex; align-items: center; gap: 0.75rem;">
+                        <i data-lucide="book-open"></i> Bibliografi
+                    </span>
+                    <i data-lucide="chevron-down" :style="open ? 'transform: rotate(180deg)' : ''" style="transition: transform 0.2s; width: 1rem; height: 1rem;"></i>
+                </button>
+                
+                <div x-show="open" style="padding-left: 2rem; display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.5rem;" x-transition>
+                    <a href="{{ route('admin.biblio.index') }}" class="nav-item {{ request()->routeIs('admin.biblio.index') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
+                        Bibliografi (Data Buku)
+                    </a>
+                    <a href="{{ route('admin.item.index') }}" class="nav-item {{ request()->routeIs('admin.item.index') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
+                        Eksemplar
+                    </a>
+                    <a href="{{ route('admin.item.out') }}" class="nav-item {{ request()->routeIs('admin.item.out') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
+                        Daftar Eksemplar Keluar
+                    </a>
+                    <a href="{{ route('admin.item.barcode') }}" class="nav-item {{ request()->routeIs('admin.item.barcode') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
+                        Cetak Barcode
+                    </a>
+                    <a href="{{ route('admin.marc.index') }}" class="nav-item {{ request()->routeIs('admin.marc.index') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
+                        MARC Import/Export
+                    </a>
+                </div>
+            </div>
 
             <div class="nav-category">Master Files</div>
             <a href="{{ route('admin.author.index') }}" class="nav-item {{ request()->routeIs('admin.author.*') ? 'active' : '' }}">

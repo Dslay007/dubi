@@ -6,7 +6,11 @@
 <div style="background: white; border-radius: 0.5rem; border: 1px solid #e2e8f0; overflow: hidden;">
     <div style="padding: 1.5rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
         <h3 style="font-weight: 700; color: #1e293b;">Book List</h3>
-        <a href="{{ route('admin.biblio.create') }}" class="btn" style="background: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; text-decoration: none; font-size: 0.875rem;">+ Add New Book</a>
+        <div style="display: flex; gap: 0.5rem;">
+            <a href="{{ route('admin.biblio.import') }}" class="btn" style="background: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; text-decoration: none; font-size: 0.875rem;">Import</a>
+            <a href="{{ route('admin.biblio.export') }}" class="btn" style="background: #f59e0b; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; text-decoration: none; font-size: 0.875rem;">Export</a>
+            <a href="{{ route('admin.biblio.create') }}" class="btn" style="background: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; text-decoration: none; font-size: 0.875rem;">+ Add New Book</a>
+        </div>
     </div>
 
     <div style="padding: 1rem; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">

@@ -31,26 +31,41 @@
                         <th style="padding: 0.75rem 1.5rem; border-bottom: 1px solid #e2e8f0; width: 40px;">
                             <input type="checkbox" onclick="toggleAll(this)">
                         </th>
-                        <th style="padding: 0.75rem 1.5rem; border-bottom: 1px solid #e2e8f0;">Item Code</th>
-                        <th style="padding: 0.75rem 1.5rem; border-bottom: 1px solid #e2e8f0;">Title</th>
-                        <th style="padding: 0.75rem 1.5rem; border-bottom: 1px solid #e2e8f0;">Call Number</th>
-                        <th style="padding: 0.75rem 1.5rem; border-bottom: 1px solid #e2e8f0;">Location</th>
+                        <th style="padding: 0.75rem 1.5rem; border-bottom: 1px solid #e2e8f0;">Kode Eksemplar</th>
+                        <th style="padding: 0.75rem 1.5rem; border-bottom: 1px solid #e2e8f0;">Judul</th>
+                        <th style="padding: 0.75rem 1.5rem; border-bottom: 1px solid #e2e8f0;">Tipe Koleksi</th>
+                        <th style="padding: 0.75rem 1.5rem; border-bottom: 1px solid #e2e8f0;">Lokasi</th>
+                        <th style="padding: 0.75rem 1.5rem; border-bottom: 1px solid #e2e8f0;">No. Panggil</th>
+                        <th style="padding: 0.75rem 1.5rem; border-bottom: 1px solid #e2e8f0;">Terakhir Diubah</th>
+                        <th style="padding: 0.75rem 1.5rem; border-bottom: 1px solid #e2e8f0; text-align: right;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($items as $item)
                     <tr style="border-bottom: 1px solid #e2e8f0;">
-                        <td style="padding: 1rem 1.5rem;">
+                        <td style="padding: 1rem 1.5rem; vertical-align: top;">
                             <input type="checkbox" name="items[]" value="{{ $item->item_id }}" class="item-checkbox">
                         </td>
-                        <td style="padding: 1rem 1.5rem; font-weight: 600; color: #1e293b;">{{ $item->item_code }}</td>
-                        <td style="padding: 1rem 1.5rem; color: #334155;">{{ $item->biblio->title ?? 'Unknown Title' }}</td>
-                        <td style="padding: 1rem 1.5rem; color: #64748b;">{{ $item->call_number ?? '-' }}</td>
-                        <td style="padding: 1rem 1.5rem; color: #64748b;">{{ $item->location_id ?? '-' }}</td>
+                        <td style="padding: 1rem 1.5rem; font-weight: 600; color: #64748b; vertical-align: top;">{{ $item->item_code }}</td>
+                        <td style="padding: 1rem 1.5rem; color: #1e293b; font-weight: 600; vertical-align: top;">
+                            {{ $item->biblio->title ?? 'Unknown Title' }}
+                            @if($item->biblio && $item->biblio->authors->isNotEmpty())
+                                <div style="font-weight: 400; font-size: 0.85rem; color: #94a3b8; font-style: italic; margin-top: 0.25rem;">
+                                    {{ $item->biblio->authors->pluck('author_name')->join(' - ') }}
+                                </div>
+                            @endif
+                        </td>
+                        <td style="padding: 1rem 1.5rem; color: #64748b; vertical-align: top;">{{ $item->coll_type_id ?? 'Nonfiksi' }}</td>
+                        <td style="padding: 1rem 1.5rem; color: #64748b; vertical-align: top;">{{ $item->location_id ?? '-' }}</td>
+                        <td style="padding: 1rem 1.5rem; color: #64748b; vertical-align: top;">{{ $item->call_number ?? '-' }}</td>
+                        <td style="padding: 1rem 1.5rem; color: #64748b; vertical-align: top;">{{ $item->last_update ?? $item->input_date ?? '-' }}</td>
+                        <td style="padding: 1rem 1.5rem; vertical-align: top; text-align: right;">
+                            <a href="{{ route('admin.item.edit', $item->item_id) }}" style="display: inline-block; padding: 0.25rem 0.75rem; background: #3b82f6; color: white; border-radius: 0.375rem; text-decoration: none; font-size: 0.75rem; font-weight: 600;">Edit</a>
+                        </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" style="padding: 2rem; text-align: center; color: #64748b;">No items found.</td>
+                        <td colspan="8" style="padding: 2rem; text-align: center; color: #64748b;">No items found.</td>
                     </tr>
                     @endforelse
                 </tbody>

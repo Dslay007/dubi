@@ -8,8 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Reservation extends Model
 {
     use HasFactory;
-    protected $primaryKey = 'reservation_id';
-    protected $guarded = ['reservation_id'];
+    protected $table = 'reserve';
+    protected $primaryKey = 'reserve_id';
+    protected $guarded = ['reserve_id'];
+    
+    public $timestamps = false; // No created_at/updated_at by default unless we added them
 
     public function member()
     {

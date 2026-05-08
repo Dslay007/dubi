@@ -72,4 +72,85 @@ class TopicController extends Controller
         $topic->delete();
         return redirect()->route('admin.topic.index')->with('success', 'Subject deleted successfully.');
     }
+
+    public function import()
+    {
+        return view('admin.topic.import');
+    }
+
+    public function processImport(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:csv,txt|max:2048'
+        ]);
+
+        $file = $request->file('file');
+        $csvData = file_get_contents($file);
+        
+        $separator = strpos($csvData, ';') !== false ? ';' : ',';
+        $rows = array_map(function($v) use ($separator) { return str_getcsv($v, $separator); }, explode("\n", $csvData));
+        $header = array_shift($rows);
+
+        $successCount = 0;
+        foreach ($rows as $row) {
+            if (count($row) < 2 || empty(trim($row[1]))) continue;
+
+            $id = isset($row[0]) && trim($row[0]) !== '' ? trim($row[0]) : null;
+            $topicStr = trim($row[1]);
+            $type = isset($row[2]) ? trim($row[2]) : 't';
+            $classification = isset($row[3]) ? trim($row[3]) : '';
+
+            $data = [
+                'topic' => $topicStr,
+                'topic_type' => $type,
+                'classification' => $classification,
+                'last_update' => now()->toDateString()
+            ];
+
+            if ($id) {
+                $existing = Topic::find($id);
+                if ($existing) {
+                    $existing->update($data);
+                } else {
+                    $data['topic_id'] = $id;
+                    $data['input_date'] = now()->toDateString();
+                    Topic::create($data);
+                }
+            } else {
+                $data['input_date'] = now()->toDateString();
+                Topic::create($data);
+            }
+            $successCount++;
+        }
+
+        return redirect()->route('admin.topic.index')->with('success', "$successCount data berhasil diimpor.");
+    }
+
+    public function export()
+    {
+        $fileName = 'topic_export_' . date('Y-m-d_H-i') . '.csv';
+        $items = Topic::orderBy('topic_id', 'asc')->get();
+
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $columns = ['ID', 'Topic', 'Topic Type', 'Classification'];
+
+        $callback = function() use($items, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns, ';'); 
+
+            foreach ($items as $item) {
+                fputcsv($file, [$item->topic_id, $item->topic, $item->topic_type, $item->classification], ';');
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }

@@ -17,12 +17,23 @@
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
             <div>
-                <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Edition</label>
-                <input type="text" name="edition" value="{{ old('edition', $biblio->edition) }}" class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
+                <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Statement of Responsibility</label>
+                <input type="text" name="sor" value="{{ old('sor', $biblio->sor) }}" class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
             </div>
             <div>
                  <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Series Title</label>
                 <input type="text" name="series_title" value="{{ old('series_title', $biblio->series_title) }}" class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+            <div>
+                <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Edition</label>
+                <input type="text" name="edition" value="{{ old('edition', $biblio->edition) }}" class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
+            </div>
+            <div>
+                 <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Specific Detail Info</label>
+                <input type="text" name="spec_detail_info" value="{{ old('spec_detail_info', $biblio->spec_detail_info) }}" class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
             </div>
         </div>
 
@@ -92,35 +103,99 @@
             </div>
         </div>
 
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+            <div style="grid-column: span 2;">
+                 <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Collation (Deskripsi Fisik)</label>
+                 <input type="text" name="collation" value="{{ old('collation', $biblio->collation) }}" class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
+            </div>
+        </div>
+
         <div style="margin-bottom: 1.5rem;">
-             <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Notes</label>
+             <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Notes (Catatan)</label>
              <textarea name="notes" rows="3" class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">{{ old('notes', $biblio->notes) }}</textarea>
         </div>
 
-        <div style="margin-bottom: 1.5rem;">
-             <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Cover Image</label>
+        <div style="margin-bottom: 1.5rem; background: #f8fafc; padding: 1.5rem; border-radius: 0.375rem; border: 1px dashed #cbd5e1;">
+             <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 1rem;">Cover Image (Pilih Salah Satu)</h4>
              @if($biblio->image)
-                <div style="margin-bottom: 0.5rem;">
-                    <img src="{{ asset('images/' . $biblio->image) }}" alt="Current Cover" style="height: 100px; border-radius: 0.375rem; border: 1px solid #cbd5e1;">
-                    <div style="font-size: 0.75rem; color: #64748b;">Current: {{ $biblio->image }}</div>
+                <div style="margin-bottom: 1rem;">
+                    @if(\str_starts_with($biblio->image, 'http'))
+                        <img src="{{ $biblio->image }}" alt="Current Cover" style="height: 100px; border-radius: 0.375rem; border: 1px solid #cbd5e1;">
+                    @else
+                        <img src="{{ asset('images/' . $biblio->image) }}" alt="Current Cover" style="height: 100px; border-radius: 0.375rem; border: 1px solid #cbd5e1;">
+                    @endif
+                    <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.5rem;">Current: {{ $biblio->image }}</div>
                 </div>
              @endif
-             <input type="file" name="image" class="input" style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
+             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div>
+                    <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Ganti File Upload</label>
+                    <input type="file" name="image" class="input" style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none; background: white;">
+                </div>
+                <div>
+                    <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Atau Ganti URL (Download Cover)</label>
+                    <input type="url" name="image_url" placeholder="https://" value="{{ \str_starts_with($biblio->image ?? '', 'http') ? $biblio->image : '' }}" class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
+                </div>
+             </div>
         </div>
 
-        <div style="margin-bottom: 2rem;">
-            <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Authors</label>
-            <div style="padding: 1rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; max-height: 150px; overflow-y: auto;">
-                 @php $selectedAuthors = $biblio->authors->pluck('author_id')->toArray(); @endphp
-                 @foreach(\App\Models\Author::limit(50)->get() as $author)
-                    <div style="margin-bottom: 0.25rem;">
-                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="author_id[]" value="{{ $author->author_id }}"
-                                {{ in_array($author->author_id, $selectedAuthors) ? 'checked' : '' }}>
-                            {{ $author->author_name }}
-                        </label>
-                    </div>
-                @endforeach
+        <div style="margin-bottom: 1.5rem; background: #f8fafc; padding: 1.5rem; border-radius: 0.375rem; border: 1px dashed #cbd5e1;">
+            <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 1rem;">E-Digital / File Attachment (Opsional)</h4>
+            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">Unggah file e-book (PDF/EPUB) atau masukkan link URL untuk mengubah buku digital yang ada.</p>
+            
+            @if($biblio->file_att)
+                <div style="margin-bottom: 1.5rem; padding: 1rem; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 0.375rem; color: #1e40af; font-size: 0.875rem;">
+                    <strong>Current E-Digital:</strong> 
+                    @if(\str_starts_with($biblio->file_att, 'http'))
+                        <a href="{{ $biblio->file_att }}" target="_blank" style="color: #2563eb; text-decoration: underline;">{{ $biblio->file_att }}</a>
+                    @else
+                        {{ $biblio->file_att }}
+                    @endif
+                </div>
+            @endif
+
+            <div style="margin-bottom: 1rem;">
+                <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Ganti File (Max 50MB)</label>
+                <input type="file" name="file_att_upload" accept=".pdf,.epub" class="input" style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none; background: white;">
+            </div>
+            
+            <div>
+                <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Atau Ganti Link URL</label>
+                <input type="url" name="file_att_link" placeholder="https://" value="{{ \str_starts_with($biblio->file_att ?? '', 'http') ? $biblio->file_att : '' }}" class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+            <div>
+                <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Authors</label>
+                <div style="padding: 1rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; max-height: 150px; overflow-y: auto; background: white;">
+                     @php $selectedAuthors = $biblio->authors->pluck('author_id')->toArray(); @endphp
+                     @foreach(\App\Models\Author::limit(50)->get() as $author)
+                        <div style="margin-bottom: 0.25rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="checkbox" name="author_id[]" value="{{ $author->author_id }}"
+                                    {{ in_array($author->author_id, $selectedAuthors) ? 'checked' : '' }}>
+                                {{ $author->author_name }}
+                            </label>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <div>
+                <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Topics / Subjects</label>
+                <div style="padding: 1rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; max-height: 150px; overflow-y: auto; background: white;">
+                     @php $selectedTopics = clone $biblio->topics; $selectedTopicIds = $selectedTopics->pluck('topic_id')->toArray(); @endphp
+                     @foreach(\App\Models\Topic::limit(50)->get() as $topic)
+                        <div style="margin-bottom: 0.25rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="checkbox" name="topic_id[]" value="{{ $topic->topic_id }}"
+                                    {{ in_array($topic->topic_id, $selectedTopicIds) ? 'checked' : '' }}>
+                                {{ $topic->topic }}
+                            </label>
+                        </div>
+                    @endforeach
+                </div>
             </div>
         </div>
 

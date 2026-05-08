@@ -3,60 +3,79 @@
 @section('pageTitle', 'Add New Member')
 
 @section('content')
-<div style="background: white; padding: 2rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; max-width: 800px;">
-    <h3 style="font-weight: 700; color: #1e293b; margin-bottom: 2rem;">Member Registration</h3>
-
-    <form action="{{ route('admin.member.store') }}" method="POST">
-        @csrf
+<div style="max-width: 800px; margin: 0 auto;">
+    <div style="background: white; border-radius: 1.5rem; overflow: hidden; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 20px 40px -15px rgba(0,0,0,0.05);">
         
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
-            <div>
-                 <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Member ID *</label>
-                <input type="text" name="member_id" required class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
-            </div>
-             <div>
-                 <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Full Name *</label>
-                <input type="text" name="member_name" required class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
-            </div>
+        <div style="padding: 2rem; border-bottom: 1px solid rgba(0,0,0,0.05); background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
+            <h3 style="font-weight: 800; color: #0f172a; font-size: 1.5rem; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #3b82f6;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+                Pendaftaran Anggota Baru
+            </h3>
+            <p style="color: #64748b; font-size: 0.95rem; margin: 0;">Isi formulir di bawah ini untuk menambahkan anggota ke perpustakaan.</p>
         </div>
 
-        <div style="margin-bottom: 1.5rem;">
-            <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Email Address</label>
-            <input type="email" name="member_email" class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
-        </div>
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
-            <div>
-                 <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Password *</label>
-                <input type="password" name="passwd" required class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
+        <form action="{{ route('admin.member.store') }}" method="POST" style="padding: 2.5rem 2rem;">
+            @csrf
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                <div>
+                     <label class="label" style="display: block; font-weight: 700; font-size: 0.85rem; color: #475569; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">ID Anggota <span style="color: #ef4444;">*</span></label>
+                    <input type="text" name="member_id" required class="input" style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                </div>
+                 <div>
+                     <label class="label" style="display: block; font-weight: 700; font-size: 0.85rem; color: #475569; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Nama Lengkap <span style="color: #ef4444;">*</span></label>
+                    <input type="text" name="member_name" required class="input" style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                </div>
             </div>
-             <div>
-                 <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Confirm Password *</label>
-                <input type="password" name="passwd_confirmation" required class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
-            </div>
-        </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
-            <div>
-                 <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Gender</label>
-                <select name="gender" class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
-                    <option value="1">Male</option>
-                    <option value="0">Female</option>
-                </select>
+            <div style="margin-bottom: 1.5rem;">
+                <label class="label" style="display: block; font-weight: 700; font-size: 0.85rem; color: #475569; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Alamat Email</label>
+                <div style="position: relative;">
+                    <div style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                    </div>
+                    <input type="email" name="member_email" class="input" style="width: 100%; padding: 0.8rem 1rem 0.8rem 2.75rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                </div>
             </div>
-             <div>
-                 <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Member Type</label>
-                <!-- For now hardcoded, ideally from mst_member_type -->
-                <select name="member_type_id" class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
-                    <option value="1">Standard Member</option>
-                </select>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                <div>
+                     <label class="label" style="display: block; font-weight: 700; font-size: 0.85rem; color: #475569; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Kata Sandi <span style="color: #ef4444;">*</span></label>
+                    <input type="password" name="passwd" required class="input" style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                </div>
+                 <div>
+                     <label class="label" style="display: block; font-weight: 700; font-size: 0.85rem; color: #475569; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Konfirmasi Kata Sandi <span style="color: #ef4444;">*</span></label>
+                    <input type="password" name="passwd_confirmation" required class="input" style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                </div>
             </div>
-        </div>
 
-        <div style="display: flex; gap: 1rem;">
-            <button type="submit" class="btn" style="padding: 0.75rem 2rem; background: #3b82f6; color: white; border: none; border-radius: 0.375rem; font-weight: 600; cursor: pointer;">Save Member</button>
-            <a href="{{ route('admin.member.index') }}" style="padding: 0.75rem 2rem; background: #e2e8f0; color: #475569; text-decoration: none; border-radius: 0.375rem; font-weight: 600;">Cancel</a>
-        </div>
-    </form>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2.5rem;">
+                <div>
+                     <label class="label" style="display: block; font-weight: 700; font-size: 0.85rem; color: #475569; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Jenis Kelamin</label>
+                    <select name="gender" class="input" style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; color: #1e293b; background: white; cursor: pointer; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                        <option value="1">Laki-laki</option>
+                        <option value="0">Perempuan</option>
+                    </select>
+                </div>
+                 <div>
+                     <label class="label" style="display: block; font-weight: 700; font-size: 0.85rem; color: #475569; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Tipe Keanggotaan</label>
+                    <select name="member_type_id" class="input" style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; color: #1e293b; background: white; cursor: pointer; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                        @if(isset($memberTypes) && $memberTypes->count() > 0)
+                            @foreach($memberTypes as $type)
+                                <option value="{{ $type->member_type_id }}">{{ $type->member_type_name }}</option>
+                            @endforeach
+                        @else
+                            <option value="1">Standard Member</option>
+                        @endif
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.05);">
+                <a href="{{ route('admin.member.index') }}" style="padding: 0.8rem 1.75rem; background: #f1f5f9; color: #475569; text-decoration: none; border-radius: 99px; font-weight: 700; transition: 0.2s;" onmouseover="this.style.background='#e2e8f0';">Batal</a>
+                <button type="submit" class="btn" style="padding: 0.8rem 1.75rem; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border: none; border-radius: 99px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(59,130,246,0.2); transition: 0.2s;" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='none';">Simpan Anggota</button>
+            </div>
+        </form>
+    </div>
 </div>
 @endsection

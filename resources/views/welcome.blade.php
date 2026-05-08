@@ -106,8 +106,15 @@
                     Akan Datang
                 </h3>
                 <div id="agenda-mendatang" style="display: flex; flex-direction: column; gap: 1rem;">
-                     <!-- Injected by JS -->
-                     <p style="color: #94a3b8;">Memuat data...</p>
+                    @forelse($upcomingEvents as $event)
+                    <div style="padding: 1.5rem; background: white; border-radius: 1rem; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: transform 0.2s;" onmouseover="this.style.transform='translateX(5px)'" onmouseout="this.style.transform='translateX(0)'">
+                        <div style="font-size: 0.85rem; font-weight: 700; color: hsl(var(--primary)); margin-bottom: 0.25rem;">{{ \Carbon\Carbon::parse($event->event_date)->isoFormat('dddd, D MMM YYYY') }}</div>
+                        <h4 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">{{ $event->title }}</h4>
+                        <p style="color: #64748b; font-size: 0.95rem;">{{ $event->location ?? 'Lokasi belum ditentukan' }}</p>
+                    </div>
+                    @empty
+                    <p style="color: #94a3b8; font-style: italic;">Belum ada agenda terdekat.</p>
+                    @endforelse
                 </div>
             </div>
 
@@ -118,8 +125,15 @@
                     Riwayat Kegiatan
                 </h3>
                 <div id="agenda-berlalu" style="display: flex; flex-direction: column; gap: 1rem; opacity: 0.8;">
-                     <!-- Injected by JS -->
-                     <p style="color: #94a3b8;">Memuat data...</p>
+                    @forelse($pastEvents as $event)
+                    <div style="padding: 1.5rem; background: #f8fafc; border-radius: 1rem; border: 1px solid #e2e8f0;">
+                        <div style="font-size: 0.85rem; font-weight: 700; color: #94a3b8; margin-bottom: 0.25rem;">{{ \Carbon\Carbon::parse($event->event_date)->isoFormat('dddd, D MMM YYYY') }}</div>
+                        <h4 style="font-size: 1.1rem; font-weight: 700; color: #64748b; margin-bottom: 0.5rem;">{{ $event->title }}</h4>
+                        <p style="color: #94a3b8; font-size: 0.9rem;">{{ $event->location }}</p>
+                    </div>
+                    @empty
+                    <p style="color: #94a3b8; font-style: italic;">Belum ada riwayat kegiatan.</p>
+                    @endforelse
                 </div>
             </div>
         </div>
@@ -261,27 +275,6 @@
             window.changeSlide(1);
         }, 3000); // 3 seconds
 
-        // --- AGENDA MOCK ---
-        document.getElementById('agenda-mendatang').innerHTML = `
-            <div style="padding: 1.5rem; background: white; border-radius: 1rem; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: transform 0.2s;" onmouseover="this.style.transform='translateX(5px)'" onmouseout="this.style.transform='translateX(0)'">
-                <div style="font-size: 0.85rem; font-weight: 700; color: hsl(var(--primary)); margin-bottom: 0.25rem;">MINGGU, 2 NOV 2025</div>
-                <h4 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">Lapak Baca Mingguan</h4>
-                <p style="color: #64748b; font-size: 0.95rem;">Alun-Alun Kota Malang</p>
-            </div>
-             <div style="padding: 1.5rem; background: white; border-radius: 1rem; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: transform 0.2s;" onmouseover="this.style.transform='translateX(5px)'" onmouseout="this.style.transform='translateX(0)'">
-                <div style="font-size: 0.85rem; font-weight: 700; color: hsl(var(--primary)); margin-bottom: 0.25rem;">SABTU, 8 NOV 2025</div>
-                <h4 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">Diskusi Buku: Sapiens</h4>
-                <p style="color: #64748b; font-size: 0.95rem;">Cafe Pustaka, Malang</p>
-            </div>
-        `;
-
-        document.getElementById('agenda-berlalu').innerHTML = `
-            <div style="padding: 1.5rem; background: #f8fafc; border-radius: 1rem; border: 1px solid #e2e8f0;">
-                <div style="font-size: 0.85rem; font-weight: 700; color: #94a3b8; margin-bottom: 0.25rem;">MINGGU, 26 OKT 2025</div>
-                <h4 style="font-size: 1.1rem; font-weight: 700; color: #64748b; margin-bottom: 0.5rem;">Lapak Baca Mingguan</h4>
-            </div>
-        `;
-
         // --- STATS ---
         const animateValue = (id, start, end, duration) => {
             const obj = document.getElementById(id);
@@ -296,9 +289,9 @@
             window.requestAnimationFrame(step);
         };
 
-        animateValue("stat-borrowings", 0, 1250, 2000);
-        animateValue("stat-members", 0, 450, 2000);
-        animateValue("stat-books", 0, 800, 2000);
+        animateValue("stat-borrowings", 0, {{ $stats['borrowings'] }}, 2000);
+        animateValue("stat-members", 0, {{ $stats['members'] }}, 2000);
+        animateValue("stat-books", 0, {{ $stats['books'] }}, 2000);
     });
 </script>
 @endsection

@@ -13,7 +13,11 @@
         <div style="position: sticky; top: 100px;">
             <div style="background: white; padding: 1rem; border-radius: 0.75rem; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
                 @if($biblio->image)
-                    <img src="{{ asset('images/' . $biblio->image) }}" alt="{{ $biblio->title }}" style="width: 100%; border-radius: 0.5rem;">
+                    @if(\str_starts_with($biblio->image, 'http'))
+                        <img src="{{ $biblio->image }}" alt="{{ $biblio->title }}" style="width: 100%; border-radius: 0.5rem;">
+                    @else
+                        <img src="{{ asset('images/' . $biblio->image) }}" alt="{{ $biblio->title }}" style="width: 100%; border-radius: 0.5rem;">
+                    @endif
                 @else
                     <div style="aspect-ratio: 2/3; background: #f1f5f9; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 4rem; color: #94a3b8;">
                         📚
@@ -48,19 +52,163 @@
                 </span>
             </div>
 
+            <!-- Detail Informasi (SLiMS Style) -->
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem;">Detail Informasi</h3>
+                
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.95rem; color: #475569;">
+                    <tbody>
+                        @if($biblio->series_title)
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 0.75rem 0; width: 30%; font-weight: 600; vertical-align: top;">Judul Seri</td>
+                            <td style="padding: 0.75rem 0; color: #1e293b;">{{ $biblio->series_title }}</td>
+                        </tr>
+                        @endif
+                        @if($biblio->call_number)
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 0.75rem 0; width: 30%; font-weight: 600; vertical-align: top;">No. Panggil</td>
+                            <td style="padding: 0.75rem 0; color: #1e293b;">{{ $biblio->call_number }}</td>
+                        </tr>
+                        @endif
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 0.75rem 0; width: 30%; font-weight: 600; vertical-align: top;">Penerbit</td>
+                            <td style="padding: 0.75rem 0; color: #1e293b;">
+                                {{ $biblio->place->place_name ?? '' }} : {{ $biblio->publisher->publisher_name ?? 'Unknown Publisher' }}., {{ $biblio->publish_year }}
+                            </td>
+                        </tr>
+                        @if($biblio->collation)
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 0.75rem 0; width: 30%; font-weight: 600; vertical-align: top;">Deskripsi Fisik</td>
+                            <td style="padding: 0.75rem 0; color: #1e293b;">{{ $biblio->collation }}</td>
+                        </tr>
+                        @endif
+                        @if($biblio->language_id)
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 0.75rem 0; width: 30%; font-weight: 600; vertical-align: top;">Bahasa</td>
+                            <td style="padding: 0.75rem 0; color: #1e293b;">{{ $biblio->language_id }}</td>
+                        </tr>
+                        @endif
+                        @if($biblio->isbn_issn)
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 0.75rem 0; width: 30%; font-weight: 600; vertical-align: top;">ISBN/ISSN</td>
+                            <td style="padding: 0.75rem 0; color: #1e293b;">{{ $biblio->isbn_issn }}</td>
+                        </tr>
+                        @endif
+                        @if($biblio->classification)
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 0.75rem 0; width: 30%; font-weight: 600; vertical-align: top;">Klasifikasi</td>
+                            <td style="padding: 0.75rem 0; color: #1e293b;">{{ $biblio->classification }}</td>
+                        </tr>
+                        @endif
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 0.75rem 0; width: 30%; font-weight: 600; vertical-align: top;">Tipe Isi</td>
+                            <td style="padding: 0.75rem 0; color: #1e293b;">{{ $biblio->gmd->gmd_name ?? 'Text' }}</td>
+                        </tr>
+                        @if($biblio->edition)
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 0.75rem 0; width: 30%; font-weight: 600; vertical-align: top;">Edisi</td>
+                            <td style="padding: 0.75rem 0; color: #1e293b;">{{ $biblio->edition }}</td>
+                        </tr>
+                        @endif
+                        @if($biblio->topics->isNotEmpty())
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 0.75rem 0; width: 30%; font-weight: 600; vertical-align: top;">Subyek</td>
+                            <td style="padding: 0.75rem 0; color: #1e293b;">
+                                @foreach($biblio->topics as $topic)
+                                    {{ $topic->topic }}{{ !$loop->last ? ' ; ' : '' }}
+                                @endforeach
+                            </td>
+                        </tr>
+                        @endif
+                        @if($biblio->spec_detail_info)
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 0.75rem 0; width: 30%; font-weight: 600; vertical-align: top;">Info Detail Spesifik</td>
+                            <td style="padding: 0.75rem 0; color: #1e293b;">{{ $biblio->spec_detail_info }}</td>
+                        </tr>
+                        @endif
+                        @if($biblio->sor)
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 0.75rem 0; width: 30%; font-weight: 600; vertical-align: top;">Pernyataan Tanggungjawab</td>
+                            <td style="padding: 0.75rem 0; color: #1e293b;">{{ $biblio->sor }}</td>
+                        </tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+
             <!-- Description / Notes -->
             @if($biblio->notes)
             <div style="margin-bottom: 3rem;">
-                <h3 style="font-size: 1.25rem; font-weight: 700; color: #334155; margin-bottom: 0.75rem;">Description</h3>
+                <h3 style="font-size: 1.25rem; font-weight: 700; color: #334155; margin-bottom: 0.75rem;">Deskripsi</h3>
                 <div style="color: #475569; line-height: 1.8;">
                     {{ $biblio->notes }}
                 </div>
             </div>
             @endif
 
+            <!-- E-Digital Access -->
+            @if($biblio->file_att)
+            <div style="margin-bottom: 3rem; background: #f8fafc; border: 1px solid #bfdbfe; border-radius: 0.75rem; padding: 1.5rem;">
+                <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e3a8a; margin-bottom: 1rem;">E-Digital Format</h3>
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                    <div style="color: #475569;">
+                        Buku ini tersedia dalam format digital.
+                    </div>
+                    
+                    @if(Auth::guard('member')->check())
+                        @if(\str_starts_with($biblio->file_att, 'http'))
+                            <a href="{{ $biblio->file_att }}" target="_blank" style="display: inline-block; padding: 0.75rem 1.5rem; background: #059669; color: white; border-radius: 0.5rem; font-weight: 600; text-decoration: none; transition: 0.2s;" onmouseover="this.style.background='#047857'" onmouseout="this.style.background='#059669'">
+                                🔗 Kunjungi / Buka Tautan
+                            </a>
+                        @else
+                            <a href="{{ route('digital.download', $biblio->biblio_id) }}" target="_blank" style="display: inline-block; padding: 0.75rem 1.5rem; background: #2563eb; color: white; border-radius: 0.5rem; font-weight: 600; text-decoration: none; transition: 0.2s;" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+                                📥 Baca / Download E-Book
+                            </a>
+                        @endif
+                    @else
+                        <div style="text-align: right;">
+                            <span style="font-size: 0.875rem; color: #dc2626; display: block; margin-bottom: 0.5rem; font-weight: 500;">
+                                Anda harus login sebagai member untuk membaca.
+                            </span>
+                            <a href="{{ route('login') }}" style="display: inline-block; padding: 0.5rem 1rem; background: #e2e8f0; color: #0f172a; border-radius: 0.5rem; font-weight: 600; text-decoration: none; font-size: 0.9rem;">
+                                Login Member
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            </div>
+            @endif
+
             <!-- Availability Section -->
+            @if(session('success'))
+                <div style="margin-bottom: 1rem; padding: 1rem; background: #dcfce7; color: #166534; border-radius: 0.5rem; font-weight: 500;">
+                    {{ session('success') }}
+                </div>
+            @endif
+            @if($errors->any())
+                <div style="margin-bottom: 1rem; padding: 1rem; background: #fee2e2; color: #991b1b; border-radius: 0.5rem; font-weight: 500;">
+                    @foreach ($errors->all() as $error)
+                        <div>{{ $error }}</div>
+                    @endforeach
+                </div>
+            @endif
+
             <div style="margin-bottom: 3rem;">
-                <h3 style="font-size: 1.25rem; font-weight: 700; color: #334155; margin-bottom: 1rem;">Availability</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: #334155; margin-bottom: 0;">Availability</h3>
+                    @if($biblio->is_reservable)
+                        @if(Auth::guard('member')->check())
+                            <form action="{{ route('opac.reserve', $biblio->biblio_id) }}" method="POST">
+                                @csrf
+                                <button type="submit" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#4f46e5'" onmouseout="this.style.background='#6366f1'">
+                                    📅 Reservasi Buku
+                                </button>
+                            </form>
+                        @else
+                            <a href="{{ route('login') }}" style="padding: 0.5rem 1rem; background: #e2e8f0; color: #475569; border-radius: 0.5rem; text-decoration: none; font-weight: 600; font-size: 0.875rem;">Login untuk Reservasi</a>
+                        @endif
+                    @endif
+                </div>
                 
                 @if($biblio->items->count() > 0)
                 <div style="background: white; border: 1px solid #e2e8f0; border-radius: 0.75rem; overflow: hidden;">

@@ -74,4 +74,85 @@ class GmdController extends Controller
         $gmd->delete();
         return redirect()->route('admin.gmd.index')->with('success', 'GMD deleted successfully.');
     }
+
+    public function import()
+    {
+        return view('admin.gmd.import');
+    }
+
+    public function processImport(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:csv,txt|max:2048'
+        ]);
+
+        $file = $request->file('file');
+        $csvData = file_get_contents($file);
+        
+        $separator = strpos($csvData, ';') !== false ? ';' : ',';
+        $rows = array_map(function($v) use ($separator) { return str_getcsv($v, $separator); }, explode("\n", $csvData));
+        $header = array_shift($rows);
+
+        $successCount = 0;
+        foreach ($rows as $row) {
+            if (count($row) < 3 || empty(trim($row[2]))) continue;
+
+            $id = isset($row[0]) && trim($row[0]) !== '' ? trim($row[0]) : null;
+            $code = isset($row[1]) ? trim($row[1]) : '';
+            $name = trim($row[2]);
+            $icon = isset($row[3]) ? trim($row[3]) : '';
+
+            $data = [
+                'gmd_code' => $code,
+                'gmd_name' => $name,
+                'icon_image' => $icon,
+                'last_update' => now()->toDateString()
+            ];
+
+            if ($id) {
+                $existing = Gmd::find($id);
+                if ($existing) {
+                    $existing->update($data);
+                } else {
+                    $data['gmd_id'] = $id;
+                    $data['input_date'] = now()->toDateString();
+                    Gmd::create($data);
+                }
+            } else {
+                $data['input_date'] = now()->toDateString();
+                Gmd::create($data);
+            }
+            $successCount++;
+        }
+
+        return redirect()->route('admin.gmd.index')->with('success', "$successCount data berhasil diimpor.");
+    }
+
+    public function export()
+    {
+        $fileName = 'gmd_export_' . date('Y-m-d_H-i') . '.csv';
+        $items = Gmd::orderBy('gmd_id', 'asc')->get();
+
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $columns = ['ID', 'GMD Code', 'GMD Name', 'Icon Image'];
+
+        $callback = function() use($items, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns, ';'); 
+
+            foreach ($items as $item) {
+                fputcsv($file, [$item->gmd_id, $item->gmd_code, $item->gmd_name, $item->icon_image], ';');
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }

@@ -19,6 +19,9 @@
         </p>
         
         <form action="{{ route('opac.index') }}" method="GET" style="position: relative; max-width: 600px; margin: 0 auto;">
+            @if(request('type'))
+                <input type="hidden" name="type" value="{{ request('type') }}">
+            @endif
             <input type="text" name="keywords" value="{{ request('keywords') }}" 
                 style="width: 100%; padding: 1.25rem 2rem; border-radius: 99px; border: 1px solid #cbd5e1; font-size: 1.1rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); transition: all 0.3s; padding-right: 120px; outline: none;"
                 placeholder="Search title, author, or ISBN...">
@@ -42,6 +45,22 @@
                 <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b;">Fresh Arrivals</h2>
                 <p style="color: #64748b;">The latest additions to our shelves.</p>
             @endif
+        </div>
+        
+        <!-- Filter Tabs -->
+        <div style="display: flex; gap: 0.5rem; background: #f1f5f9; padding: 0.25rem; border-radius: 0.5rem;">
+            <a href="{{ route('opac.index', array_merge(request()->query(), ['type' => null])) }}" 
+               style="padding: 0.5rem 1rem; border-radius: 0.375rem; text-decoration: none; font-size: 0.875rem; font-weight: 600; {{ !request('type') ? 'background: white; color: #0f172a; box-shadow: 0 1px 3px rgba(0,0,0,0.1);' : 'color: #64748b;' }}">
+                Semua Koleksi
+            </a>
+            <a href="{{ route('opac.index', array_merge(request()->query(), ['type' => 'fisik'])) }}" 
+               style="padding: 0.5rem 1rem; border-radius: 0.375rem; text-decoration: none; font-size: 0.875rem; font-weight: 600; {{ request('type') == 'fisik' ? 'background: white; color: #0f172a; box-shadow: 0 1px 3px rgba(0,0,0,0.1);' : 'color: #64748b;' }}">
+                Koleksi Fisik
+            </a>
+            <a href="{{ route('opac.index', array_merge(request()->query(), ['type' => 'digital'])) }}" 
+               style="padding: 0.5rem 1rem; border-radius: 0.375rem; text-decoration: none; font-size: 0.875rem; font-weight: 600; {{ request('type') == 'digital' ? 'background: white; color: #0f172a; box-shadow: 0 1px 3px rgba(0,0,0,0.1);' : 'color: #64748b;' }}">
+                E-Digital
+            </a>
         </div>
     </div>
 

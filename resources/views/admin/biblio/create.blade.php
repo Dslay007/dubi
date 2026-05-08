@@ -16,12 +16,23 @@
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
             <div>
-                <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Edition</label>
-                <input type="text" name="edition" class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
+                <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Statement of Responsibility</label>
+                <input type="text" name="sor" class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
             </div>
             <div>
                  <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Series Title</label>
                 <input type="text" name="series_title" class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+            <div>
+                <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Edition</label>
+                <input type="text" name="edition" class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
+            </div>
+            <div>
+                 <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Specific Detail Info</label>
+                <input type="text" name="spec_detail_info" class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
             </div>
         </div>
 
@@ -87,30 +98,80 @@
             </div>
         </div>
 
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+            <div style="grid-column: span 2;">
+                 <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Collation (Deskripsi Fisik)</label>
+                 <input type="text" name="collation" class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
+            </div>
+        </div>
+
         <div style="margin-bottom: 1.5rem;">
-             <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Notes</label>
+             <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Notes (Catatan)</label>
              <textarea name="notes" rows="3" class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;"></textarea>
         </div>
 
-        <div style="margin-bottom: 1.5rem;">
-             <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Cover Image</label>
-             <input type="file" name="image" class="input" style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
+        <div style="margin-bottom: 1.5rem; background: #f8fafc; padding: 1.5rem; border-radius: 0.375rem; border: 1px dashed #cbd5e1;">
+            <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 1rem;">Cover Image (Pilih Salah Satu)</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div>
+                    <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Upload File</label>
+                    <input type="file" name="image" class="input" style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none; background: white;">
+                </div>
+                <div>
+                    <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Atau Paste URL (Download Cover)</label>
+                    <input type="url" name="image_url" placeholder="https://" class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
+                </div>
+            </div>
         </div>
 
-        <div style="margin-bottom: 2rem;">
-            <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Authors</label>
-            <div style="padding: 1rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; max-height: 150px; overflow-y: auto;">
-                 @foreach(\App\Models\Author::limit(50)->get() as $author)
-                    <div style="margin-bottom: 0.25rem;">
-                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="author_id[]" value="{{ $author->author_id }}">
-                            {{ $author->author_name }}
-                        </label>
-                    </div>
-                @endforeach
-                @if(\App\Models\Author::count() > 50)
-                    <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem; font-style: italic;">Showing top 50 authors... (Search to be implemented)</div>
-                @endif
+        <div style="margin-bottom: 1.5rem; background: #f8fafc; padding: 1.5rem; border-radius: 0.375rem; border: 1px dashed #cbd5e1;">
+            <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 1rem;">E-Digital / File Attachment (Opsional)</h4>
+            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">Unggah file e-book (PDF/EPUB) atau masukkan link URL untuk buku digital.</p>
+            
+            <div style="margin-bottom: 1rem;">
+                <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Unggah File (Max 50MB)</label>
+                <input type="file" name="file_att_upload" accept=".pdf,.epub" class="input" style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none; background: white;">
+            </div>
+            
+            <div>
+                <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Atau Link URL (G-Drive, dll)</label>
+                <input type="url" name="file_att_link" placeholder="https://" class="input" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+            <div>
+                <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Authors</label>
+                <div style="padding: 1rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; max-height: 150px; overflow-y: auto; background: white;">
+                     @foreach(\App\Models\Author::limit(50)->get() as $author)
+                        <div style="margin-bottom: 0.25rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="checkbox" name="author_id[]" value="{{ $author->author_id }}">
+                                {{ $author->author_name }}
+                            </label>
+                        </div>
+                    @endforeach
+                    @if(\App\Models\Author::count() > 50)
+                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem; font-style: italic;">Showing top 50 authors...</div>
+                    @endif
+                </div>
+            </div>
+            
+            <div>
+                <label class="label" style="display: block; font-weight: 600; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Topics / Subjects</label>
+                <div style="padding: 1rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; max-height: 150px; overflow-y: auto; background: white;">
+                     @foreach(\App\Models\Topic::limit(50)->get() as $topic)
+                        <div style="margin-bottom: 0.25rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="checkbox" name="topic_id[]" value="{{ $topic->topic_id }}">
+                                {{ $topic->topic }}
+                            </label>
+                        </div>
+                    @endforeach
+                    @if(\App\Models\Topic::count() > 50)
+                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem; font-style: italic;">Showing top 50 topics...</div>
+                    @endif
+                </div>
             </div>
         </div>
 

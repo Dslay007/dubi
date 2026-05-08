@@ -74,4 +74,80 @@ class ItemStatusController extends Controller
         $status->delete();
         return redirect()->route('admin.item_status.index')->with('success', 'Item Status deleted successfully.');
     }
+
+    public function import()
+    {
+        return view('admin.item_status.import');
+    }
+
+    public function processImport(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:csv,txt|max:2048'
+        ]);
+
+        $file = $request->file('file');
+        $csvData = file_get_contents($file);
+        
+        $separator = strpos($csvData, ';') !== false ? ';' : ',';
+        $rows = array_map(function($v) use ($separator) { return str_getcsv($v, $separator); }, explode("\n", $csvData));
+        $header = array_shift($rows);
+
+        $successCount = 0;
+        foreach ($rows as $row) {
+            if (count($row) < 2 || empty(trim($row[0])) || empty(trim($row[1]))) continue;
+
+            $id = substr(trim($row[0]), 0, 3);
+            $name = trim($row[1]);
+            $no_loan = isset($row[2]) ? (int)trim($row[2]) : 0;
+            $skip_stock_take = isset($row[3]) ? (int)trim($row[3]) : 0;
+
+            $data = [
+                'item_status_name' => $name,
+                'no_loan' => $no_loan,
+                'skip_stock_take' => $skip_stock_take,
+                'last_update' => now()->toDateString()
+            ];
+
+            $existing = ItemStatus::find($id);
+            if ($existing) {
+                $existing->update($data);
+            } else {
+                $data['item_status_id'] = $id;
+                $data['input_date'] = now()->toDateString();
+                ItemStatus::create($data);
+            }
+            $successCount++;
+        }
+
+        return redirect()->route('admin.item_status.index')->with('success', "$successCount data berhasil diimpor.");
+    }
+
+    public function export()
+    {
+        $fileName = 'item_status_export_' . date('Y-m-d_H-i') . '.csv';
+        $items = ItemStatus::orderBy('item_status_id', 'asc')->get();
+
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $columns = ['ID', 'Status Name', 'No Loan', 'Skip Stock Take'];
+
+        $callback = function() use($items, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns, ';'); 
+
+            foreach ($items as $item) {
+                fputcsv($file, [$item->item_status_id, $item->item_status_name, $item->no_loan, $item->skip_stock_take], ';');
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }

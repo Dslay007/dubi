@@ -13,6 +13,9 @@
     <!-- Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="//unpkg.com/alpinejs" defer></script>
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         :root {
@@ -200,6 +203,28 @@
         button.nav-item::after { display: none; }
     </style>
 </head>
+@php
+    use App\Http\Controllers\Admin\SystemRoleController;
+    $__user = auth()->guard('admin')->user();
+    $__groupId = $__user->groups ?? null;
+    $__isSuper = ($__groupId == 1);
+    $__perms = $__isSuper ? [] : SystemRoleController::loadPermissions($__groupId);
+    // Helper: check if user can see a sub-menu
+    // Super admin always true; others check the loaded permissions array
+    if (!function_exists('__canSee')) {
+        function __canSee($key, $isSuper, $perms) {
+            return $isSuper || in_array($key, $perms);
+        }
+    }
+    // Check if ANY sub-menu in a group is visible
+    if (!function_exists('__anyVisible')) {
+        function __anyVisible($keys, $isSuper, $perms) {
+            if ($isSuper) return true;
+            foreach ($keys as $k) { if (in_array($k, $perms)) return true; }
+            return false;
+        }
+    }
+@endphp
 <body>
 
     <!-- Sidebar -->
@@ -213,11 +238,14 @@
 
         <nav class="nav-menu">
             <div class="nav-category">Main</div>
+            @if(__canSee('dashboard', $__isSuper, $__perms))
             <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                 <i data-lucide="layout-dashboard"></i> Dashboard
             </a>
+            @endif
 
             <!-- Circulation Group (Dropdown) -->
+            @if(__anyVisible(['sirkulasi.transaksi','sirkulasi.pengembalian_kilat','sirkulasi.aturan_peminjaman','sirkulasi.sejarah_peminjaman','sirkulasi.daftar_keterlambatan','sirkulasi.reservasi'], $__isSuper, $__perms))
             <div x-data="{ open: {{ request()->is('admin/circulation*') ? 'true' : 'false' }} }">
                 <button @click="open = !open" class="nav-item" style="width: 100%; justify-content: space-between; background: none; border: none; cursor: pointer;">
                     <span style="display: flex; align-items: center; gap: 0.75rem;">
@@ -227,31 +255,71 @@
                 </button>
                 
                 <div x-show="open" style="padding-left: 2rem; display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.5rem;" x-transition>
+                    @if(__canSee('sirkulasi.transaksi', $__isSuper, $__perms))
                     <a href="{{ route('admin.circulation.index') }}" class="nav-item {{ request()->routeIs('admin.circulation.index') || request()->routeIs('admin.circulation.transaction') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
                         Transaksi
                     </a>
+                    @endif
+                    @if(__canSee('sirkulasi.pengembalian_kilat', $__isSuper, $__perms))
                     <a href="{{ route('admin.circulation.quick_return') }}" class="nav-item {{ request()->routeIs('admin.circulation.quick_return') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
                         Pengembalian Kilat
                     </a>
+                    @endif
+                    @if(__canSee('sirkulasi.aturan_peminjaman', $__isSuper, $__perms))
                     <a href="{{ route('admin.circulation.rules') }}" class="nav-item {{ request()->routeIs('admin.circulation.rules') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
                         Aturan Peminjaman
                     </a>
+                    @endif
+                    @if(__canSee('sirkulasi.sejarah_peminjaman', $__isSuper, $__perms))
                     <a href="{{ route('admin.circulation.history') }}" class="nav-item {{ request()->routeIs('admin.circulation.history') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
                         Sejarah Peminjaman
                     </a>
+                    @endif
+                    @if(__canSee('sirkulasi.daftar_keterlambatan', $__isSuper, $__perms))
                     <a href="{{ route('admin.circulation.overdue') }}" class="nav-item {{ request()->routeIs('admin.circulation.overdue') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
                         Daftar Keterlambatan
                     </a>
+                    @endif
+                    @if(__canSee('sirkulasi.reservasi', $__isSuper, $__perms))
                     <a href="{{ route('admin.circulation.reservations') }}" class="nav-item {{ request()->routeIs('admin.circulation.reservations') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
                         Reservasi
                     </a>
+                    @endif
                 </div>
             </div>
-            <a href="{{ route('admin.member.index') }}" class="nav-item {{ request()->routeIs('admin.member.*') ? 'active' : '' }}">
-                <i data-lucide="users"></i> Membership
-            </a>
+            @endif
+            <!-- Membership Group (Dropdown) -->
+            @if(__anyVisible(['membership.data_anggota','membership.tipe_keanggotaan','membership.cetak_kartu'], $__isSuper, $__perms))
+            <div x-data="{ open: {{ request()->is('admin/member*') || request()->is('admin/member_type*') ? 'true' : 'false' }} }">
+                <button @click="open = !open" class="nav-item" style="width: 100%; justify-content: space-between; background: none; border: none; cursor: pointer;">
+                    <span style="display: flex; align-items: center; gap: 0.75rem;">
+                        <i data-lucide="users"></i> Membership
+                    </span>
+                    <i data-lucide="chevron-down" :style="open ? 'transform: rotate(180deg)' : ''" style="transition: transform 0.2s; width: 1rem; height: 1rem;"></i>
+                </button>
+                
+                <div x-show="open" style="padding-left: 2rem; display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.5rem;" x-transition>
+                    @if(__canSee('membership.data_anggota', $__isSuper, $__perms))
+                    <a href="{{ route('admin.member.index') }}" class="nav-item {{ request()->routeIs('admin.member.index') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
+                        Data Anggota
+                    </a>
+                    @endif
+                    @if(__canSee('membership.tipe_keanggotaan', $__isSuper, $__perms))
+                    <a href="{{ route('admin.member_type.index') }}" class="nav-item {{ request()->routeIs('admin.member_type.index') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
+                        Tipe Keanggotaan
+                    </a>
+                    @endif
+                    @if(__canSee('membership.cetak_kartu', $__isSuper, $__perms))
+                    <a href="{{ route('admin.member.barcode') }}" class="nav-item {{ request()->routeIs('admin.member.barcode') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
+                        Cetak Kartu Anggota
+                    </a>
+                    @endif
+                </div>
+            </div>
+            @endif
 
             <!-- Bibliography Group (Dropdown) -->
+            @if(__anyVisible(['bibliografi.data_buku','bibliografi.eksemplar','bibliografi.eksemplar_keluar','bibliografi.cetak_barcode','bibliografi.marc'], $__isSuper, $__perms))
             <div x-data="{ open: {{ request()->is('admin/biblio*') || request()->is('admin/item*') || request()->is('admin/marc*') ? 'true' : 'false' }} }">
                 <button @click="open = !open" class="nav-item" style="width: 100%; justify-content: space-between; background: none; border: none; cursor: pointer;">
                     <span style="display: flex; align-items: center; gap: 0.75rem;">
@@ -261,45 +329,173 @@
                 </button>
                 
                 <div x-show="open" style="padding-left: 2rem; display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.5rem;" x-transition>
+                    @if(__canSee('bibliografi.data_buku', $__isSuper, $__perms))
                     <a href="{{ route('admin.biblio.index') }}" class="nav-item {{ request()->routeIs('admin.biblio.index') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
                         Bibliografi (Data Buku)
                     </a>
+                    @endif
+                    @if(__canSee('bibliografi.eksemplar', $__isSuper, $__perms))
                     <a href="{{ route('admin.item.index') }}" class="nav-item {{ request()->routeIs('admin.item.index') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
                         Eksemplar
                     </a>
+                    @endif
+                    @if(__canSee('bibliografi.eksemplar_keluar', $__isSuper, $__perms))
                     <a href="{{ route('admin.item.out') }}" class="nav-item {{ request()->routeIs('admin.item.out') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
                         Daftar Eksemplar Keluar
                     </a>
+                    @endif
+                    @if(__canSee('bibliografi.cetak_barcode', $__isSuper, $__perms))
                     <a href="{{ route('admin.item.barcode') }}" class="nav-item {{ request()->routeIs('admin.item.barcode') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
                         Cetak Barcode
                     </a>
+                    @endif
+                    @if(__canSee('bibliografi.marc', $__isSuper, $__perms))
                     <a href="{{ route('admin.marc.index') }}" class="nav-item {{ request()->routeIs('admin.marc.index') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
                         MARC Import/Export
                     </a>
+                    @endif
                 </div>
             </div>
+            @endif
 
-            <div class="nav-category">Master Files</div>
-            <a href="{{ route('admin.author.index') }}" class="nav-item {{ request()->routeIs('admin.author.*') ? 'active' : '' }}">
-                <i data-lucide="pen-tool"></i> Authors
-            </a>
-            <a href="{{ route('admin.publisher.index') }}" class="nav-item {{ request()->routeIs('admin.publisher.*') ? 'active' : '' }}">
-                <i data-lucide="building-2"></i> Publishers
-            </a>
-            <a href="{{ route('admin.gmd.index') }}" class="nav-item {{ request()->routeIs('admin.gmd.*') ? 'active' : '' }}">
-                <i data-lucide="tag"></i> GMD
-            </a>
-            <a href="{{ route('admin.topic.index') }}" class="nav-item {{ request()->routeIs('admin.topic.*') ? 'active' : '' }}">
-                <i data-lucide="hash"></i> Subjects
-            </a>
-            <a href="{{ route('admin.place.index') }}" class="nav-item {{ request()->routeIs('admin.place.*') ? 'active' : '' }}">
-                <i data-lucide="map-pin"></i> Places
-            </a>
-             <a href="{{ route('admin.item_status.index') }}" class="nav-item {{ request()->routeIs('admin.item_status.*') ? 'active' : '' }}">
-                <i data-lucide="alert-circle"></i> Item Status
-            </a>
+            <!-- Master Files Group (Dropdown) -->
+            @if(__anyVisible(['master.terkendali','master.referensi','master.peralatan'], $__isSuper, $__perms))
+            <div x-data="{ open: {{ request()->is('admin/master*') || request()->is('admin/gmd*') || request()->is('admin/author*') || request()->is('admin/publisher*') || request()->is('admin/topic*') || request()->is('admin/place*') || request()->is('admin/item_status*') ? 'true' : 'false' }} }">
+                <button @click="open = !open" class="nav-item" style="width: 100%; justify-content: space-between; background: none; border: none; cursor: pointer;">
+                    <span style="display: flex; align-items: center; gap: 0.75rem;">
+                        <i data-lucide="database"></i> Daftar Terkendali
+                    </span>
+                    <i data-lucide="chevron-down" :style="open ? 'transform: rotate(180deg)' : ''" style="transition: transform 0.2s; width: 1rem; height: 1rem;"></i>
+                </button>
+                
+                <div x-show="open" style="padding-left: 2rem; display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.5rem;" x-transition>
+                    @if(__canSee('master.terkendali', $__isSuper, $__perms))
+                    <a href="{{ route('admin.gmd.index') }}" class="nav-item {{ request()->is('admin/gmd*') || request()->is('admin/author*') || request()->is('admin/publisher*') || request()->is('admin/topic*') || request()->is('admin/master/terkendali*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
+                        Daftar Terkendali
+                    </a>
+                    @endif
+                    @if(__canSee('master.referensi', $__isSuper, $__perms))
+                    <a href="{{ route('admin.place.index') }}" class="nav-item {{ request()->is('admin/place*') || request()->is('admin/item_status*') || request()->is('admin/master/referensi*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
+                        Daftar Referensi
+                    </a>
+                    @endif
+                    @if(__canSee('master.peralatan', $__isSuper, $__perms))
+                    <a href="{{ route('admin.master.peralatan') }}" class="nav-item {{ request()->is('admin/master/peralatan*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
+                        Peralatan
+                    </a>
+                    @endif
+                </div>
+            </div>
+            @endif
 
-            <div class="nav-category">System</div>
+            <!-- Inventarisasi Group -->
+            @if(__anyVisible(['inventarisasi.rekaman','inventarisasi.inisialisasi'], $__isSuper, $__perms))
+            <div x-data="{ open: {{ request()->is('admin/inventarisasi*') ? 'true' : 'false' }} }">
+                <button @click="open = !open" class="nav-item" style="width: 100%; justify-content: space-between; background: none; border: none; cursor: pointer;">
+                    <span style="display: flex; align-items: center; gap: 0.75rem;">
+                        <i data-lucide="clipboard-list"></i> Inventarisasi
+                    </span>
+                    <i data-lucide="chevron-down" :style="open ? 'transform: rotate(180deg)' : ''" style="transition: transform 0.2s; width: 1rem; height: 1rem;"></i>
+                </button>
+                <div x-show="open" style="padding-left: 2rem; display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.5rem;" x-transition>
+                    @if(__canSee('inventarisasi.rekaman', $__isSuper, $__perms))
+                    <a href="{{ route('admin.inventarisasi.rekaman') }}" class="nav-item {{ request()->routeIs('admin.inventarisasi.rekaman') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Rekaman Inventaris</a>
+                    @endif
+                    @if(__canSee('inventarisasi.inisialisasi', $__isSuper, $__perms))
+                    <a href="{{ route('admin.inventarisasi.inisialisasi') }}" class="nav-item {{ request()->routeIs('admin.inventarisasi.inisialisasi') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Inisialisasi</a>
+                    @endif
+                </div>
+            </div>
+            @endif
+
+            <!-- Acara Group -->
+            @if(__anyVisible(['acara.berita_acara','acara.pendaftaran'], $__isSuper, $__perms))
+            <div x-data="{ open: {{ request()->is('admin/acara*') ? 'true' : 'false' }} }">
+                <button @click="open = !open" class="nav-item" style="width: 100%; justify-content: space-between; background: none; border: none; cursor: pointer;">
+                    <span style="display: flex; align-items: center; gap: 0.75rem;">
+                        <i data-lucide="calendar-days"></i> Acara
+                    </span>
+                    <i data-lucide="chevron-down" :style="open ? 'transform: rotate(180deg)' : ''" style="transition: transform 0.2s; width: 1rem; height: 1rem;"></i>
+                </button>
+                <div x-show="open" style="padding-left: 2rem; display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.5rem;" x-transition>
+                    @if(__canSee('acara.berita_acara', $__isSuper, $__perms))
+                    <a href="{{ route('admin.acara.berita_acara.index') }}" class="nav-item {{ request()->routeIs('admin.acara.berita_acara.*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Berita Acara</a>
+                    @endif
+                    @if(__canSee('acara.pendaftaran', $__isSuper, $__perms))
+                    <a href="{{ route('admin.acara.pendaftaran.index') }}" class="nav-item {{ request()->routeIs('admin.acara.pendaftaran.*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Form Pendaftaran Kegiatan</a>
+                    @endif
+                </div>
+            </div>
+            @endif
+
+            <!-- Pelaporan Group -->
+            @if(__anyVisible(['pelaporan.statistik_koleksi','pelaporan.laporan_peminjaman','pelaporan.laporan_anggota','pelaporan.koleksi_perpustakaan','pelaporan.data_klasifikasi','pelaporan.laporan_pengunjung','pelaporan.laporan_denda'], $__isSuper, $__perms))
+            <div x-data="{ open: {{ request()->is('admin/pelaporan*') ? 'true' : 'false' }} }">
+                <button @click="open = !open" class="nav-item" style="width: 100%; justify-content: space-between; background: none; border: none; cursor: pointer;">
+                    <span style="display: flex; align-items: center; gap: 0.75rem;">
+                        <i data-lucide="bar-chart-3"></i> Pelaporan
+                    </span>
+                    <i data-lucide="chevron-down" :style="open ? 'transform: rotate(180deg)' : ''" style="transition: transform 0.2s; width: 1rem; height: 1rem;"></i>
+                </button>
+                <div x-show="open" style="padding-left: 2rem; display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.5rem;" x-transition>
+                    @if(__canSee('pelaporan.statistik_koleksi', $__isSuper, $__perms))
+                    <a href="{{ route('admin.pelaporan.statistik_koleksi') }}" class="nav-item {{ request()->routeIs('admin.pelaporan.statistik_koleksi') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Statistik Koleksi</a>
+                    @endif
+                    @if(__canSee('pelaporan.laporan_peminjaman', $__isSuper, $__perms))
+                    <a href="{{ route('admin.pelaporan.laporan_peminjaman') }}" class="nav-item {{ request()->routeIs('admin.pelaporan.laporan_peminjaman') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Laporan Peminjaman</a>
+                    @endif
+                    @if(__canSee('pelaporan.laporan_anggota', $__isSuper, $__perms))
+                    <a href="{{ route('admin.pelaporan.laporan_anggota') }}" class="nav-item {{ request()->routeIs('admin.pelaporan.laporan_anggota') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Laporan Anggota</a>
+                    @endif
+                    @if(__canSee('pelaporan.koleksi_perpustakaan', $__isSuper, $__perms))
+                    <a href="{{ route('admin.pelaporan.koleksi_perpustakaan') }}" class="nav-item {{ request()->routeIs('admin.pelaporan.koleksi_perpustakaan') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Koleksi Perpustakaan</a>
+                    @endif
+                    @if(__canSee('pelaporan.data_klasifikasi', $__isSuper, $__perms))
+                    <a href="{{ route('admin.pelaporan.data_klasifikasi') }}" class="nav-item {{ request()->routeIs('admin.pelaporan.data_klasifikasi') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Data Klasifikasi</a>
+                    @endif
+                    @if(__canSee('pelaporan.laporan_pengunjung', $__isSuper, $__perms))
+                    <a href="{{ route('admin.pelaporan.laporan_pengunjung') }}" class="nav-item {{ request()->routeIs('admin.pelaporan.laporan_pengunjung') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Laporan Pengunjung</a>
+                    @endif
+                    @if(__canSee('pelaporan.laporan_denda', $__isSuper, $__perms))
+                    <a href="{{ route('admin.pelaporan.laporan_denda') }}" class="nav-item {{ request()->routeIs('admin.pelaporan.laporan_denda') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Laporan Denda</a>
+                    @endif
+                </div>
+            </div>
+            @endif
+
+            <!-- Sistem Group -->
+            @if(__anyVisible(['sistem.konten','sistem.backup','sistem.role','sistem.staff','sistem.aktifitas','sistem.plugin'], $__isSuper, $__perms))
+            <div x-data="{ open: {{ request()->is('admin/sistem*') ? 'true' : 'false' }} }">
+                <button @click="open = !open" class="nav-item" style="width: 100%; justify-content: space-between; background: none; border: none; cursor: pointer;">
+                    <span style="display: flex; align-items: center; gap: 0.75rem;">
+                        <i data-lucide="settings"></i> Sistem
+                    </span>
+                    <i data-lucide="chevron-down" :style="open ? 'transform: rotate(180deg)' : ''" style="transition: transform 0.2s; width: 1rem; height: 1rem;"></i>
+                </button>
+                <div x-show="open" style="padding-left: 2rem; display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.5rem;" x-transition>
+                    @if(__canSee('sistem.konten', $__isSuper, $__perms))
+                    <a href="{{ route('admin.sistem.konten.index') }}" class="nav-item {{ request()->routeIs('admin.sistem.konten.*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Konten</a>
+                    @endif
+                    @if(__canSee('sistem.backup', $__isSuper, $__perms))
+                    <a href="{{ route('admin.sistem.backup.index') }}" class="nav-item {{ request()->routeIs('admin.sistem.backup.*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Salinan Pangkalan</a>
+                    @endif
+                    @if(__canSee('sistem.role', $__isSuper, $__perms))
+                    <a href="{{ route('admin.sistem.role.index') }}" class="nav-item {{ request()->routeIs('admin.sistem.role.*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Role and Permission</a>
+                    @endif
+                    @if(__canSee('sistem.staff', $__isSuper, $__perms))
+                    <a href="{{ route('admin.sistem.staff.index') }}" class="nav-item {{ request()->routeIs('admin.sistem.staff.*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Manajemen Staff</a>
+                    @endif
+                    @if(__canSee('sistem.aktifitas', $__isSuper, $__perms))
+                    <a href="{{ route('admin.sistem.aktifitas.index') }}" class="nav-item {{ request()->routeIs('admin.sistem.aktifitas.*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Aktifitas Staff</a>
+                    @endif
+                    @if(__canSee('sistem.plugin', $__isSuper, $__perms))
+                    <a href="{{ route('admin.sistem.plugin.csp') }}" class="nav-item {{ request()->routeIs('admin.sistem.plugin.csp') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Plugin (CSP)</a>
+                    @endif
+                </div>
+            </div>
+            @endif
+
+            <div class="nav-category">Account</div>
             <form action="{{ route('admin.logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="nav-item" style="background: none; border: none; width: 100%; cursor: pointer;">
@@ -309,10 +505,10 @@
         </nav>
 
         <div class="user-panel">
-            <div class="user-avatar">A</div>
+            <div class="user-avatar">{{ strtoupper(substr($__user->realname ?? $__user->username ?? 'A', 0, 1)) }}</div>
             <div>
-                <div style="font-weight: 600; font-size: 0.9rem;">Administrator</div>
-                <div style="font-size: 0.75rem; color: #64748b;">Online</div>
+                <div style="font-weight: 600; font-size: 0.9rem;">{{ $__user->realname ?? $__user->username ?? 'Admin' }}</div>
+                <div style="font-size: 0.75rem; color: #64748b;">{{ $__isSuper ? 'Administrator' : ($__user->groups ?? 'Staff') }}</div>
             </div>
         </div>
     </aside>
@@ -328,6 +524,17 @@
                 </a>
             </div>
         </header>
+
+        @if($errors->any())
+            <div style="background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; border: 1px solid #fecaca;">
+                <div style="font-weight: 700; margin-bottom: 0.5rem;">Oops, ada kesalahan:</div>
+                <ul style="margin: 0; padding-left: 1.5rem;">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
         @if(session('success'))
             <div style="background: #dcfce7; color: #166534; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; border: 1px solid #bbf7d0;">

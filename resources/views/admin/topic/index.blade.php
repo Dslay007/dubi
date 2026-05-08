@@ -3,10 +3,17 @@
 @section('pageTitle', 'Subject List')
 
 @section('content')
+
+<x-master-file-dropdown type="terkendali" current="topic" />
+
 <div style="background: white; border-radius: 0.5rem; border: 1px solid #e2e8f0; overflow: hidden;">
     <div style="padding: 1.5rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
         <h3 style="font-weight: 700; color: #1e293b;">Master File: Subjects</h3>
-        <a href="{{ route('admin.topic.create') }}" class="btn" style="background: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; text-decoration: none; font-size: 0.875rem;">+ Add New Subject</a>
+        <div>
+            <a href="{{ route('admin.topic.import') }}" class="btn" style="background: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; font-size: 0.875rem; text-decoration: none; margin-right: 0.5rem;">Import CSV</a>
+            <a href="{{ route('admin.topic.export') }}" class="btn" style="background: #64748b; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; font-size: 0.875rem; text-decoration: none; margin-right: 0.5rem;">Export CSV</a>
+            <a href="{{ route('admin.topic.create') }}" class="btn" style="background: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; text-decoration: none; font-size: 0.875rem;">+ Add New Subject</a>
+        </div>
     </div>
 
     <div style="padding: 1rem; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">

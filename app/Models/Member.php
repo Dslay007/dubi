@@ -38,4 +38,14 @@ class Member extends Authenticatable
     {
         return $this->hasMany(Loan::class, 'member_id', 'member_id');
     }
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class, 'member_id', 'member_id');
+    }
+
+    public function memberType()
+    {
+        return $this->belongsTo(MemberType::class, 'member_type_id', 'member_type_id');
+    }
 }

@@ -17,7 +17,13 @@ class MemberController extends Controller
             ->with(['item.biblio'])
             ->orderBy('due_date', 'asc')
             ->get();
+            
+        // Get active reservations
+        $reservations = $member->reservations()
+            ->with(['item.biblio'])
+            ->orderBy('reserve_date', 'desc')
+            ->get();
 
-        return view('member.dashboard', compact('member', 'loans'));
+        return view('member.dashboard', compact('member', 'loans', 'reservations'));
     }
 }

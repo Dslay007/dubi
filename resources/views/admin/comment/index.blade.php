@@ -6,10 +6,13 @@
 
 <x-master-file-dropdown type="peralatan" current="manajemen_komentar" />
 
-<div style="background: white; border-radius: 0.5rem; border: 1px solid #e2e8f0; overflow: hidden;">
-    <div style="padding: 1.5rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-        <h3 style="font-weight: 700; color: #1e293b;">Daftar Komentar</h3>
-    </div>
+<x-master-header 
+    title="Daftar Komentar" 
+    subtitle="Kelola dan moderasi komentar dari pengunjung." 
+    icon="message-square"
+/>
+
+<div style="background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); overflow: hidden;">
 
     <div style="padding: 1rem; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
         <form action="{{ route('admin.comment.index') }}" method="GET" style="display: flex; gap: 0.5rem; max-width: 400px;">

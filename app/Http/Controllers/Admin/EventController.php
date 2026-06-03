@@ -16,72 +16,121 @@ class EventController extends Controller
             $query->where('title', 'like', '%' . $request->search . '%');
         }
 
-        if ($request->filled('date_from')) {
-            $query->whereDate('event_date', '>=', $request->date_from);
-        }
+        $events = $query->orderBy('created_at', 'desc')->paginate(10);
 
-        if ($request->filled('date_to')) {
-            $query->whereDate('event_date', '<=', $request->date_to);
-        }
-
-        $events = $query->orderBy('event_date', 'desc')->paginate(10);
-
-        return view('admin.acara.berita_acara.index', compact('events'));
+        return view('admin.kegiatan.acara.index', compact('events'));
     }
 
     public function create()
     {
-        return view('admin.acara.berita_acara.form', ['event' => null]);
+        return view('admin.kegiatan.acara.form', ['event' => null]);
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'event_date' => 'required|date',
-            'location' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'is_active' => 'boolean'
+            'description' => 'required|string',
+            'registration_link' => 'nullable|url|max:255',
+            'photos.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048' // multiple validation
         ]);
 
-        Event::create($request->all());
+        $photos = [];
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $file) {
+                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/acara'), $filename);
+                $photos[] = $filename;
+            }
+        }
 
-        return redirect()->route('admin.acara.berita_acara.index')->with('success', 'Berita acara berhasil ditambahkan.');
+        Event::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'registration_link' => $request->registration_link,
+            'photos' => empty($photos) ? null : json_encode($photos),
+            'is_active' => false // Default false, must be activated manually
+        ]);
+
+        return redirect()->route('admin.kegiatan.acara.index')->with('success', 'Acara berhasil ditambahkan. Silakan klik Tampilkan di Beranda untuk mengaktifkannya.');
     }
 
-    public function edit(Event $beritaAcarum) // Route Model Binding uses $beritaAcarum by default because of the route name, but let's use standard $id to avoid confusion with pluralization
-    {
-        // Using manual find to avoid Laravel's pluralization route binding issues with non-english words
-    }
-
-    public function editById($id)
+    public function edit($id)
     {
         $event = Event::findOrFail($id);
-        return view('admin.acara.berita_acara.form', compact('event'));
+        return view('admin.kegiatan.acara.form', compact('event'));
     }
 
-    public function updateById(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $event = Event::findOrFail($id);
 
         $request->validate([
             'title' => 'required|string|max:255',
-            'event_date' => 'required|date',
-            'location' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'is_active' => 'boolean'
+            'description' => 'required|string',
+            'registration_link' => 'nullable|url|max:255',
+            'photos.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048'
         ]);
 
-        $event->update($request->all());
+        $photos = $event->photos ? json_decode($event->photos, true) : [];
+        
+        // Handle new uploads (append to existing or replace depending on logic. Let's append for now or replace if they upload new ones. Actually, simpler to just replace if new photos are uploaded).
+        if ($request->hasFile('photos')) {
+            // Delete old photos
+            if (!empty($photos)) {
+                foreach($photos as $oldFile) {
+                    if (file_exists(public_path('uploads/acara/' . $oldFile))) {
+                        unlink(public_path('uploads/acara/' . $oldFile));
+                    }
+                }
+            }
+            
+            $photos = [];
+            foreach ($request->file('photos') as $file) {
+                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/acara'), $filename);
+                $photos[] = $filename;
+            }
+        }
 
-        return redirect()->route('admin.acara.berita_acara.index')->with('success', 'Berita acara berhasil diperbarui.');
+        $event->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'registration_link' => $request->registration_link,
+            'photos' => empty($photos) ? null : json_encode($photos),
+        ]);
+
+        return redirect()->route('admin.kegiatan.acara.index')->with('success', 'Acara berhasil diperbarui.');
     }
 
-    public function destroyById($id)
+    public function destroy($id)
     {
         $event = Event::findOrFail($id);
+        
+        // Delete photos
+        $photos = $event->photos ? json_decode($event->photos, true) : [];
+        if (!empty($photos)) {
+            foreach($photos as $oldFile) {
+                if (file_exists(public_path('uploads/acara/' . $oldFile))) {
+                    unlink(public_path('uploads/acara/' . $oldFile));
+                }
+            }
+        }
+        
         $event->delete();
 
-        return redirect()->route('admin.acara.berita_acara.index')->with('success', 'Berita acara berhasil dihapus.');
+        return redirect()->route('admin.kegiatan.acara.index')->with('success', 'Acara berhasil dihapus.');
+    }
+    
+    public function toggleActive($id)
+    {
+        // Set all to false first
+        Event::query()->update(['is_active' => false]);
+        
+        // Activate the selected one
+        $event = Event::findOrFail($id);
+        $event->update(['is_active' => true]);
+        
+        return redirect()->route('admin.kegiatan.acara.index')->with('success', 'Acara "'.$event->title.'" sekarang ditampilkan di halaman beranda.');
     }
 }

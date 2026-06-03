@@ -6,15 +6,17 @@
 
 <x-master-file-dropdown type="terkendali" current="gmd" />
 
-<div style="background: white; border-radius: 0.5rem; border: 1px solid #e2e8f0; overflow: hidden;">
-    <div style="padding: 1.5rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-        <h3 style="font-weight: 700; color: #1e293b;">Master File: GMD</h3>
-        <div>
-            <a href="{{ route('admin.gmd.import') }}" class="btn" style="background: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; font-size: 0.875rem; text-decoration: none; margin-right: 0.5rem;">Import CSV</a>
-            <a href="{{ route('admin.gmd.export') }}" class="btn" style="background: #64748b; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; font-size: 0.875rem; text-decoration: none; margin-right: 0.5rem;">Export CSV</a>
-            <a href="{{ route('admin.gmd.create') }}" class="btn" style="background: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; text-decoration: none; font-size: 0.875rem;">+ Add New GMD</a>
-        </div>
-    </div>
+<x-master-header 
+    title="GMD" 
+    subtitle="General Material Designation (GMD) untuk klasifikasi umum material." 
+    icon="layers"
+    importRoute="admin.gmd.import"
+    exportRoute="admin.gmd.export"
+    createRoute="admin.gmd.create"
+    createLabel="Tambah GMD"
+/>
+
+<div style="background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); overflow: hidden;">
 
     <div style="padding: 1rem; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
         <form action="{{ route('admin.gmd.index') }}" method="GET" style="display: flex; gap: 0.5rem; max-width: 400px;">
@@ -40,13 +42,21 @@
                     <td style="padding: 1rem 1.5rem; font-weight: 600; color: #1e293b;">{{ $gmd->gmd_code }}</td>
                     <td style="padding: 1rem 1.5rem; color: #334155;">{{ $gmd->gmd_name }}</td>
                     <td style="padding: 1rem 1.5rem; color: #64748b;">{{ $gmd->last_update }}</td>
-                    <td style="padding: 1rem 1.5rem; display: flex; gap: 0.5rem;">
-                         <a href="{{ route('admin.gmd.edit', $gmd->gmd_id) }}" style="color: #3b82f6; font-weight: 500; text-decoration: none;">Edit</a>
-                        <form action="{{ route('admin.gmd.destroy', $gmd->gmd_id) }}" method="POST" onsubmit="return confirm('Delete this GMD?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" style="background: none; border: none; color: #ef4444; font-weight: 500; cursor: pointer;">Delete</button>
-                        </form>
+                    <td style="padding: 1rem 1.5rem; text-align: right;">
+                        <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+                            <a href="{{ route('admin.gmd.edit', $gmd->gmd_id) }}" style="background: #f1f5f9; color: #475569; padding: 0.4rem 0.75rem; border-radius: 99px; font-weight: 700; text-decoration: none; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.25rem; transition: 0.2s;" onmouseover="this.style.background='#e2e8f0';" onmouseout="this.style.background='#f1f5f9';">
+                                <i data-lucide="edit-3" style="width: 14px; height: 14px;"></i>
+                                Edit
+                            </a>
+                            <form action="{{ route('admin.gmd.destroy', $gmd->gmd_id) }}" method="POST" onsubmit="return confirm('Hapus GMD ini?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" style="background: white; border: 1px solid #fecaca; color: #ef4444; padding: 0.4rem 0.75rem; border-radius: 99px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; transition: 0.2s;" onmouseover="this.style.background='#fef2f2';" onmouseout="this.style.background='white';">
+                                    <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                    Hapus
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 @empty

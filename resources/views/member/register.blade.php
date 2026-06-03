@@ -9,19 +9,11 @@
             <form action="{{ route('member.register.post') }}" method="POST">
                 @csrf
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                    <div>
-                        <label for="member_id" style="display: block; font-weight: 500; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Member ID (Required)</label>
-                        <input type="text" name="member_id" id="member_id" value="{{ old('member_id') }}" required placeholder="e.g. Student ID / NIM"
-                            style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; outline: none; box-sizing: border-box;">
-                        @error('member_id') <div style="color: #b91c1c; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</div> @enderror
-                    </div>
-                    <div>
-                        <label for="nik" style="display: block; font-weight: 500; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">NIK (KTP)</label>
-                        <input type="text" name="nik" id="nik" value="{{ old('nik') }}" required maxlength="16" placeholder="16 digits"
-                            style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; outline: none; box-sizing: border-box;">
-                        @error('nik') <div style="color: #b91c1c; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</div> @enderror
-                    </div>
+                <div style="margin-bottom: 1rem;">
+                    <label for="member_id" style="display: block; font-weight: 500; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">NIK (Nomor Induk Kependudukan - 16 Digit)</label>
+                    <input type="text" name="member_id" id="member_id" value="{{ old('member_id') }}" required maxlength="16" placeholder="Masukkan 16 digit NIK Anda (Akan digunakan untuk login)"
+                        style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; outline: none; box-sizing: border-box;">
+                    @error('member_id') <div style="color: #b91c1c; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</div> @enderror
                 </div>
 
                 <div style="margin-bottom: 1rem;">

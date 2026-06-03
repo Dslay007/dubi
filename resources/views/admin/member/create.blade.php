@@ -20,11 +20,11 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
                 <div>
                      <label class="label" style="display: block; font-weight: 700; font-size: 0.85rem; color: #475569; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">ID Anggota <span style="color: #ef4444;">*</span></label>
-                    <input type="text" name="member_id" required class="input" style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                    <input type="text" name="member_id" required class="input form-input" style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
                 </div>
                  <div>
                      <label class="label" style="display: block; font-weight: 700; font-size: 0.85rem; color: #475569; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Nama Lengkap <span style="color: #ef4444;">*</span></label>
-                    <input type="text" name="member_name" required class="input" style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                    <input type="text" name="member_name" required class="input form-input" style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
                 </div>
             </div>
 
@@ -34,32 +34,32 @@
                     <div style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                     </div>
-                    <input type="email" name="member_email" class="input" style="width: 100%; padding: 0.8rem 1rem 0.8rem 2.75rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                    <input type="email" name="member_email" class="input form-input" style="width: 100%; padding: 0.8rem 1rem 0.8rem 2.75rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
                 </div>
             </div>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
                 <div>
                      <label class="label" style="display: block; font-weight: 700; font-size: 0.85rem; color: #475569; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Kata Sandi <span style="color: #ef4444;">*</span></label>
-                    <input type="password" name="passwd" required class="input" style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                    <input type="password" name="passwd" required class="input form-input" style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
                 </div>
                  <div>
                      <label class="label" style="display: block; font-weight: 700; font-size: 0.85rem; color: #475569; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Konfirmasi Kata Sandi <span style="color: #ef4444;">*</span></label>
-                    <input type="password" name="passwd_confirmation" required class="input" style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                    <input type="password" name="passwd_confirmation" required class="input form-input" style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
                 </div>
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2.5rem;">
                 <div>
                      <label class="label" style="display: block; font-weight: 700; font-size: 0.85rem; color: #475569; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Jenis Kelamin</label>
-                    <select name="gender" class="input" style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; color: #1e293b; background: white; cursor: pointer; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                    <select name="gender" class="input form-input" style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; color: #1e293b; background: white; cursor: pointer; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
                         <option value="1">Laki-laki</option>
                         <option value="0">Perempuan</option>
                     </select>
                 </div>
                  <div>
                      <label class="label" style="display: block; font-weight: 700; font-size: 0.85rem; color: #475569; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Tipe Keanggotaan</label>
-                    <select name="member_type_id" class="input" style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; color: #1e293b; background: white; cursor: pointer; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                    <select name="member_type_id" class="input form-input" style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; color: #1e293b; background: white; cursor: pointer; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
                         @if(isset($memberTypes) && $memberTypes->count() > 0)
                             @foreach($memberTypes as $type)
                                 <option value="{{ $type->member_type_id }}">{{ $type->member_type_name }}</option>

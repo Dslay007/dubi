@@ -107,7 +107,13 @@
                             $fines = $daysOverdue * 1000;
                         @endphp
                         <tr style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-                             <td style="padding: 1.25rem 1.5rem; font-weight: 700; color: #0f172a;">{{ $loan->item_code }}</td>
+                             <td style="padding: 1.25rem 1.5rem;">
+                                <div style="font-weight: 700; color: #0f172a; margin-bottom: 0.25rem;">{{ $loan->item_code }}</div>
+                                <div style="font-size: 0.8rem; color: #64748b; display: flex; align-items: center; gap: 0.25rem;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                                    {{ $loan->item->call_number ?? '-' }}
+                                </div>
+                             </td>
                              <td style="padding: 1.25rem 1.5rem; font-weight: 500; color: #334155;">
                                 {{ $loan->item->biblio->title ?? 'Unknown Title' }}
                              </td>

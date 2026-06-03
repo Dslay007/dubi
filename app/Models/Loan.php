@@ -31,4 +31,9 @@ class Loan extends Model
     {
         return $this->belongsTo(Member::class, 'member_id', 'member_id');
     }
+
+    public function loanHistory()
+    {
+        return $this->hasOne(LoanHistory::class, 'loan_id', 'loan_id');
+    }
 }

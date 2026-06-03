@@ -6,15 +6,17 @@
 
 <x-master-file-dropdown type="terkendali" current="tipe_isi" />
 
-<div style="background: white; border-radius: 0.5rem; border: 1px solid #e2e8f0; overflow: hidden;">
-    <div style="padding: 1.5rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-        <h3 style="font-weight: 700; color: #1e293b;">Daftar Tipe Isi</h3>
-        <div>
-            <a href="{{ route('admin.content_type.import') }}" class="btn" style="background: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; font-size: 0.875rem; text-decoration: none; margin-right: 0.5rem;">Import CSV</a>
-            <a href="{{ route('admin.content_type.export') }}" class="btn" style="background: #64748b; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; font-size: 0.875rem; text-decoration: none; margin-right: 0.5rem;">Export CSV</a>
-            <a href="{{ route('admin.content_type.create') }}" class="btn" style="background: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; font-size: 0.875rem; text-decoration: none;">+ Add Tipe Isi</a>
-        </div>
-    </div>
+<x-master-header 
+    title="Tipe Isi (Content Types)" 
+    subtitle="Kelola tipe isi sesuai standar deskripsi koleksi perpustakaan." 
+    icon="file-text"
+    importRoute="admin.content_type.import"
+    exportRoute="admin.content_type.export"
+    createRoute="admin.content_type.create"
+    createLabel="Tambah Tipe Isi"
+/>
+
+<div style="background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); overflow: hidden;">
 
     <div style="padding: 1rem; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
         <form action="{{ route('admin.content_type.index') }}" method="GET" style="display: flex; gap: 0.5rem; max-width: 400px;">
@@ -42,13 +44,21 @@
                     <td style="padding: 1rem 1.5rem; font-weight: 600; color: #1e293b;">{{ $item->content_type }}</td>
                     <td style="padding: 1rem 1.5rem; color: #334155;">{{ $item->code }}</td>
                     <td style="padding: 1rem 1.5rem; color: #64748b;">{{ $item->last_update }}</td>
-                    <td style="padding: 1rem 1.5rem; display: flex; gap: 0.5rem;">
-                         <a href="{{ route('admin.content_type.edit', $item->id) }}" style="color: #3b82f6; font-weight: 500; text-decoration: none;">Edit</a>
-                        <form action="{{ route('admin.content_type.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Delete this item?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" style="background: none; border: none; color: #ef4444; font-weight: 500; cursor: pointer;">Delete</button>
-                        </form>
+                    <td style="padding: 1rem 1.5rem; text-align: right;">
+                        <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+                            <a href="{{ route('admin.content_type.edit', $item->id) }}" style="background: #f1f5f9; color: #475569; padding: 0.4rem 0.75rem; border-radius: 99px; font-weight: 700; text-decoration: none; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.25rem; transition: 0.2s;" onmouseover="this.style.background='#e2e8f0';" onmouseout="this.style.background='#f1f5f9';">
+                                <i data-lucide="edit-3" style="width: 14px; height: 14px;"></i>
+                                Edit
+                            </a>
+                            <form action="{{ route('admin.content_type.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Hapus item ini?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" style="background: white; border: 1px solid #fecaca; color: #ef4444; padding: 0.4rem 0.75rem; border-radius: 99px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; transition: 0.2s;" onmouseover="this.style.background='#fef2f2';" onmouseout="this.style.background='white';">
+                                    <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                    Hapus
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 @empty

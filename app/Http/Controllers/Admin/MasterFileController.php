@@ -20,7 +20,7 @@ class MasterFileController extends Controller
 
     public function peralatan()
     {
-        return redirect()->route('admin.master.placeholder', ['type' => 'peralatan', 'current' => 'ruang_pengunjung']);
+        return redirect()->route('admin.visitor.index');
     }
 
     // Placeholder view for unimplemented master files

@@ -23,7 +23,9 @@ class MemberController extends Controller
             ->with(['item.biblio'])
             ->orderBy('reserve_date', 'desc')
             ->get();
+        // Get total visits
+        $totalVisits = \App\Models\VisitorCount::where('member_id', $member->member_id)->count();
 
-        return view('member.dashboard', compact('member', 'loans', 'reservations'));
+        return view('member.dashboard', compact('member', 'loans', 'reservations', 'totalVisits'));
     }
 }

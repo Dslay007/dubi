@@ -40,13 +40,21 @@
                     <td style="padding: 1rem 1.5rem; color: #64748b;">{{ $item->coll_type_id }}</td>
                     <td style="padding: 1rem 1.5rem; font-weight: 600; color: #1e293b;">{{ $item->coll_type_name }}</td>
                     <td style="padding: 1rem 1.5rem; color: #64748b;">{{ $item->last_update }}</td>
-                    <td style="padding: 1rem 1.5rem; display: flex; gap: 0.5rem;">
-                         <a href="{{ route('admin.coll_type.edit', $item->coll_type_id) }}" style="color: #3b82f6; font-weight: 500; text-decoration: none;">Edit</a>
-                        <form action="{{ route('admin.coll_type.destroy', $item->coll_type_id) }}" method="POST" onsubmit="return confirm('Delete this item?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" style="background: none; border: none; color: #ef4444; font-weight: 500; cursor: pointer;">Delete</button>
-                        </form>
+                    <td style="padding: 1rem 1.5rem; text-align: right;">
+                        <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+                            <a href="{{ route('admin.coll_type.edit', $item->coll_type_id) }}" style="background: #f1f5f9; color: #475569; padding: 0.4rem 0.75rem; border-radius: 99px; font-weight: 700; text-decoration: none; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.25rem; transition: 0.2s;" onmouseover="this.style.background='#e2e8f0';" onmouseout="this.style.background='#f1f5f9';">
+                                <i data-lucide="edit-3" style="width: 14px; height: 14px;"></i>
+                                Edit
+                            </a>
+                            <form action="{{ route('admin.coll_type.destroy', $item->coll_type_id) }}" method="POST" onsubmit="return confirm('Hapus item ini?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" style="background: white; border: 1px solid #fecaca; color: #ef4444; padding: 0.4rem 0.75rem; border-radius: 99px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; transition: 0.2s;" onmouseover="this.style.background='#fef2f2';" onmouseout="this.style.background='white';">
+                                    <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                    Hapus
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 @empty

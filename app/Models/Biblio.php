@@ -36,7 +36,7 @@ class Biblio extends Model
 
     public function authors()
     {
-        return $this->belongsToMany(Author::class, 'biblio_author', 'biblio_id', 'author_id');
+        return $this->belongsToMany(Author::class, 'biblio_author', 'biblio_id', 'author_id')->withPivot('level');
     }
 
     public function items()

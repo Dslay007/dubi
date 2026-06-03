@@ -194,18 +194,45 @@
             @endif
 
             <div style="margin-bottom: 3rem;">
+                @php
+                    $itemStatuses = [];
+                    $hasAvailableCopy = false;
+                    foreach ($biblio->items as $itemCopy) {
+                        $onLoan = \App\Models\Loan::where('item_code', $itemCopy->item_code)->where('is_return', 0)->exists();
+                        $isReserved = \App\Models\Reservation::where('item_code', $itemCopy->item_code)->whereIn('status', ['pending', 'approved'])->exists();
+                        $noLoan = optional($itemCopy->status)->no_loan;
+
+                        if ($onLoan) {
+                            $itemStatuses[$itemCopy->item_code] = 'loan';
+                        } elseif ($isReserved) {
+                            $itemStatuses[$itemCopy->item_code] = 'reserved';
+                        } elseif ($noLoan) {
+                            $itemStatuses[$itemCopy->item_code] = 'no_loan';
+                        } else {
+                            $itemStatuses[$itemCopy->item_code] = 'available';
+                            $hasAvailableCopy = true;
+                        }
+                    }
+                @endphp
+
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h3 style="font-size: 1.25rem; font-weight: 700; color: #334155; margin-bottom: 0;">Availability</h3>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: #334155; margin-bottom: 0;">Ketersediaan Eksemplar</h3>
                     @if($biblio->is_reservable)
-                        @if(Auth::guard('member')->check())
-                            <form action="{{ route('opac.reserve', $biblio->biblio_id) }}" method="POST">
-                                @csrf
-                                <button type="submit" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#4f46e5'" onmouseout="this.style.background='#6366f1'">
-                                    📅 Reservasi Buku
-                                </button>
-                            </form>
+                        @if($hasAvailableCopy)
+                            @if(Auth::guard('member')->check())
+                                <form action="{{ route('opac.reserve', $biblio->biblio_id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#4f46e5'" onmouseout="this.style.background='#6366f1'">
+                                        📅 Reservasi Buku
+                                    </button>
+                                </form>
+                            @else
+                                <a href="{{ route('login') }}" style="padding: 0.5rem 1rem; background: #e2e8f0; color: #475569; border-radius: 0.5rem; text-decoration: none; font-weight: 600; font-size: 0.875rem;">Login untuk Reservasi</a>
+                            @endif
                         @else
-                            <a href="{{ route('login') }}" style="padding: 0.5rem 1rem; background: #e2e8f0; color: #475569; border-radius: 0.5rem; text-decoration: none; font-weight: 600; font-size: 0.875rem;">Login untuk Reservasi</a>
+                            <span style="padding: 0.5rem 1rem; background: #fef2f2; color: #dc2626; border-radius: 0.5rem; font-weight: 600; font-size: 0.875rem; border: 1px solid #fecaca;">
+                                Semua eksemplar sedang dipinjam
+                            </span>
                         @endif
                     @endif
                 </div>
@@ -215,25 +242,33 @@
                     <table style="width: 100%; border-collapse: collapse;">
                         <thead style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
                             <tr>
-                                <th style="text-align: left; padding: 1rem; font-weight: 600; color: #475569;">Item Code</th>
-                                <th style="text-align: left; padding: 1rem; font-weight: 600; color: #475569;">Location</th>
+                                <th style="text-align: left; padding: 1rem; font-weight: 600; color: #475569;">Kode Eksemplar</th>
+                                <th style="text-align: left; padding: 1rem; font-weight: 600; color: #475569;">Lokasi</th>
                                 <th style="text-align: left; padding: 1rem; font-weight: 600; color: #475569;">Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($biblio->items as $item)
+                            @php $realStatus = $itemStatuses[$item->item_code] ?? 'available'; @endphp
                             <tr style="border-bottom: 1px solid #f1f5f9;">
                                 <td style="padding: 1rem; font-family: monospace; font-size: 1.1em;">{{ $item->item_code }}</td>
-                                <td style="padding: 1rem; color: #64748b;">{{ $item->location_id ?? 'General Collection' }}</td>
+                                <td style="padding: 1rem; color: #64748b;">{{ $item->location_id ?? 'Koleksi Umum' }}</td>
                                 <td style="padding: 1rem;">
-                                    @if(optional($item->status)->item_status_name == 'Available' || $item->item_status_id == 'NL') 
-                                    {{-- Assuming NL or null might mean available in some systems, adjusting based on actual data is key. standard SLiMS usually has specific codes --}}
-                                        <span style="color: #16a34a; font-weight: 600; background: #dcfce7; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.875rem;">
-                                            Available
+                                    @if($realStatus === 'available')
+                                        <span style="color: #059669; font-weight: 700; background: #ecfdf5; padding: 0.3rem 0.85rem; border-radius: 99px; font-size: 0.85rem; border: 1px solid #a7f3d0;">
+                                            ✓ Tersedia
                                         </span>
-                                    @else
-                                        <span style="color: #d97706; font-weight: 600; background: #fef3c7; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.875rem;">
-                                            {{ optional($item->status)->item_status_name ?? 'Loaned / Unavailable' }}
+                                    @elseif($realStatus === 'loan')
+                                        <span style="color: #dc2626; font-weight: 700; background: #fef2f2; padding: 0.3rem 0.85rem; border-radius: 99px; font-size: 0.85rem; border: 1px solid #fecaca;">
+                                            ✗ Sedang Dipinjam
+                                        </span>
+                                    @elseif($realStatus === 'reserved')
+                                        <span style="color: #7c3aed; font-weight: 700; background: #f5f3ff; padding: 0.3rem 0.85rem; border-radius: 99px; font-size: 0.85rem; border: 1px solid #ddd6fe;">
+                                            ◷ Sudah Direservasi
+                                        </span>
+                                    @elseif($realStatus === 'no_loan')
+                                        <span style="color: #475569; font-weight: 700; background: #f1f5f9; padding: 0.3rem 0.85rem; border-radius: 99px; font-size: 0.85rem; border: 1px solid #e2e8f0;">
+                                            {{ optional($item->status)->item_status_name ?? 'Tidak Tersedia' }}
                                         </span>
                                     @endif
                                 </td>

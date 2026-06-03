@@ -62,7 +62,7 @@
                     </td>
                     <td style="padding: 1.25rem 1rem; text-align: right;">
                         <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
-                            <form action="{{ route('admin.circulation.reservations.approve', $res->reserve_id) }}" method="POST">
+                            <form action="{{ route('admin.circulation.reservations.approve', $res->reserve_id) }}" method="POST" onsubmit="confirmApprove(event, this, '{{ addslashes($res->member->member_name ?? '') }}', '{{ addslashes($res->item->biblio->title ?? '') }}')">
                                 @csrf
                                 <button type="submit" style="background: #3b82f6; color: white; border: none; padding: 0.4rem 1rem; border-radius: 99px; font-size: 0.8rem; cursor: pointer; font-weight: 700; transition: 0.2s; box-shadow: 0 2px 4px rgba(59,130,246,0.2);" onmouseover="this.style.background='#2563eb';">Setuju</button>
                             </form>
@@ -120,7 +120,7 @@
                         <span style="background: #ecfdf5; color: #059669; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; border: 1px solid #a7f3d0;">Approved</span>
                     </td>
                     <td style="padding: 1.25rem 1rem; text-align: right;">
-                        <form action="{{ route('admin.circulation.reservations.handover', $res->reserve_id) }}" method="POST" style="display: flex; justify-content: flex-end;">
+                        <form action="{{ route('admin.circulation.reservations.handover', $res->reserve_id) }}" method="POST" style="display: flex; justify-content: flex-end;" onsubmit="confirmHandover(event, this, '{{ addslashes($res->member->member_name ?? '') }}', '{{ addslashes($res->item->biblio->title ?? '') }}')">
                             @csrf
                             <button type="submit" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 0.5rem 1.25rem; border-radius: 99px; font-size: 0.8rem; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem; box-shadow: 0 4px 6px -1px rgba(16,185,129,0.2); transition: 0.2s;" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='none';">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
@@ -276,6 +276,42 @@
         document.getElementById('addModal').style.display = 'none';
     }
 
+    function confirmApprove(event, form, memberName, title) {
+        event.preventDefault();
+        Swal.fire({
+            title: 'Setujui Reservasi?',
+            html: `Apakah Anda yakin ingin menyetujui reservasi buku:<br><b>${title}</b><br>untuk anggota: <b>${memberName}</b>?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3b82f6',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Ya, Setujui!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
+    function confirmHandover(event, form, memberName, title) {
+        event.preventDefault();
+        Swal.fire({
+            title: 'Serahkan Buku?',
+            html: `Apakah Anda yakin ingin menyerahkan buku:<br><b>${title}</b><br>kepada anggota: <b>${memberName}</b>?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#10b981',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Ya, Serahkan!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
     $(document).ready(function() {
         // Autocomplete Member
         $('#memberSelect').select2({
@@ -315,7 +351,7 @@
                     return {
                         results: $.map(data, function (item) {
                             return {
-                                text: item.title + (item.isbn_issn ? ' (ISBN: ' + item.isbn_issn + ')' : ''),
+                                text: item.title + (item.isbn_issn ? ' (ISBN: ' + item.isbn_issn + ')' : '') + ' — Tersedia: ' + item.available + '/' + item.total,
                                 id: item.biblio_id
                             }
                         })

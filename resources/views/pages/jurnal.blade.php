@@ -12,70 +12,53 @@
         </div>
 
         <!-- Grid -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2.5rem;">
-            <!-- Card 1 -->
-            <article style="background: white; border-radius: 1rem; overflow: hidden; border: 1px solid #e2e8f0; transition: transform 0.2s, box-shadow 0.2s;" 
-                     onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 30px -5px rgba(0,0,0,0.08)'" 
-                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2.5rem; margin-bottom: 3rem;">
+            @forelse($jurnals as $jurnal)
+            <article style="background: white; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                @if($jurnal->cover_image)
+                <div style="height: 200px; overflow: hidden;">
+                    <img src="{{ asset('uploads/jurnal/' . $jurnal->cover_image) }}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                </div>
+                @else
+                <div style="height: 200px; background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); display: flex; align-items: center; justify-content: center; color: #94a3b8;">
+                    <i data-lucide="image" style="width: 3rem; height: 3rem;"></i>
+                </div>
+                @endif
+                
                 <div style="padding: 2rem;">
-                    <div style="margin-bottom: 1rem;">
-                        <span style="background: #ecfeff; color: #0891b2; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Wawancara</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                        <span style="background: rgba(14, 165, 233, 0.1); color: #0284c7; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">{{ $jurnal->category ?? 'Berita' }}</span>
+                        <span style="font-size: 0.8rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">
+                            {{ $jurnal->created_at->format('d M Y') }}
+                        </span>
                     </div>
-                    <h3 style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 0.75rem; line-height: 1.4;">
-                        Liputan Eksklusif RRI Malang: Peran Komunitas dalam Menjaga Budaya Baca
+                    <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 1rem; line-height: 1.4;">
+                        {{ $jurnal->title }}
                     </h3>
-                    <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6;">
-                        Simak diskusi hangat tim Duduk Baca bersama RRI tentang tantangan dan harapan literasi di ruang publik.
+                    <p style="color: #64748b; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">
+                        {{ Str::limit(strip_tags($jurnal->content), 120) }}
                     </p>
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 1rem;">
-                        <span style="font-size: 0.85rem; color: #94a3b8;">20 Oktober 2025</span>
-                        <a href="#" style="font-weight: 600; color: hsl(var(--primary)); font-size: 0.9rem;">Baca Selengkapnya &rarr;</a>
-                    </div>
+                    
+                    <a href="#" style="display: inline-flex; align-items: center; gap: 0.5rem; color: #0f172a; font-weight: 700; text-decoration: none; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='hsl(var(--primary))'" onmouseout="this.style.color='#0f172a'">
+                        Baca Selengkapnya
+                        <i data-lucide="arrow-right" style="width: 1rem; height: 1rem;"></i>
+                    </a>
                 </div>
             </article>
-
-            <!-- Card 2 -->
-            <article style="background: white; border-radius: 1rem; overflow: hidden; border: 1px solid #e2e8f0; transition: transform 0.2s, box-shadow 0.2s;" 
-                     onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 30px -5px rgba(0,0,0,0.08)'" 
-                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                <div style="padding: 2rem;">
-                    <div style="margin-bottom: 1rem;">
-                        <span style="background: #fff1f2; color: #be123c; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Kegiatan</span>
-                    </div>
-                    <h3 style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 0.75rem; line-height: 1.4;">
-                        Duduk Baca Berpartisipasi di Malam Budaya Sanggar Arek Malang
-                    </h3>
-                    <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6;">
-                        Kolaborasi lintas komunitas untuk merayakan keberagaman seni dan literasi lokal.
-                    </p>
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 1rem;">
-                        <span style="font-size: 0.85rem; color: #94a3b8;">12 September 2025</span>
-                        <a href="#" style="font-weight: 600; color: hsl(var(--primary)); font-size: 0.9rem;">Dokumentasi &rarr;</a>
-                    </div>
-                </div>
-            </article>
-
-            <!-- Card 3 -->
-            <article style="background: white; border-radius: 1rem; overflow: hidden; border: 1px solid #e2e8f0; transition: transform 0.2s, box-shadow 0.2s;" 
-                     onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 30px -5px rgba(0,0,0,0.08)'" 
-                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                <div style="padding: 2rem;">
-                    <div style="margin-bottom: 1rem;">
-                        <span style="background: #f0fdf4; color: #15803d; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Pengumuman</span>
-                    </div>
-                    <h3 style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 0.75rem; line-height: 1.4;">
-                        Lapak Baca Pindah Lokasi Sementara Minggu Ini
-                    </h3>
-                    <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6;">
-                        Karena adanya renovasi taman, lapak minggu ini akan bergeser ke area Tugu Malang.
-                    </p>
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 1rem;">
-                        <span style="font-size: 0.85rem; color: #94a3b8;">01 November 2025</span>
-                        <a href="#" style="font-weight: 600; color: hsl(var(--primary)); font-size: 0.9rem;">Cek Lokasi &rarr;</a>
-                    </div>
-                </div>
-            </article>
+            @empty
+            <div style="grid-column: 1 / -1; text-align: center; color: #94a3b8; padding: 4rem;">
+                <i data-lucide="newspaper" style="width: 4rem; height: 4rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: #475569; margin-bottom: 0.5rem;">Belum Ada Jurnal</h3>
+                <p>Nantikan berita dan cerita terbaru dari komunitas kami.</p>
+            </div>
+            @endforelse
         </div>
+
+        @if($jurnals->hasPages())
+        <div style="display: flex; justify-content: center;">
+            {{ $jurnals->links() }}
+        </div>
+        @endif
     </div>
     </div>
 </section>

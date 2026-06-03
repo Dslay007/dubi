@@ -47,7 +47,8 @@
             </div>
             @endif
             
-            @if(Carbon\Carbon::parse($member->expire_date)->isPast())
+            @php $isValidExpire = $member->expire_date && $member->expire_date !== '0000-00-00' && $member->expire_date !== '0000-00-00 00:00:00' && !str_contains($member->expire_date, '-0001'); @endphp
+            @if(!$isValidExpire || Carbon\Carbon::parse($member->expire_date)->isPast())
             <div style="display: inline-block; padding: 0.35rem 1rem; border-radius: 99px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; background: #fee2e2; color: #b91c1c;">
                 Kedaluwarsa
             </div>
@@ -114,15 +115,15 @@
                     </div>
                     <div>
                         <div style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 0.25rem;">Tanggal Registrasi</div>
-                        <div style="font-size: 1rem; font-weight: 500; color: #1e293b;">{{ $member->register_date ? date('d M Y', strtotime($member->register_date)) : '-' }}</div>
+                        <div style="font-size: 1rem; font-weight: 500; color: #1e293b;">{{ ($member->register_date && !str_contains($member->register_date, '-0001') && !str_contains($member->register_date, '0000-00-00')) ? date('d M Y', strtotime($member->register_date)) : '-' }}</div>
                     </div>
                     <div>
                         <div style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 0.25rem;">Tanggal Berlaku Hingga</div>
-                        <div style="font-size: 1rem; font-weight: 500; color: #1e293b;">{{ $member->expire_date ? date('d M Y', strtotime($member->expire_date)) : '-' }}</div>
+                        <div style="font-size: 1rem; font-weight: 500; color: #1e293b;">{{ ($member->expire_date && !str_contains($member->expire_date, '-0001') && !str_contains($member->expire_date, '0000-00-00')) ? date('d M Y', strtotime($member->expire_date)) : '-' }}</div>
                     </div>
                     <div>
                         <div style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 0.25rem;">Anggota Sejak</div>
-                        <div style="font-size: 1rem; font-weight: 500; color: #1e293b;">{{ $member->member_since_date ? date('d M Y', strtotime($member->member_since_date)) : '-' }}</div>
+                        <div style="font-size: 1rem; font-weight: 500; color: #1e293b;">{{ ($member->member_since_date && !str_contains($member->member_since_date, '-0001') && !str_contains($member->member_since_date, '0000-00-00')) ? date('d M Y', strtotime($member->member_since_date)) : '-' }}</div>
                     </div>
                     <div>
                         <div style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 0.25rem;">Terakhir Diperbarui</div>

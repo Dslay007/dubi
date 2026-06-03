@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Helpers\SystemLog;
 
 class StaffController extends Controller
 {
@@ -47,6 +48,8 @@ class StaffController extends Controller
             'input_date' => Carbon::now()->toDateString(),
             'last_update' => Carbon::now()->toDateString(),
         ]);
+
+        SystemLog::write('insert', 'Menambah Staff/Admin Baru: ' . $request->username, 'System', 'Staff');
 
         return redirect()->route('admin.sistem.staff.index')->with('success', 'Akun staff baru berhasil ditambahkan.');
     }
@@ -93,6 +96,8 @@ class StaffController extends Controller
             session()->forget('user_permissions_' . $id);
         }
 
+        SystemLog::write('update', 'Mengubah Data Staff/Admin: ' . $request->username, 'System', 'Staff');
+
         return redirect()->route('admin.sistem.staff.index')->with('success', 'Data staff berhasil diperbarui.');
     }
 
@@ -107,7 +112,11 @@ class StaffController extends Controller
             return back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }
 
-        DB::table('user')->where('user_id', $id)->delete();
+        $staff = DB::table('user')->where('user_id', $id)->first();
+        if ($staff) {
+            DB::table('user')->where('user_id', $id)->delete();
+            SystemLog::write('delete', 'Menghapus Staff/Admin: ' . $staff->username, 'System', 'Staff');
+        }
 
         return back()->with('success', 'Akun staff berhasil dihapus.');
     }
@@ -125,6 +134,9 @@ class StaffController extends Controller
         DB::table('user')->where('user_id', $id)->update([
             'is_active' => $currentStatus == 1 ? 0 : 1
         ]);
+
+        $statusText = $currentStatus == 1 ? 'Menonaktifkan' : 'Mengaktifkan';
+        SystemLog::write('update', $statusText . ' Akun Staff/Admin: ' . $user->username, 'System', 'Staff');
 
         return back()->with('success', 'Status akun berhasil diperbarui.');
     }

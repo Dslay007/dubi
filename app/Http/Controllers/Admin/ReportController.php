@@ -10,6 +10,79 @@ use Carbon\Carbon;
 class ReportController extends Controller
 {
     /**
+     * Laporan Ketua (Executive Summary)
+     */
+    public function laporanKetua()
+    {
+        // 1. Data Koleksi
+        $totalBiblio = DB::table('biblio')->count();
+        $totalItem = DB::table('item')->count();
+        
+        // 2. Data Anggota
+        $totalMember = DB::table('member')->count();
+        $activeMember = DB::table('member')->where('is_pending', 0)->count();
+        
+        // 3. Data Kunjungan
+        $totalVisitor = DB::table('visitor_count')->count();
+        $visitorBulanIni = DB::table('visitor_count')
+            ->whereYear('checkin_date', Carbon::now()->year)
+            ->whereMonth('checkin_date', Carbon::now()->month)
+            ->count();
+            
+        // 4. Data Transaksi Peminjaman
+        $totalLoan = DB::table('loan')->count();
+        $loanBulanIni = DB::table('loan')
+            ->whereYear('loan_date', Carbon::now()->year)
+            ->whereMonth('loan_date', Carbon::now()->month)
+            ->count();
+            
+        $activeLoan = DB::table('loan')->where('is_return', 0)->count();
+            
+        // 5. Data Keuangan / Denda
+        $totalDenda = DB::table('fines')->sum('debet') ?? 0;
+        $totalBayar = DB::table('fines')->sum('credit') ?? 0;
+        $totalTunggakan = $totalDenda - $totalBayar;
+
+        // 6. Koleksi Paling Sering Dipinjam
+        $topBooks = DB::table('loan')
+            ->join('item', 'loan.item_code', '=', 'item.item_code')
+            ->join('biblio', 'item.biblio_id', '=', 'biblio.biblio_id')
+            ->select('biblio.title', DB::raw('COUNT(*) as total'))
+            ->groupBy('biblio.title')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
+
+        // 7. Tren 12 Bulan Terakhir (Kunjungan vs Peminjaman)
+        $chartData = [];
+        for ($i = 11; $i >= 0; $i--) {
+            $month = Carbon::now()->subMonths($i);
+            $yearMonth = $month->format('Y-m');
+            $label = $month->translatedFormat('M Y');
+            
+            $visitorCount = DB::table('visitor_count')
+                ->where(DB::raw("DATE_FORMAT(checkin_date, '%Y-%m')"), $yearMonth)
+                ->count();
+                
+            $loanCount = DB::table('loan')
+                ->where(DB::raw("DATE_FORMAT(loan_date, '%Y-%m')"), $yearMonth)
+                ->count();
+                
+            $chartData[] = [
+                'label' => $label,
+                'visitor' => $visitorCount,
+                'loan' => $loanCount
+            ];
+        }
+
+        return view('admin.pelaporan.laporan_ketua', compact(
+            'totalBiblio', 'totalItem', 'totalMember', 'activeMember',
+            'totalVisitor', 'visitorBulanIni', 'totalLoan', 'loanBulanIni',
+            'activeLoan', 'totalTunggakan', 'topBooks', 'chartData'
+        ));
+    }
+
+    /**
      * Statistik Koleksi
      */
     public function statistikKoleksi()

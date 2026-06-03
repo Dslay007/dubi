@@ -40,9 +40,11 @@ class SystemRoleController extends Controller
                 'label' => 'Membership',
                 'icon' => 'users',
                 'submenus' => [
+                    'membership.verifikasi' => 'Verifikasi Pendaftar',
                     'membership.data_anggota' => 'Data Anggota',
                     'membership.tipe_keanggotaan' => 'Tipe Keanggotaan',
                     'membership.cetak_kartu' => 'Cetak Kartu Anggota',
+                    'membership.absensi' => 'Absensi Anggota',
                 ]
             ],
             'bibliografi' => [
@@ -73,18 +75,21 @@ class SystemRoleController extends Controller
                     'inventarisasi.inisialisasi' => 'Inisialisasi',
                 ]
             ],
-            'acara' => [
-                'label' => 'Acara',
+            'kegiatan' => [
+                'label' => 'Kegiatan',
                 'icon' => 'calendar-days',
                 'submenus' => [
-                    'acara.berita_acara' => 'Berita Acara',
-                    'acara.pendaftaran' => 'Form Pendaftaran Kegiatan',
+                    'kegiatan.agenda' => 'Agenda (Rutinitas)',
+                    'kegiatan.acara' => 'Acara (Kampanye/Volunteer)',
+                    'kegiatan.jurnal' => 'Jurnal Lapak (Berita)',
+                    'kegiatan.struktur' => 'Struktur Komunitas',
                 ]
             ],
             'pelaporan' => [
                 'label' => 'Pelaporan',
                 'icon' => 'bar-chart-3',
                 'submenus' => [
+                    'pelaporan.laporan_ketua' => 'Laporan Ketua',
                     'pelaporan.statistik_koleksi' => 'Statistik Koleksi',
                     'pelaporan.laporan_peminjaman' => 'Laporan Peminjaman',
                     'pelaporan.laporan_anggota' => 'Laporan Anggota',

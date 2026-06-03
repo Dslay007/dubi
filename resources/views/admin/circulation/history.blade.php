@@ -63,21 +63,25 @@
         <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
             <thead>
                 <tr style="color: #64748b; text-transform: uppercase; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em;">
-                     <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Tgl Pinjam</th>
                      <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Eksemplar</th>
                      <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Judul Buku</th>
                      <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Anggota</th>
                      <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Status</th>
+                     <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Tgl Pinjam</th>
                      <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Tgl Kembali</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($loans as $loan)
                 <tr style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-                    <td style="padding: 1.25rem 1rem; color: #64748b; font-weight: 500;">{{ \Carbon\Carbon::parse($loan->loan_date)->format('d M Y') }}</td>
                     <td style="padding: 1.25rem 1rem; font-weight: 700; color: #0f172a;">{{ $loan->item_code }}</td>
-                    <td style="padding: 1.25rem 1rem; font-weight: 500; color: #334155;">{{ Str::limit($loan->item->biblio->title ?? 'N/A', 40) }}</td>
-                    <td style="padding: 1.25rem 1rem; font-weight: 500; color: #334155;">{{ $loan->member->member_name ?? 'N/A' }}</td>
+                    <td style="padding: 1.25rem 1rem; font-weight: 500; color: #334155;">
+                        {{ Str::limit(optional(optional($loan->item)->biblio)->title ?? optional($loan->loanHistory)->title ?? 'N/A', 40) }}
+                        @if(!optional(optional($loan->item)->biblio)->title && optional($loan->loanHistory)->title)
+                            <span style="font-size: 0.7rem; background: #f1f5f9; color: #64748b; padding: 0.15rem 0.4rem; border-radius: 4px; margin-left: 0.25rem;" title="Buku telah dihapus dari sistem">Dihapus</span>
+                        @endif
+                    </td>
+                    <td style="padding: 1.25rem 1rem; font-weight: 500; color: #334155;">{{ $loan->member->member_name ?? optional($loan->loanHistory)->member_name ?? 'N/A' }}</td>
                     <td style="padding: 1.25rem 1rem;">
                         @if($loan->is_return)
                             <span style="background: #ecfdf5; color: #059669; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; border: 1px solid #a7f3d0;">Sudah Kembali</span>
@@ -85,6 +89,7 @@
                             <span style="background: #fffbeb; color: #d97706; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; border: 1px solid #fde68a;">Sedang Dipinjam</span>
                         @endif
                     </td>
+                    <td style="padding: 1.25rem 1rem; color: #64748b; font-weight: 500;">{{ \Carbon\Carbon::parse($loan->loan_date)->format('d M Y') }}</td>
                     <td style="padding: 1.25rem 1rem; color: #64748b; font-weight: 500;">{{ $loan->return_date ? \Carbon\Carbon::parse($loan->return_date)->format('d M Y') : '-' }}</td>
                 </tr>
                 @empty

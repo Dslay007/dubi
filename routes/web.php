@@ -14,31 +14,54 @@ Route::get('/', function () {
         'books' => \App\Models\Item::count(),
     ];
 
-    $upcomingEvents = \App\Models\Event::where('event_date', '>=', now()->toDateString())
+    $upcomingEvents = \App\Models\Agenda::where('event_date', '>=', now()->toDateString())
         ->where('is_active', true)
         ->orderBy('event_date', 'asc')
         ->take(4)
         ->get();
 
-    $pastEvents = \App\Models\Event::where('event_date', '<', now()->toDateString())
+    $pastEvents = \App\Models\Agenda::where('event_date', '<', now()->toDateString())
         ->where('is_active', true)
         ->orderBy('event_date', 'desc')
         ->take(4)
         ->get();
+        
+    $campaign = \App\Models\Event::where('is_active', true)->first();
+    
+    $jurnals = \App\Models\Jurnal::where('is_published', true)
+        ->orderBy('created_at', 'desc')
+        ->take(3)
+        ->get();
 
-    return view('welcome', compact('stats', 'upcomingEvents', 'pastEvents'));
+    return view('welcome', compact('stats', 'upcomingEvents', 'pastEvents', 'campaign', 'jurnals'));
 })->name('landing');
 
 Route::get('/struktur', function () {
-    return view('pages.struktur');
+    $founders = \App\Models\CommunityStructure::where('type', 'founder')->get();
+    $cores = \App\Models\CommunityStructure::where('type', 'core')->get();
+    $divisions = \App\Models\CommunityStructure::where('type', 'division')->get();
+    return view('pages.struktur', compact('founders', 'cores', 'divisions'));
 })->name('page.struktur');
 
 Route::get('/jurnal', function () {
-    return view('pages.jurnal');
+    $jurnals = \App\Models\Jurnal::where('is_published', true)
+        ->orderBy('created_at', 'desc')
+        ->paginate(9);
+    return view('pages.jurnal', compact('jurnals'));
 })->name('page.jurnal');
 
 Route::get('/opac', [OpacController::class, 'index'])->name('opac.index');
 Route::get('/opac/detail/{id}', [OpacController::class, 'show'])->name('opac.show');
+
+// Click Tracker Route
+Route::get('/kegiatan/daftar/{id}', function($id) {
+    $event = \App\Models\Event::findOrFail($id);
+    if($event->registration_link) {
+        $event->increment('click_count');
+        return redirect()->away($event->registration_link);
+    }
+    return redirect()->route('landing');
+})->name('kegiatan.daftar');
 
 // Content Routes
 Route::get('/page/{path}', [ContentController::class, 'show'])->name('content.show');
@@ -79,8 +102,6 @@ Route::middleware(['auth:admin', 'menu_access'])->prefix('admin')->name('admin.'
         Route::get('/export', [\App\Http\Controllers\Admin\BiblioController::class, 'export'])->name('export');
     });
 
-
-
     // Items (Eksemplar)
     Route::prefix('item')->name('item.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\ItemController::class, 'index'])->name('index');
@@ -92,8 +113,10 @@ Route::middleware(['auth:admin', 'menu_access'])->prefix('admin')->name('admin.'
         Route::get('/barcode', [\App\Http\Controllers\Admin\ItemController::class, 'barcodeIndex'])->name('barcode'); // Cetak Barcode page
         Route::post('/print-barcodes', [\App\Http\Controllers\Admin\ItemController::class, 'printBarcodes'])->name('print_barcodes');
         Route::post('/print-barcodes-filter', [\App\Http\Controllers\Admin\ItemController::class, 'printBarcodesByFilter'])->name('print_barcodes_filter');
+        Route::post('/', [\App\Http\Controllers\Admin\ItemController::class, 'store'])->name('store');
         Route::get('/{id}/edit', [\App\Http\Controllers\Admin\ItemController::class, 'edit'])->name('edit');
         Route::put('/{id}', [\App\Http\Controllers\Admin\ItemController::class, 'update'])->name('update');
+        Route::delete('/{id}', [\App\Http\Controllers\Admin\ItemController::class, 'destroy'])->name('destroy');
     });
 
     // MARC
@@ -108,10 +131,20 @@ Route::middleware(['auth:admin', 'menu_access'])->prefix('admin')->name('admin.'
     Route::post('/member/import', [\App\Http\Controllers\Admin\MemberController::class, 'processImport'])->name('member.process_import');
     Route::get('/member/export', [\App\Http\Controllers\Admin\MemberController::class, 'export'])->name('member.export');
     
+    // Member Verification
+    Route::get('/member/verifikasi', [\App\Http\Controllers\Admin\MemberController::class, 'verifikasiIndex'])->name('member.verifikasi');
+    Route::post('/member/verifikasi/{id}/approve', [\App\Http\Controllers\Admin\MemberController::class, 'approve'])->name('member.verifikasi.approve');
+    Route::post('/member/verifikasi/{id}/reject', [\App\Http\Controllers\Admin\MemberController::class, 'reject'])->name('member.verifikasi.reject');
+
     // Member Barcodes
     Route::get('/member/barcode', [\App\Http\Controllers\Admin\MemberController::class, 'barcodeIndex'])->name('member.barcode');
     Route::post('/member/print-barcodes', [\App\Http\Controllers\Admin\MemberController::class, 'printBarcodes'])->name('member.print_barcodes');
     Route::post('/member/print-barcodes-filter', [\App\Http\Controllers\Admin\MemberController::class, 'printBarcodesByFilter'])->name('member.print_barcodes_filter');
+    
+    // Member Attendance (Absensi Anggota)
+    Route::get('/member/attendance', [\App\Http\Controllers\Admin\MemberController::class, 'attendance'])->name('member.attendance');
+    Route::get('/member/attendance/check', [\App\Http\Controllers\Admin\MemberController::class, 'checkAttendance'])->name('member.attendance.check');
+    Route::post('/member/attendance', [\App\Http\Controllers\Admin\MemberController::class, 'storeAttendance'])->name('member.attendance.store');
     
     Route::resource('member', \App\Http\Controllers\Admin\MemberController::class);
     
@@ -250,6 +283,7 @@ Route::middleware(['auth:admin', 'menu_access'])->prefix('admin')->name('admin.'
 
     // Pelaporan (Reports)
     Route::prefix('pelaporan')->name('pelaporan.')->group(function () {
+        Route::get('/laporan-ketua', [\App\Http\Controllers\Admin\ReportController::class, 'laporanKetua'])->name('laporan_ketua');
         Route::get('/statistik-koleksi', [\App\Http\Controllers\Admin\ReportController::class, 'statistikKoleksi'])->name('statistik_koleksi');
         Route::get('/laporan-peminjaman', [\App\Http\Controllers\Admin\ReportController::class, 'laporanPeminjaman'])->name('laporan_peminjaman');
         Route::get('/laporan-anggota', [\App\Http\Controllers\Admin\ReportController::class, 'laporanAnggota'])->name('laporan_anggota');
@@ -259,31 +293,18 @@ Route::middleware(['auth:admin', 'menu_access'])->prefix('admin')->name('admin.'
         Route::get('/laporan-denda', [\App\Http\Controllers\Admin\ReportController::class, 'laporanDenda'])->name('laporan_denda');
     });
 
-    // Acara (Events)
-    Route::prefix('acara')->name('acara.')->group(function () {
-        // Berita Acara
-        Route::get('/berita-acara', [\App\Http\Controllers\Admin\EventController::class, 'index'])->name('berita_acara.index');
-        Route::get('/berita-acara/create', [\App\Http\Controllers\Admin\EventController::class, 'create'])->name('berita_acara.create');
-        Route::post('/berita-acara', [\App\Http\Controllers\Admin\EventController::class, 'store'])->name('berita_acara.store');
-        Route::get('/berita-acara/{id}/edit', [\App\Http\Controllers\Admin\EventController::class, 'editById'])->name('berita_acara.edit');
-        Route::put('/berita-acara/{id}', [\App\Http\Controllers\Admin\EventController::class, 'updateById'])->name('berita_acara.update');
-        Route::delete('/berita-acara/{id}', [\App\Http\Controllers\Admin\EventController::class, 'destroyById'])->name('berita_acara.destroy');
-
-        // Form Pendaftaran Kegiatan
-        Route::get('/pendaftaran', [\App\Http\Controllers\Admin\EventFormController::class, 'index'])->name('pendaftaran.index');
-        Route::get('/pendaftaran/create', [\App\Http\Controllers\Admin\EventFormController::class, 'create'])->name('pendaftaran.create');
-        Route::post('/pendaftaran', [\App\Http\Controllers\Admin\EventFormController::class, 'store'])->name('pendaftaran.store');
-        Route::get('/pendaftaran/{id}/edit', [\App\Http\Controllers\Admin\EventFormController::class, 'edit'])->name('pendaftaran.edit');
-        Route::put('/pendaftaran/{id}', [\App\Http\Controllers\Admin\EventFormController::class, 'update'])->name('pendaftaran.update');
-        Route::delete('/pendaftaran/{id}', [\App\Http\Controllers\Admin\EventFormController::class, 'destroy'])->name('pendaftaran.destroy');
+    // Kegiatan (Acara/Campaign, Agenda, Jurnal)
+    Route::prefix('kegiatan')->name('kegiatan.')->group(function() {
+        Route::post('/acara/{id}/toggle', [\App\Http\Controllers\Admin\EventController::class, 'toggleActive'])->name('acara.toggle');
+        Route::resource('acara', \App\Http\Controllers\Admin\EventController::class);
+        Route::resource('agenda', \App\Http\Controllers\Admin\AgendaController::class);
+        Route::resource('jurnal', \App\Http\Controllers\Admin\JurnalController::class);
         
-        // Form Builder
-        Route::get('/pendaftaran/{id}/builder', [\App\Http\Controllers\Admin\EventFormController::class, 'builder'])->name('pendaftaran.builder');
-        Route::post('/pendaftaran/{id}/fields', [\App\Http\Controllers\Admin\EventFormController::class, 'storeField'])->name('pendaftaran.fields.store');
-        Route::delete('/pendaftaran/fields/{id}', [\App\Http\Controllers\Admin\EventFormController::class, 'destroyField'])->name('pendaftaran.fields.destroy');
-        
-        // Registrants
-        Route::get('/pendaftaran/{id}/registrants', [\App\Http\Controllers\Admin\EventFormController::class, 'registrants'])->name('pendaftaran.registrants');
-        Route::patch('/pendaftaran/registrants/{id}/confirm', [\App\Http\Controllers\Admin\EventFormController::class, 'confirmRegistrant'])->name('pendaftaran.registrants.confirm');
+        // Struktur Komunitas
+        Route::get('/struktur', [\App\Http\Controllers\Admin\CommunityStructureController::class, 'index'])->name('struktur.index');
+        Route::put('/struktur/{id}/static', [\App\Http\Controllers\Admin\CommunityStructureController::class, 'updateStatic'])->name('struktur.updateStatic');
+        Route::post('/struktur/division', [\App\Http\Controllers\Admin\CommunityStructureController::class, 'storeDivision'])->name('struktur.storeDivision');
+        Route::put('/struktur/division/{id}', [\App\Http\Controllers\Admin\CommunityStructureController::class, 'updateDivision'])->name('struktur.updateDivision');
+        Route::delete('/struktur/division/{id}', [\App\Http\Controllers\Admin\CommunityStructureController::class, 'destroyDivision'])->name('struktur.destroyDivision');
     });
 });

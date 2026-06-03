@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Item;
 use App\Models\Biblio;
+use App\Helpers\SystemLog;
 
 class ItemController extends Controller
 {
@@ -83,12 +84,46 @@ class ItemController extends Controller
         return view('admin.item.barcodes', compact('items'));
     }
 
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'biblio_id' => 'required|exists:biblio,biblio_id',
+            'item_code' => 'required|string|max:20|unique:item,item_code',
+            'call_number' => 'nullable|string|max:50',
+            'inventory_code' => 'nullable|string|max:200',
+            'location_id' => 'nullable|string|max:3',
+            'coll_type_id' => 'nullable|integer',
+            'item_status_id' => 'nullable|string|max:3',
+            'price' => 'nullable|integer',
+            'price_currency' => 'nullable|string|max:10',
+            'invoice' => 'nullable|string|max:20',
+            'invoice_date' => 'nullable|date',
+            'received_date' => 'nullable|date',
+            'source' => 'nullable|integer',
+            'supplier_id' => 'nullable|string|max:6',
+            'order_no' => 'nullable|string|max:20',
+            'order_date' => 'nullable|date',
+            'site' => 'nullable|string|max:50',
+        ]);
+
+        $item = new Item($validated);
+        $item->input_date = now();
+        $item->last_update = now();
+        $item->uid = auth()->id() ?? 1;
+        $item->save();
+
+        // Catat log aktifitas
+        SystemLog::write('insert', 'Menambah Eksemplar Baru: ' . $item->item_code, 'Bibliography', 'Item');
+
+        return redirect()->back()->with('success', 'Eksemplar baru berhasil ditambahkan.');
+    }
+
     public function edit($id)
     {
         $item = Item::with('biblio')->findOrFail($id);
-        $locations = \Illuminate\Support\Facades\DB::table('mst_location')->get();
-        $collTypes = \Illuminate\Support\Facades\DB::table('mst_coll_type')->get();
-        $itemStatuses = \Illuminate\Support\Facades\DB::table('mst_item_status')->get();
+        $locations = \App\Models\Location::all();
+        $collTypes = \App\Models\CollType::all();
+        $itemStatuses = \App\Models\ItemStatus::all();
 
         return view('admin.item.edit', compact('item', 'locations', 'collTypes', 'itemStatuses'));
     }
@@ -110,16 +145,31 @@ class ItemController extends Controller
             'invoice_date' => 'nullable|date',
             'received_date' => 'nullable|date',
             'source' => 'nullable|integer',
+            'supplier_id' => 'nullable|string|max:6',
             'order_no' => 'nullable|string|max:20',
             'order_date' => 'nullable|date',
             'site' => 'nullable|string|max:50',
         ]);
 
+        $validated['last_update'] = now();
         $item->update($validated);
-        $item->last_update = now();
-        $item->save();
 
-        return redirect()->route('admin.item.index')->with('success', 'Item updated successfully!');
+        // Catat log aktifitas
+        SystemLog::write('update', 'Mengubah Eksemplar: ' . $item->item_code, 'Bibliography', 'Item');
+
+        return redirect()->route('admin.item.index')->with('success', 'Item updated successfully.');
+    }
+
+    public function destroy($id)
+    {
+        $item = Item::findOrFail($id);
+        $itemCode = $item->item_code;
+        $item->delete();
+
+        // Catat log aktifitas
+        SystemLog::write('delete', 'Menghapus Eksemplar: ' . $itemCode, 'Bibliography', 'Item');
+
+        return redirect()->back()->with('success', 'Eksemplar berhasil dihapus.');
     }
 
     public function import()

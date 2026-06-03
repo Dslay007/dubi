@@ -24,21 +24,25 @@ class MemberAuthController extends Controller
 
         // Check if member exists and verify password
         // SLiMS uanlly uses SHA256 to hash 'mpasswd'
-        if ($member && hash('sha256', $credentials['password']) === $member->mpasswd) {
-            Auth::guard('member')->login($member);
-            $request->session()->regenerate();
-            return redirect()->intended('/member/dashboard');
+        $passwordMatches = false;
+        
+        if ($member) {
+            if (hash('sha256', $credentials['password']) === $member->mpasswd) {
+                $passwordMatches = true;
+            } elseif (md5($credentials['password']) === $member->mpasswd) {
+                $passwordMatches = true;
+            } elseif (\Illuminate\Support\Facades\Hash::check($credentials['password'], $member->mpasswd)) {
+                $passwordMatches = true;
+            }
         }
 
-        // Add support for legacy MD5 if SHA256 fails (common in older SLiMS)
-        if ($member && md5($credentials['password']) === $member->mpasswd) {
-            Auth::guard('member')->login($member);
-            $request->session()->regenerate();
-            return redirect()->intended('/member/dashboard');
-        }
+        if ($passwordMatches) {
+            if ($member->is_pending == 1) {
+                return back()->withErrors([
+                    'member_id' => 'Akun Anda sedang dalam MASA TUNGGU. Silakan datang ke perpustakaan dengan membawa KTP asli untuk verifikasi.',
+                ])->onlyInput('member_id');
+            }
 
-        // 3. Try generic Laravel hashing (Robust Fallback)
-        if ($member && \Illuminate\Support\Facades\Hash::check($credentials['password'], $member->mpasswd)) {
             Auth::guard('member')->login($member);
             $request->session()->regenerate();
             return redirect()->intended('/member/dashboard');

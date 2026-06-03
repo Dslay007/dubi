@@ -8,21 +8,38 @@ use Illuminate\Support\Facades\DB;
 
 class SystemActivityController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Log Aktifitas
-        $logs = DB::table('system_log')
+        // Log Aktifitas Query
+        $logQuery = DB::table('system_log')
             ->leftJoin('user', 'system_log.id', '=', 'user.username')
-            ->select('system_log.*', 'user.username', 'user.realname')
-            ->orderBy('log_date', 'desc')
-            ->paginate(20, ['*'], 'log_page');
+            ->select('system_log.*', 'user.username', 'user.realname');
+
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $logQuery->where(function($q) use ($search) {
+                $q->where('system_log.log_msg', 'like', "%{$search}%")
+                  ->orWhere('system_log.log_location', 'like', "%{$search}%")
+                  ->orWhere('user.realname', 'like', "%{$search}%")
+                  ->orWhere('user.username', 'like', "%{$search}%");
+            });
+        }
+
+        $sort = $request->input('sort', 'terbaru');
+        if ($sort == 'terlama') {
+            $logQuery->orderBy('system_log.log_date', 'asc');
+        } else {
+            $logQuery->orderBy('system_log.log_date', 'desc');
+        }
+
+        $logs = $logQuery->paginate(20, ['*'], 'log_page')->appends($request->all());
 
         // Status Akun Staff
         $users = DB::table('user')
             ->select('user.*')
             ->get();
 
-        return view('admin.sistem.aktifitas.index', compact('logs', 'users'));
+        return view('admin.sistem.aktifitas.index', compact('logs', 'users', 'sort'));
     }
 
     public function toggleUserStatus($id)

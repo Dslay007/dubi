@@ -14,21 +14,23 @@
 
 <x-master-file-dropdown type="peralatan" :current="$currentMenu" />
 
-<div style="background: white; border-radius: 0.5rem; border: 1px solid #e2e8f0; overflow: hidden;">
-    <div style="padding: 1.5rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-        <h3 style="font-weight: 700; color: #1e293b;">{{ $title }}</h3>
-        <div>
-            @if($data->count() > 0)
-            <form action="{{ $deleteAllRoute }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin MENGHAPUS SEMUA data tak terpakai ini secara permanen?');">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn" style="background: #ef4444; color: white; padding: 0.5rem 1rem; border: none; border-radius: 0.375rem; font-size: 0.875rem; cursor: pointer;">
-                    <i data-lucide="trash-2" style="width: 1rem; height: 1rem; display: inline-block; vertical-align: middle;"></i> Bersihkan Semua Data Tak Terpakai
-                </button>
-            </form>
-            @endif
-        </div>
-    </div>
+<x-master-header 
+    title="{{ $title }}" 
+    subtitle="Kelola data master yang tidak lagi terikat dengan bibliografi manapun." 
+    icon="database"
+>
+    @if($data->count() > 0)
+    <form action="{{ $deleteAllRoute }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin MENGHAPUS SEMUA data tak terpakai ini secara permanen?');" style="margin:0;">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="btn" style="background: #ef4444; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 99px; font-weight: 700; font-size: 0.875rem; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; box-shadow: 0 4px 6px -1px rgba(239,68,68,0.2); transition: 0.2s;" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='none';">
+            <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i> Bersihkan Semua
+        </button>
+    </form>
+    @endif
+</x-master-header>
+
+<div style="background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); overflow: hidden;">
 
     <div style="padding: 1rem; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
         <form action="{{ route('admin.orphan.index', $type) }}" method="GET" style="display: flex; gap: 0.5rem; max-width: 400px;">

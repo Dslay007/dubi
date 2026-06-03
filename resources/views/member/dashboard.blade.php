@@ -86,12 +86,33 @@
                         <div style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Instansi / Lembaga</div>
                         <div style="color: #334155; font-size: 0.95rem; font-weight: 500;">{{ $member->inst_name ?? '-' }}</div>
                     </div>
-                    @php $isExpired = \Carbon\Carbon::parse($member->expire_date)->isPast(); @endphp
+                    @php 
+                        $isValidDate = $member->expire_date && $member->expire_date !== '0000-00-00' && $member->expire_date !== '0000-00-00 00:00:00' && !str_contains($member->expire_date, '-0001');
+                        $isExpired = $isValidDate ? \Carbon\Carbon::parse($member->expire_date)->isPast() : true; 
+                    @endphp
                     <div style="background: {{ $isExpired ? '#fef2f2' : '#f0fdf4' }}; padding: 1rem; border-radius: 0.75rem; border: 1px solid {{ $isExpired ? '#fecaca' : '#bbf7d0' }};">
                         <div style="font-size: 0.75rem; font-weight: 700; color: {{ $isExpired ? '#dc2626' : '#166534' }}; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Masa Berlaku Sampai</div>
                         <div style="color: {{ $isExpired ? '#b91c1c' : '#15803d' }}; font-size: 1.05rem; font-weight: 800;">
-                            {{ \Carbon\Carbon::parse($member->expire_date)->format('d F Y') }}
+                            {{ $isValidDate ? \Carbon\Carbon::parse($member->expire_date)->format('d F Y') : '-' }}
                         </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <!-- Total Kunjungan Card -->
+            <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 1.25rem; box-shadow: 0 10px 30px -10px rgba(16,185,129,0.3); overflow: hidden; position: relative; padding: 1.5rem;">
+                <div style="position: absolute; right: -1rem; top: -1rem; opacity: 0.1;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div style="position: relative; z-index: 10;">
+                    <h4 style="font-weight: 700; color: rgba(255,255,255,0.9); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        Total Kunjungan
+                    </h4>
+                    <div style="display: flex; align-items: baseline; gap: 0.5rem;">
+                        <span style="font-size: 2.5rem; font-weight: 800; color: white; line-height: 1;">{{ $totalVisits ?? 0 }}</span>
+                        <span style="color: rgba(255,255,255,0.8); font-weight: 600; font-size: 1rem;">Kali</span>
                     </div>
                 </div>
             </div>
@@ -134,6 +155,7 @@
                                 </h4>
                                 <div style="display: flex; flex-wrap: wrap; gap: 1rem; color: #64748b; font-size: 0.85rem; font-weight: 500;">
                                     <span style="display: flex; align-items: center; gap: 0.35rem;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Eksemplar: {{ $loan->item_code }}</span>
+                                    <span style="display: flex; align-items: center; gap: 0.35rem;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> No. Panggil: {{ optional($loan->item)->call_number ?? '-' }}</span>
                                     <span style="display: flex; align-items: center; gap: 0.35rem;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg> Dipinjam: {{ \Carbon\Carbon::parse($loan->loan_date)->format('d M') }}</span>
                                 </div>
                             </div>
@@ -186,9 +208,10 @@
                                 <h4 style="font-weight: 800; font-size: 1.1rem; color: #1e293b; margin-bottom: 0.35rem;">
                                     {{ optional(optional($reserve->item)->biblio)->title ?? 'Unknown Title' }}
                                 </h4>
-                                <div style="color: #64748b; font-size: 0.85rem; font-weight: 500; display: flex; gap: 1.25rem; align-items: center;">
+                                <div style="color: #64748b; font-size: 0.85rem; font-weight: 500; display: flex; flex-wrap: wrap; gap: 1.25rem; align-items: center;">
                                     <span style="display: flex; align-items: center; gap: 0.35rem;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg> Dipesan: {{ \Carbon\Carbon::parse($reserve->reserve_date)->format('d M') }}</span>
                                     <span style="display: flex; align-items: center; gap: 0.35rem; color: #94a3b8;">&bull; Eksemplar: {{ $reserve->item_code }}</span>
+                                    <span style="display: flex; align-items: center; gap: 0.35rem; color: #94a3b8;">&bull; No. Panggil: {{ optional($reserve->item)->call_number ?? '-' }}</span>
                                 </div>
                             </div>
                             

@@ -124,12 +124,12 @@
                     <span style="width: 8px; height: 8px; background: #cbd5e1; border-radius: 50%; display: inline-block; margin-right: 0.75rem;"></span>
                     Riwayat Kegiatan
                 </h3>
-                <div id="agenda-berlalu" style="display: flex; flex-direction: column; gap: 1rem; opacity: 0.8;">
+                <div id="agenda-berlalu" style="display: flex; flex-direction: column; gap: 1rem;">
                     @forelse($pastEvents as $event)
-                    <div style="padding: 1.5rem; background: #f8fafc; border-radius: 1rem; border: 1px solid #e2e8f0;">
-                        <div style="font-size: 0.85rem; font-weight: 700; color: #94a3b8; margin-bottom: 0.25rem;">{{ \Carbon\Carbon::parse($event->event_date)->isoFormat('dddd, D MMM YYYY') }}</div>
-                        <h4 style="font-size: 1.1rem; font-weight: 700; color: #64748b; margin-bottom: 0.5rem;">{{ $event->title }}</h4>
-                        <p style="color: #94a3b8; font-size: 0.9rem;">{{ $event->location }}</p>
+                    <div style="padding: 1.5rem; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(5px); border-radius: 1rem; border: 1px dashed #cbd5e1; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+                        <div style="font-size: 0.85rem; font-weight: 700; color: #64748b; margin-bottom: 0.25rem;">{{ \Carbon\Carbon::parse($event->event_date)->isoFormat('dddd, D MMM YYYY') }}</div>
+                        <h4 style="font-size: 1.1rem; font-weight: 700; color: #475569; margin-bottom: 0.5rem;">{{ $event->title }}</h4>
+                        <p style="color: #64748b; font-size: 0.9rem;">{{ $event->location }}</p>
                     </div>
                     @empty
                     <p style="color: #94a3b8; font-style: italic;">Belum ada riwayat kegiatan.</p>
@@ -140,60 +140,86 @@
     </div>
 </section>
 
-<!-- Volunteer Section -->
+<!-- Volunteer / Campaign Section -->
+@if($campaign)
 <section style="padding: 6rem 1rem;">
     <div style="max-width: 1200px; margin: 0 auto; background: #0f172a; border-radius: 2rem; overflow: hidden; color: white;">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; align-items: stretch;">
-            <!-- Carousel Side -->
-            <div style="position: relative; min-height: 500px; background: #1e293b;">
-                <div id="volunteer-carousel" style="position: absolute; inset: 0; width: 100%; height: 100%;"></div>
-                
-                <button onclick="changeSlide(-1)" style="position: absolute; top: 50%; left: 1.5rem; transform: translateY(-50%); background: rgba(255,255,255,0.1); backdrop-filter: blur(5px); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10;">&larr;</button>
-                <button onclick="changeSlide(1)" style="position: absolute; top: 50%; right: 1.5rem; transform: translateY(-50%); background: rgba(255,255,255,0.1); backdrop-filter: blur(5px); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10;">&rarr;</button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; align-items: stretch; min-height: 500px;">
+            <!-- Image / Carousel Side -->
+            <div style="position: relative; background: #1e293b; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                @php
+                    $photos = $campaign->photos ? json_decode($campaign->photos, true) : [];
+                @endphp
 
-                <div style="position: absolute; bottom: 2rem; left: 0; right: 0; text-align: center; pointer-events: none;">
-                    <span style="background: rgba(0,0,0,0.5); color: white; padding: 0.5rem 1rem; border-radius: 99px; font-size: 0.8rem; backdrop-filter: blur(4px);">Kegiatan Volunteer Batch Sebelumnya</span>
-                </div>
+                @if(!empty($photos))
+                    <div id="campaign-carousel" style="position: absolute; inset: 0; width: 100%; height: 100%;">
+                        @foreach($photos as $index => $photo)
+                        <div class="campaign-slide" style="position: absolute; inset: 0; opacity: {{ $index === 0 ? 1 : 0 }}; transition: opacity 0.8s ease-in-out; background-image: url('{{ asset('uploads/acara/' . $photo) }}'); background-size: cover; background-position: center;">
+                            <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 2rem; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);"></div>
+                        </div>
+                        @endforeach
+                    </div>
+                    
+                    @if(count($photos) > 1)
+                    <!-- Carousel Controls -->
+                    <button onclick="changeCampaignSlide(-1)" style="position: absolute; top: 50%; left: 1.5rem; transform: translateY(-50%); background: rgba(255,255,255,0.1); backdrop-filter: blur(5px); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+                        <i data-lucide="chevron-left" style="width: 1.25rem; height: 1.25rem;"></i>
+                    </button>
+                    <button onclick="changeCampaignSlide(1)" style="position: absolute; top: 50%; right: 1.5rem; transform: translateY(-50%); background: rgba(255,255,255,0.1); backdrop-filter: blur(5px); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+                        <i data-lucide="chevron-right" style="width: 1.25rem; height: 1.25rem;"></i>
+                    </button>
+                    
+                    <script>
+                        let currentCampaignSlide = 0;
+                        function changeCampaignSlide(n) {
+                            const slides = document.querySelectorAll('.campaign-slide');
+                            if (slides.length <= 1) return;
+                            
+                            slides[currentCampaignSlide].style.opacity = 0;
+                            currentCampaignSlide = (currentCampaignSlide + n + slides.length) % slides.length;
+                            slides[currentCampaignSlide].style.opacity = 1;
+                        }
+                        
+                        setInterval(() => {
+                            changeCampaignSlide(1);
+                        }, 4000);
+                    </script>
+                    @endif
+                @else
+                    <!-- Fallback if no photo -->
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; color: #475569; width: 100%; height: 100%;">
+                        <i data-lucide="image" style="width: 4rem; height: 4rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <span>Tidak ada foto acara</span>
+                    </div>
+                @endif
             </div>
 
             <!-- Content Side -->
-            <div style="padding: 4rem;">
+            <div style="padding: 4rem; display: flex; flex-direction: column; justify-content: center;">
                 <span style="color: hsl(var(--accent)); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem; display: block; margin-bottom: 1rem;">Bergabung Bersama Kami</span>
-                <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1.5rem; line-height: 1.2;">Volunteer Batch 8</h2>
+                <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1.5rem; line-height: 1.2;">{{ $campaign->title }}</h2>
                 
-                <p style="color: #94a3b8; font-size: 1.1rem; margin-bottom: 2rem;">
-                    Pendaftaran untuk Volunteer Batch 8 telah dibuka! Jadilah bagian dari perubahan literasi di Malang.
-                </p>
+                <div style="color: #cbd5e1; font-size: 1.1rem; margin-bottom: 2.5rem; line-height: 1.7; white-space: pre-line;">
+                    {!! nl2br(e($campaign->description)) !!}
+                </div>
 
-                <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 3rem;">
-                    <p style="font-size: 0.95rem;">
+                @if($campaign->registration_link)
+                <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.1); display: inline-block;">
+                    <p style="font-size: 0.95rem; margin-bottom: 1rem;">
                         <span style="color: #ecfeff; font-weight: 600;">👋 Daftar Sekarang!</span><br>
-                        Klik tombol di bawah atau pantau Instagram <a href="#" style="color: hsl(var(--accent)); font-weight: 600;">@dudukbaca</a>.
+                        Klik tombol di bawah ini untuk mendaftar.
                     </p>
-                    <a href="#" class="btn" style="margin-top: 1rem; display: inline-block; background: hsl(var(--accent)); text-shadow: none;">Isi Formulir Pendaftaran</a>
+                    <a href="{{ route('kegiatan.daftar', $campaign->id) }}" class="btn" style="display: inline-flex; align-items: center; gap: 0.5rem; background: hsl(var(--accent)); text-shadow: none;" target="_blank">
+                        Isi Formulir Pendaftaran
+                        <i data-lucide="external-link" style="width: 1.1rem; height: 1.1rem;"></i>
+                    </a>
                 </div>
-
-                <div>
-                    <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Kenapa jadi Volunteer?</h4>
-                    <ul style="display: grid; gap: 1rem; color: #cbd5e1;">
-                        <li style="display: flex; align-items: center; gap: 0.75rem;">
-                            <span style="width: 20px; height: 20px; background: hsl(var(--primary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem;">✓</span>
-                            Literasi Sosial & Kontribusi Nyata
-                        </li>
-                         <li style="display: flex; align-items: center; gap: 0.75rem;">
-                            <span style="width: 20px; height: 20px; background: hsl(var(--primary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem;">✓</span>
-                            Jaringan Komunitas Luas
-                        </li>
-                         <li style="display: flex; align-items: center; gap: 0.75rem;">
-                            <span style="width: 20px; height: 20px; background: hsl(var(--primary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem;">✓</span>
-                            Akses Buku Eksklusif
-                        </li>
-                    </ul>
-                </div>
+                @endif
             </div>
         </div>
     </div>
 </section>
+@endif
 
 <!-- About Section -->
 <section id="tentang" style="background: white; padding: 6rem 1rem;">
@@ -227,53 +253,67 @@
                               <p style="font-size: 0.9rem; color: #64748b;">Booking buku fisik via website ini.</p>
                           </div>
                       </div>
-                       <div style="display: flex; gap: 1rem;">
-                          <div style="font-size: 1.5rem;">✍️</div>
-                          <div>
-                              <h4 style="font-weight: 700; color: #0f172a;">Review Buku</h4>
-                              <p style="font-size: 0.9rem; color: #64748b;">Rangkuman & ulasan dari komunitas.</p>
-                          </div>
-                      </div>
                   </div>
              </div>
          </div>
     </div>
 </section>
 
+<!-- Jurnal Lapak Section -->
+<section style="background: #f8fafc; padding: 6rem 1rem;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+         <div style="text-align: center; margin-bottom: 4rem;">
+             <span style="color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem; display: block; margin-bottom: 0.5rem;">Jurnal Lapak</span>
+             <h2 style="font-size: 2.5rem; font-weight: 800; color: #0f172a;">Cerita & Kabar Terbaru</h2>
+         </div>
+
+         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
+             @forelse($jurnals as $jurnal)
+             <div style="background: white; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                 @if($jurnal->cover_image)
+                 <div style="height: 200px; overflow: hidden;">
+                     <img src="{{ asset('uploads/jurnal/' . $jurnal->cover_image) }}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                 </div>
+                 @else
+                 <div style="height: 200px; background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); display: flex; align-items: center; justify-content: center; color: #94a3b8;">
+                     <i data-lucide="image" style="width: 3rem; height: 3rem;"></i>
+                 </div>
+                 @endif
+                 
+                 <div style="padding: 2rem;">
+                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                         <span style="background: rgba(14, 165, 233, 0.1); color: #0284c7; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">{{ $jurnal->category ?? 'Berita' }}</span>
+                         <span style="font-size: 0.8rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">
+                             {{ $jurnal->created_at->format('d M Y') }}
+                         </span>
+                     </div>
+                     <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 1rem; line-height: 1.4;">
+                         {{ $jurnal->title }}
+                     </h3>
+                     <p style="color: #64748b; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">
+                         {{ Str::limit(strip_tags($jurnal->content), 120) }}
+                     </p>
+                     
+                     <a href="#" style="display: inline-flex; align-items: center; gap: 0.5rem; color: #0f172a; font-weight: 700; text-decoration: none; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='hsl(var(--primary))'" onmouseout="this.style.color='#0f172a'">
+                         Baca Selengkapnya
+                         <i data-lucide="arrow-right" style="width: 1rem; height: 1rem;"></i>
+                     </a>
+                 </div>
+             </div>
+             @empty
+             <div style="grid-column: 1 / -1; text-align: center; color: #94a3b8; padding: 3rem;">
+                 <i data-lucide="newspaper" style="width: 3rem; height: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                 <p>Belum ada cerita atau jurnal terbaru.</p>
+             </div>
+             @endforelse
+         </div>
+    </div>
+</section>
+
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // --- CAROUSEL LOGIC ---
-        let currentSlide = 0;
-        const slidesData = [
-            { img: "https://placehold.co/800x600/1e293b/ffffff?text=Diskusi+Lapangan", caption: "Sesi Diskusi Lapangan Volunteer Batch 7" },
-            { img: "https://placehold.co/800x600/0f172a/ffffff?text=Organisasi+Buku", caption: "Pengorganisasian Buku Koleksi Komunitas" },
-            { img: "https://placehold.co/800x600/334155/ffffff?text=Lapak+Alun-Alun", caption: "Kegiatan Lapak di Alun-Alun Malang" },
-             { img: "https://placehold.co/800x600/14b8a6/ffffff?text=Briefing+Volunteer", caption: "Briefing Pagi Sebelum Lapak Baca" },
-        ];
 
-        const carouselContainer = document.getElementById('volunteer-carousel');
-        if (carouselContainer) {
-            carouselContainer.innerHTML = slidesData.map((slide, index) => `
-                <div class="carousel-item" style="position: absolute; inset: 0; opacity: ${index === 0 ? 1 : 0}; transition: opacity 0.8s ease-in-out; background-image: url('${slide.img}'); background-size: cover; background-position: center;">
-                    <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 2rem; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); color: white;">
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        window.changeSlide = (n) => {
-            const slides = document.querySelectorAll('.carousel-item');
-            if (!slides.length) return;
-            
-            slides[currentSlide].style.opacity = 0;
-            currentSlide = (currentSlide + n + slides.length) % slides.length;
-            slides[currentSlide].style.opacity = 1;
-        };
-
-        // Auto Scroll Carousel
-        setInterval(() => {
-            window.changeSlide(1);
-        }, 3000); // 3 seconds
 
         // --- STATS ---
         const animateValue = (id, start, end, duration) => {

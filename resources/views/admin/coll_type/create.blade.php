@@ -12,7 +12,7 @@
         <div style="margin-bottom: 1.5rem;">
             <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #475569; margin-bottom: 0.5rem;">Nama Tipe Koleksi <span style="color: #ef4444;">*</span></label>
             <input type="text" name="coll_type_name" required
-                style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;">
+                style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; outline: none;" class="form-input">
         </div>
 
         <div style="display: flex; gap: 1rem;">

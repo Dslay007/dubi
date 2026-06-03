@@ -6,10 +6,13 @@
 
 <x-master-file-dropdown type="peralatan" current="pola_kode_eksemplar" />
 
-<div style="background: white; border-radius: 0.5rem; border: 1px solid #e2e8f0; overflow: hidden; max-width: 600px;">
-    <div style="padding: 1.5rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-        <h3 style="font-weight: 700; color: #1e293b;">Pengaturan Pola Kode Eksemplar</h3>
-    </div>
+<x-master-header 
+    title="Pola Kode Eksemplar" 
+    subtitle="Kelola format pola barcode untuk buku yang didaftarkan." 
+    icon="barcode"
+/>
+
+<div style="background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); overflow: hidden; max-width: 600px;">
 
     <div style="padding: 1.5rem;">
         <div style="background: #f8fafc; padding: 1rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; margin-bottom: 1.5rem; font-size: 0.875rem; color: #475569;">

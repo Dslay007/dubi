@@ -14,16 +14,24 @@ class ReservationSettingController extends Controller
             ->where('setting_name', 'max_reservations')
             ->value('setting_value') ?? 2;
 
-        $query = Biblio::query();
+        $sortBy = $request->input('sort_by', 'title');
+        $order = $request->input('order', 'asc');
+
+        $query = Biblio::with('items');
 
         if ($request->has('search') && $request->search != '') {
-            $query->where('title', 'like', '%' . $request->search . '%')
-                  ->orWhere('isbn_issn', 'like', '%' . $request->search . '%');
+            $query->where(function($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('isbn_issn', 'like', '%' . $request->search . '%')
+                  ->orWhereHas('items', function ($subq) use ($request) {
+                      $subq->where('item_code', 'like', '%' . $request->search . '%');
+                  });
+            });
         }
 
-        $biblios = $query->orderBy('title', 'asc')->paginate(20);
+        $biblios = $query->orderBy($sortBy, $order)->paginate(20)->appends($request->all());
 
-        return view('admin.circulation.reservation_settings', compact('biblios', 'max_reservations'));
+        return view('admin.circulation.reservation_settings', compact('biblios', 'max_reservations', 'sortBy', 'order'));
     }
 
     public function update(Request $request)

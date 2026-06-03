@@ -6,13 +6,14 @@
 
 <x-master-file-dropdown type="peralatan" current="ruang_pengunjung" />
 
-<div style="background: white; border-radius: 0.5rem; border: 1px solid #e2e8f0; overflow: hidden;">
-    <div style="padding: 1.5rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-        <h3 style="font-weight: 700; color: #1e293b;">Data Ruang Pengunjung</h3>
-        <div>
-            <a href="{{ route('admin.visitor.export') }}" class="btn" style="background: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; font-size: 0.875rem; text-decoration: none;">Export CSV</a>
-        </div>
-    </div>
+<x-master-header 
+    title="Data Ruang Pengunjung" 
+    subtitle="Kelola dan lihat data riwayat kunjungan ke perpustakaan." 
+    icon="log-in"
+    exportRoute="admin.visitor.export"
+/>
+
+<div style="background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); overflow: hidden;">
 
     <div style="padding: 1rem; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
         <form action="{{ route('admin.visitor.index') }}" method="GET" style="display: flex; gap: 0.5rem; max-width: 400px;">

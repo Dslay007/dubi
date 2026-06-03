@@ -64,7 +64,7 @@
                         </span>
                     </td>
                     <td style="padding: 1.25rem 1rem; text-align: right;">
-                         <form action="{{ route('admin.circulation.overdue.notify', $loan->loan_id) }}" method="POST" style="display: inline;">
+                         <form action="{{ route('admin.circulation.overdue.notify', $loan->loan_id) }}" method="POST" style="display: inline;" onsubmit="confirmNotify(event, this, '{{ addslashes($loan->member->member_name ?? '') }}', '{{ addslashes($loan->item->biblio->title ?? '') }}', {{ floor($daysOverdue) }})">
                             @csrf
                             <button type="submit" class="btn" style="background: white; color: #d97706; padding: 0.4rem 1rem; border-radius: 99px; border: 1px solid #fcd34d; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; box-shadow: 0 2px 4px rgba(245,158,11,0.1); transition: 0.2s;" onmouseover="this.style.background='#fffbeb';" onmouseout="this.style.background='white';">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> 
@@ -92,4 +92,46 @@
         {{ $loans->links() }}
     </div>
 </div>
+
+<script>
+    function confirmNotify(event, form, memberName, title, daysOverdue) {
+        event.preventDefault();
+        
+        const fines = daysOverdue * 1000;
+        const formattedFines = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(fines);
+        
+        let htmlText = `Peringatan akan dikirimkan ke email <b>${memberName}</b> mengenai keterlambatan buku:<br><br>
+                        <b>${title}</b><br><br>
+                        <div style="background: #fef2f2; border: 1px solid #f87171; color: #b91c1c; padding: 0.75rem; border-radius: 0.375rem; font-size: 0.9rem;">
+                            Terlambat: <b>${daysOverdue} Hari</b><br>
+                            Perkiraan Denda: <b>${formattedFines}</b>
+                         </div><br>
+                        Apakah Anda yakin ingin mengirim peringatan ini?`;
+
+        Swal.fire({
+            title: 'Kirim Peringatan?',
+            html: htmlText,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d97706',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Ya, Kirim Email!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ session('success') }}',
+            timer: 2500,
+            showConfirmButton: false
+        });
+    @endif
+</script>
 @endsection

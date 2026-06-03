@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Biblio;
+use App\Helpers\SystemLog;
 
 class BiblioController extends Controller
 {
@@ -36,8 +37,9 @@ class BiblioController extends Controller
             'publisher_id' => 'nullable|exists:mst_publisher,publisher_id',
             'publish_year' => 'nullable|numeric',
             'gmd_id' => 'nullable|exists:mst_gmd,gmd_id',
-            'author_id' => 'nullable|array',
-            'author_id.*' => 'exists:mst_author,author_id',
+            'authors' => 'nullable|array',
+            'authors.*.id' => 'required|exists:mst_author,author_id',
+            'authors.*.level' => 'nullable|integer',
             'edition' => 'nullable|string|max:50',
             'call_number' => 'nullable|string|max:50',
             'classification' => 'nullable|string|max:50',
@@ -94,13 +96,22 @@ class BiblioController extends Controller
         $biblio->last_update = now();
         $biblio->save();
 
-        if (isset($validated['author_id'])) {
-            $biblio->authors()->attach($validated['author_id']);
+        if ($request->has('authors') && is_array($request->authors)) {
+            $syncData = [];
+            foreach ($request->authors as $author) {
+                if (isset($author['id'])) {
+                    $syncData[$author['id']] = ['level' => $author['level'] ?? 1];
+                }
+            }
+            $biblio->authors()->sync($syncData);
         }
         
         if (isset($validated['topic_id'])) {
             $biblio->topics()->attach($validated['topic_id']);
         }
+
+        // Catat log aktifitas
+        SystemLog::write('insert', 'Menambah Bibliografi Baru: ' . $biblio->title, 'Bibliography', 'Biblio');
 
         return redirect()->route('admin.biblio.index')->with('success', 'Book added successfully!');
     }
@@ -119,8 +130,9 @@ class BiblioController extends Controller
             'publisher_id' => 'nullable|exists:mst_publisher,publisher_id',
             'publish_year' => 'nullable|numeric',
             'gmd_id' => 'nullable|exists:mst_gmd,gmd_id',
-            'author_id' => 'nullable|array',
-            'author_id.*' => 'exists:mst_author,author_id',
+            'authors' => 'nullable|array',
+            'authors.*.id' => 'required|exists:mst_author,author_id',
+            'authors.*.level' => 'nullable|integer',
             'edition' => 'nullable|string|max:50',
             'call_number' => 'nullable|string|max:50',
             'classification' => 'nullable|string|max:50',
@@ -191,8 +203,14 @@ class BiblioController extends Controller
         $biblio->last_update = now();
         $biblio->save();
 
-        if (isset($validated['author_id'])) {
-            $biblio->authors()->sync($validated['author_id']);
+        if ($request->has('authors') && is_array($request->authors)) {
+            $syncData = [];
+            foreach ($request->authors as $author) {
+                if (isset($author['id'])) {
+                    $syncData[$author['id']] = ['level' => $author['level'] ?? 1];
+                }
+            }
+            $biblio->authors()->sync($syncData);
         } else {
             $biblio->authors()->detach();
         }
@@ -203,6 +221,9 @@ class BiblioController extends Controller
             $biblio->topics()->detach();
         }
 
+        // Catat log aktifitas
+        SystemLog::write('update', 'Mengubah Bibliografi: ' . $biblio->title, 'Bibliography', 'Biblio');
+
         return redirect()->route('admin.biblio.index')->with('success', 'Book updated successfully!');
     }
 
@@ -212,7 +233,12 @@ class BiblioController extends Controller
         // Detach relations first
         $biblio->authors()->detach();
         $biblio->topics()->detach();
+        
+        $title = $biblio->title;
         $biblio->delete();
+
+        // Catat log aktifitas
+        SystemLog::write('delete', 'Menghapus Bibliografi: ' . $title, 'Bibliography', 'Biblio');
 
         return redirect()->route('admin.biblio.index')->with('success', 'Book deleted successfully!');
     }

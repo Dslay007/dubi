@@ -51,7 +51,7 @@
                     <div style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     </div>
-                    <input type="text" name="member_type_name" value="{{ old('member_type_name') }}" required class="input" style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s; background: #f8fafc;" onfocus="this.style.borderColor='#8b5cf6'; this.style.background='white'; this.style.boxShadow='0 0 0 3px rgba(139,92,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.background='#f8fafc'; this.style.boxShadow='none';" placeholder="Cth: Anggota Standar, Dosen">
+                    <input type="text" name="member_type_name" value="{{ old('member_type_name') }}" required class="input form-input" style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s; background: #f8fafc;" onfocus="this.style.borderColor='#8b5cf6'; this.style.background='white'; this.style.boxShadow='0 0 0 3px rgba(139,92,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.background='#f8fafc'; this.style.boxShadow='none';" placeholder="Cth: Anggota Standar, Dosen">
                 </div>
             </div>
 
@@ -62,7 +62,7 @@
                         <div style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
                         </div>
-                        <input type="number" name="loan_limit" value="{{ old('loan_limit', 3) }}" required min="0" class="input" style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s; background: #f8fafc;" onfocus="this.style.borderColor='#8b5cf6'; this.style.background='white'; this.style.boxShadow='0 0 0 3px rgba(139,92,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.background='#f8fafc'; this.style.boxShadow='none';">
+                        <input type="number" name="loan_limit" value="{{ old('loan_limit', 3) }}" required min="0" class="input form-input" style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s; background: #f8fafc;" onfocus="this.style.borderColor='#8b5cf6'; this.style.background='white'; this.style.boxShadow='0 0 0 3px rgba(139,92,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.background='#f8fafc'; this.style.boxShadow='none';">
                     </div>
                 </div>
 
@@ -72,7 +72,7 @@
                         <div style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         </div>
-                        <input type="number" name="loan_periode" value="{{ old('loan_periode', 7) }}" required min="0" class="input" style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s; background: #f8fafc;" onfocus="this.style.borderColor='#8b5cf6'; this.style.background='white'; this.style.boxShadow='0 0 0 3px rgba(139,92,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.background='#f8fafc'; this.style.boxShadow='none';">
+                        <input type="number" name="loan_periode" value="{{ old('loan_periode', 7) }}" required min="0" class="input form-input" style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s; background: #f8fafc;" onfocus="this.style.borderColor='#8b5cf6'; this.style.background='white'; this.style.boxShadow='0 0 0 3px rgba(139,92,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.background='#f8fafc'; this.style.boxShadow='none';">
                     </div>
                 </div>
             </div>
@@ -84,7 +84,7 @@
                         <div style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
                         </div>
-                        <input type="number" name="fine_each_day" value="{{ old('fine_each_day', 1000) }}" required min="0" class="input" style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s; background: #f8fafc;" onfocus="this.style.borderColor='#8b5cf6'; this.style.background='white'; this.style.boxShadow='0 0 0 3px rgba(139,92,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.background='#f8fafc'; this.style.boxShadow='none';">
+                        <input type="number" name="fine_each_day" value="{{ old('fine_each_day', 1000) }}" required min="0" class="input form-input" style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s; background: #f8fafc;" onfocus="this.style.borderColor='#8b5cf6'; this.style.background='white'; this.style.boxShadow='0 0 0 3px rgba(139,92,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.background='#f8fafc'; this.style.boxShadow='none';">
                     </div>
                 </div>
 
@@ -94,7 +94,7 @@
                         <div style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a10 10 0 1 0-10-10"/><path d="m15 15-3-3V7"/><path d="M22 12A10 10 0 0 0 12 2v0"/></svg>
                         </div>
-                        <input type="number" name="grace_period" value="{{ old('grace_period', 0) }}" required min="0" class="input" style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s; background: #f8fafc;" onfocus="this.style.borderColor='#8b5cf6'; this.style.background='white'; this.style.boxShadow='0 0 0 3px rgba(139,92,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.background='#f8fafc'; this.style.boxShadow='none';">
+                        <input type="number" name="grace_period" value="{{ old('grace_period', 0) }}" required min="0" class="input form-input" style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 0.95rem; transition: 0.2s; background: #f8fafc;" onfocus="this.style.borderColor='#8b5cf6'; this.style.background='white'; this.style.boxShadow='0 0 0 3px rgba(139,92,246,0.1)';" onblur="this.style.borderColor='#e2e8f0'; this.style.background='#f8fafc'; this.style.boxShadow='none';">
                     </div>
                 </div>
             </div>

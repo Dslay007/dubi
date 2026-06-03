@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Member;
+use App\Helpers\SystemLog;
 
 class MemberController extends Controller
 {
@@ -69,6 +70,9 @@ class MemberController extends Controller
         $member->input_date = now();
         $member->last_update = now();
         $member->save();
+
+        // Catat log aktifitas
+        SystemLog::write('insert', 'Menambah Anggota Baru: ' . $member->member_id . ' - ' . $member->member_name, 'Membership', 'Member');
 
         return redirect()->route('admin.member.index')->with('success', 'Member registered successfully!');
     }
@@ -145,12 +149,21 @@ class MemberController extends Controller
         $member->last_update = now();
         $member->save();
 
+        // Catat log aktifitas
+        SystemLog::write('update', 'Mengubah Data Anggota: ' . $member->member_id . ' - ' . $member->member_name, 'Membership', 'Member');
+
         return redirect()->route('admin.member.index')->with('success', 'Data anggota berhasil diperbarui!');
     }
 
     public function destroy($id)
     {
-        Member::destroy($id);
+        $member = Member::find($id);
+        if ($member) {
+            $memberId = $member->member_id;
+            $memberName = $member->member_name;
+            $member->delete();
+            SystemLog::write('delete', 'Menghapus Anggota: ' . $memberId . ' - ' . $memberName, 'Membership', 'Member');
+        }
         return redirect()->route('admin.member.index')->with('success', 'Member deleted successfully!');
     }
 
@@ -338,5 +351,109 @@ class MemberController extends Controller
         }
 
         return view('admin.member.print_barcodes', compact('members'));
+    }
+
+    public function verifikasiIndex(Request $request)
+    {
+        $query = Member::where('is_pending', 1);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('member_name', 'like', "%{$search}%")
+                  ->orWhere('member_id', 'like', "%{$search}%");
+            });
+        }
+
+        $sort = $request->input('sort', 'terbaru');
+        if ($sort === 'terlama') {
+            $query->orderBy('input_date', 'asc');
+        } else {
+            $query->orderBy('input_date', 'desc');
+        }
+
+        $members = $query->paginate(15)->appends($request->all());
+        return view('admin.member.verifikasi', compact('members', 'sort'));
+    }
+
+    public function approve($id)
+    {
+        $member = Member::findOrFail($id);
+        $member->is_pending = 0;
+        $member->register_date = now();
+        $member->member_since_date = now();
+        $member->expire_date = now()->addMonths(6); // Default 6 bulan
+        $member->last_update = now();
+        $member->save();
+
+        SystemLog::write('update', 'Memverifikasi Pendaftaran Anggota: ' . $member->member_id, 'Membership', 'Member');
+
+        return response()->json(['success' => true, 'message' => 'Akun berhasil diverifikasi.']);
+    }
+
+    public function reject($id)
+    {
+        $member = Member::findOrFail($id);
+        $memberName = $member->member_name;
+        $member->delete();
+        
+        SystemLog::write('delete', 'Menolak Pendaftaran Anggota: ' . $memberName, 'Membership', 'Member');
+
+        return response()->json(['success' => true, 'message' => 'Akun berhasil ditolak dan dihapus.']);
+    }
+
+    public function attendance()
+    {
+        return view('admin.member.attendance');
+    }
+
+    public function checkAttendance(Request $request)
+    {
+        $member = Member::where('member_id', $request->member_id)->first();
+        if (!$member) {
+            return response()->json(['success' => false, 'message' => 'Member not found.']);
+        }
+
+        $visitCount = \App\Models\VisitorCount::where('member_id', $member->member_id)->count();
+        $memberSince = $member->member_since_date ? \Carbon\Carbon::parse($member->member_since_date)->format('d M Y') : '-';
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'member_id' => $member->member_id,
+                'member_name' => $member->member_name,
+                'visit_count' => $visitCount,
+                'member_since' => $memberSince,
+                'image' => $member->member_image ? asset('storage/member_images/' . $member->member_image) : null
+            ]
+        ]);
+    }
+
+    public function storeAttendance(Request $request)
+    {
+        $request->validate([
+            'member_id' => 'required|exists:member,member_id'
+        ], [
+            'member_id.exists' => 'Anggota dengan ID tersebut tidak ditemukan.'
+        ]);
+
+        $member = Member::where('member_id', $request->member_id)->first();
+
+        \App\Models\VisitorCount::create([
+            'member_id' => $member->member_id,
+            'member_name' => $member->member_name,
+            'institution' => $member->inst_name ?? '-',
+            'checkin_date' => now()
+        ]);
+
+        $totalVisits = \App\Models\VisitorCount::where('member_id', $member->member_id)->count();
+        
+        if ($totalVisits > 0 && $totalVisits % 6 === 0) {
+            return back()->with('success', 'Selamat datang, ' . $member->member_name . '! Absensi berhasil.')
+                         ->with('merch_reward', true)
+                         ->with('visit_count', $totalVisits);
+        }
+
+        return back()->with('success', 'Selamat datang, ' . $member->member_name . '! Absensi berhasil.');
     }
 }

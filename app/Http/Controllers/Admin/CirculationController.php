@@ -8,6 +8,7 @@ use App\Models\Member;
 use App\Models\Item;
 use App\Models\Loan;
 use Carbon\Carbon;
+use App\Helpers\SystemLog;
 
 class CirculationController extends Controller
 {
@@ -57,6 +58,11 @@ class CirculationController extends Controller
             'item_code' => 'required|exists:item,item_code'
         ]);
 
+        $member = Member::findOrFail($member_id);
+        if (empty($member->member_email) || empty($member->member_phone)) {
+            return back()->withErrors(['item_code' => 'Peminjaman Gagal: Nomor telepon dan email anggota harus diisi terlebih dahulu. Silakan lengkapi data anggota.']);
+        }
+
         $item = Item::where('item_code', $request->item_code)->first();
 
         // Check availability
@@ -77,6 +83,8 @@ class CirculationController extends Controller
         $loan->last_update = now();
         $loan->save();
 
+        SystemLog::write('insert', 'Peminjaman Eksemplar: ' . $request->item_code . ' oleh ' . $member_id, 'Circulation', 'Loan');
+
         return back()->with('success', 'Item loaned successfully.');
     }
 
@@ -87,6 +95,8 @@ class CirculationController extends Controller
         $loan->return_date = now()->toDateString();
         $loan->last_update = now();
         $loan->save();
+
+        SystemLog::write('update', 'Pengembalian Eksemplar: ' . $loan->item_code . ' oleh ' . $loan->member_id, 'Circulation', 'Return');
 
         return back()->with('success', 'Item returned successfully.');
     }
@@ -111,6 +121,8 @@ class CirculationController extends Controller
         $loan->last_update = now();
         $loan->save();
 
+        SystemLog::write('update', 'Perpanjangan Eksemplar: ' . $loan->item_code . ' oleh ' . $loan->member_id, 'Circulation', 'Extend');
+
         return back()->with('success', 'Loan extended for 7 days successfully.');
     }
 
@@ -122,7 +134,7 @@ class CirculationController extends Controller
 
     public function history(Request $request)
     {
-        $query = Loan::with(['member', 'item.biblio']);
+        $query = Loan::with(['member', 'item.biblio', 'loanHistory']);
 
         if ($request->has('q') && $request->q != '') {
             $q = $request->q;
@@ -283,6 +295,8 @@ class CirculationController extends Controller
         $reservation->status = 'approved';
         $reservation->save();
 
+        SystemLog::write('update', 'Menyetujui Reservasi: ' . $reservation->item_code . ' oleh ' . $reservation->member_id, 'Circulation', 'Reservation');
+
         return back()->with('success', 'Reservasi berhasil disetujui (Buku Siap Diambil).');
     }
 
@@ -311,6 +325,8 @@ class CirculationController extends Controller
         $reservation->status = 'completed';
         $reservation->save();
 
+        SystemLog::write('update', 'Penyerahan Buku Reservasi: ' . $reservation->item_code . ' ke ' . $reservation->member_id, 'Circulation', 'Reservation');
+
         return back()->with('success', 'Buku telah diserahkan dan transaksi peminjaman berhasil dibuat.');
     }
         
@@ -322,6 +338,8 @@ class CirculationController extends Controller
         $reservation->status = 'rejected';
         $reservation->notes = $request->notes;
         $reservation->save();
+
+        SystemLog::write('update', 'Menolak Reservasi: ' . $reservation->item_code . ' oleh ' . $reservation->member_id, 'Circulation', 'Reservation');
 
         return back()->with('success', 'Reservasi ditolak dengan keterangan.');
     }
@@ -336,10 +354,40 @@ class CirculationController extends Controller
                 $query->where('title', 'like', "%{$q}%")
                       ->orWhere('isbn_issn', 'like', "%{$q}%");
             })
+            ->with('items')
             ->limit(10)
-            ->get(['biblio_id', 'title', 'isbn_issn']);
+            ->get();
 
-        return response()->json($biblios);
+        $results = [];
+        foreach ($biblios as $biblio) {
+            $totalCopies = $biblio->items->count();
+            $availableCopies = 0;
+
+            foreach ($biblio->items as $item) {
+                $isOnLoan = \App\Models\Loan::where('item_code', $item->item_code)
+                                            ->where('is_return', 0)
+                                            ->exists();
+                $isReserved = \App\Models\Reservation::where('item_code', $item->item_code)
+                                            ->whereIn('status', ['pending', 'approved'])
+                                            ->exists();
+                if (!$isOnLoan && !$isReserved) {
+                    $availableCopies++;
+                }
+            }
+
+            // Skip books where all copies are on loan or reserved
+            if ($availableCopies <= 0) continue;
+
+            $results[] = [
+                'biblio_id' => $biblio->biblio_id,
+                'title' => $biblio->title,
+                'isbn_issn' => $biblio->isbn_issn,
+                'available' => $availableCopies,
+                'total' => $totalCopies,
+            ];
+        }
+
+        return response()->json($results);
     }
 
     public function storeReservation(Request $request)
@@ -406,9 +454,11 @@ class CirculationController extends Controller
         }
 
         if ($failedCount > 0) {
+            SystemLog::write('insert', "Menambah $successCount Reservasi Buku untuk member $request->member_id ($failedCount gagal)", 'Circulation', 'Reservation');
             return back()->with('success', "Berhasil menambahkan $successCount reservasi. $failedCount buku gagal direservasi karena sedang dipinjam atau sudah direservasi orang lain.");
         }
 
+        SystemLog::write('insert', "Menambah $successCount Reservasi Buku untuk member $request->member_id", 'Circulation', 'Reservation');
         return back()->with('success', "Berhasil menambahkan $successCount reservasi untuk member {$request->member_id}.");
     }
 

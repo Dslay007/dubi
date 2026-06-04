@@ -36,9 +36,9 @@
 </div>
 
 <!-- Charts Row -->
-<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; margin-bottom: 2rem;">
+<div style="display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem;">
     <!-- Per GMD (Doughnut) -->
-    <div style="background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
+    <div style="flex: 1 1 300px; min-width: 0; background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
             <h4 style="font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
                 <i data-lucide="pie-chart" style="width: 18px; height: 18px; color: #8b5cf6;"></i>
@@ -58,7 +58,7 @@
     </div>
 
     <!-- Per Tahun Terbit (Bar) -->
-    <div style="background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
+    <div style="flex: 2 1 300px; min-width: 0; background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
             <h4 style="font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
                 <i data-lucide="bar-chart" style="width: 18px; height: 18px; color: #3b82f6;"></i>
@@ -78,9 +78,9 @@
     </div>
 </div>
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+<div style="display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem;">
     <!-- Per Tipe Koleksi (Horizontal Bar) -->
-    <div style="background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
+    <div style="flex: 1 1 300px; min-width: 0; background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
             <h4 style="font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
                 <i data-lucide="bookmark" style="width: 18px; height: 18px; color: #10b981;"></i>
@@ -100,7 +100,7 @@
     </div>
     
     <!-- Top GMD List Insight -->
-    <div style="background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
+    <div style="flex: 1 1 300px; min-width: 0; background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
             <h4 style="font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
                 <i data-lucide="award" style="width: 18px; height: 18px; color: #f59e0b;"></i>
@@ -249,3 +249,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endsection
+

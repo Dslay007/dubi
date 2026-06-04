@@ -50,6 +50,11 @@ Route::get('/jurnal', function () {
     return view('pages.jurnal', compact('jurnals'));
 })->name('page.jurnal');
 
+Route::get('/jurnal/{id}', function ($id) {
+    $jurnal = \App\Models\Jurnal::where('is_published', true)->findOrFail($id);
+    return view('pages.jurnal_detail', compact('jurnal'));
+})->name('page.jurnal.detail');
+
 Route::get('/opac', [OpacController::class, 'index'])->name('opac.index');
 Route::get('/opac/detail/{id}', [OpacController::class, 'show'])->name('opac.show');
 

@@ -28,7 +28,7 @@ class OpacController extends Controller
 
         $biblios = $query->with(['publisher', 'authors'])
             ->orderBy('last_update', 'desc')
-            ->paginate(8)
+            ->paginate(12)
             ->withQueryString();
 
         return view('opac.index', compact('biblios'));

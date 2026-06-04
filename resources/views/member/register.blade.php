@@ -23,7 +23,7 @@
                     @error('member_name') <div style="color: #b91c1c; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</div> @enderror
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
                     <div>
                         <label for="member_email" style="display: block; font-weight: 500; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Email Address</label>
                         <input type="email" name="member_email" id="member_email" value="{{ old('member_email') }}" required 
@@ -45,7 +45,7 @@
                     @error('member_address') <div style="color: #b91c1c; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</div> @enderror
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
                      <div>
                         <label for="gender" style="display: block; font-weight: 500; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Gender</label>
                         <select name="gender" id="gender" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; outline: none; background: white; box-sizing: border-box;">
@@ -55,7 +55,7 @@
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
                     <div>
                         <label for="password" style="display: block; font-weight: 500; font-size: 0.875rem; color: #475569; margin-bottom: 0.5rem;">Password</label>
                         <input type="password" name="password" id="password" required 

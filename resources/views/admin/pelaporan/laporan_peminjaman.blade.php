@@ -96,9 +96,9 @@
 </div>
 
 <!-- Insights Row -->
-<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+<div style="display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem;">
     <!-- Top Books -->
-    <div style="background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
+    <div style="flex: 2 1 300px; min-width: 0; background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
         <h4 style="font-weight: 800; color: #0f172a; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
             <i data-lucide="award" style="width: 18px; height: 18px; color: #f59e0b;"></i>
             Koleksi Paling Sering Dipinjam
@@ -123,7 +123,7 @@
     </div>
 
     <!-- Pie chart of loan status -->
-    <div style="background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
+    <div style="flex: 1 1 300px; min-width: 0; background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
         <h4 style="font-weight: 800; color: #0f172a; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
             <i data-lucide="pie-chart" style="width: 18px; height: 18px; color: #10b981;"></i>
             Status Keseluruhan
@@ -260,3 +260,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endsection
+

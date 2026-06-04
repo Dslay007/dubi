@@ -34,7 +34,7 @@
         
         <!-- Search and Sort Bar -->
         <div style="background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.6); padding: 1.5rem; border-radius: 1rem; box-shadow: 0 4px 15px -3px rgba(0,0,0,0.05); margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center;">
-            <form action="{{ route('admin.sistem.aktifitas.index') }}" method="GET" style="display: flex; gap: 1rem; flex: 1; min-width: 300px;">
+            <form action="{{ route('admin.sistem.aktifitas.index') }}" method="GET" style="display: flex; gap: 1rem; flex: 1; min-width: 0; flex-wrap: wrap;">
                 <div style="flex: 1; position: relative;">
                     <i data-lucide="search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 1.25rem; height: 1.25rem; color: #94a3b8;"></i>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari log aktifitas (Pesan, Modul, Staff)..." style="width: 100%; padding: 0.75rem 1rem 0.75rem 3rem; border-radius: 99px; border: 1px solid #e2e8f0; background: white; font-size: 0.875rem; box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.02); outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e2e8f0'">
@@ -169,3 +169,4 @@
 
 </div>
 @endsection
+

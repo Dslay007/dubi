@@ -31,7 +31,7 @@
         <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
     </div>
 
-    <form action="{{ route('admin.circulation.start') }}" method="POST">
+    <form id="circulationForm" action="{{ route('admin.circulation.start') }}" method="POST">
         @csrf
         
         <div style="margin-bottom: 2rem; position: relative;">
@@ -39,7 +39,7 @@
                 <div style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 </div>
-                <input type="text" id="member_id_input" name="member_id" required autofocus autocomplete="off"
+                <input type="text" id="member_id_input" name="member_id" required autocomplete="off"
                     oninput="searchMember(this.value)"
                     style="width: 100%; padding: 1.1rem 1rem 1.1rem 3rem; border: 2px solid #cbd5e1; border-radius: 0.75rem; outline: none; font-size: 1.1rem; color: #1e293b; font-weight: 500; transition: border-color 0.2s;"
                     placeholder="Ketik ID / Nama Anggota..."
@@ -74,12 +74,13 @@
         
         html5QrcodeScanner = new Html5Qrcode("reader");
         html5QrcodeScanner.start(
-            { facingMode: "user" }, // Changed to 'user' (front camera) for laptop compatibility
+            { facingMode: "environment" }, // Changed to 'environment' (rear camera)
             { fps: 10, qrbox: { width: 250, height: 150 } },
             (decodedText, decodedResult) => {
                 document.getElementById('member_id_input').value = decodedText;
                 stopScanner();
                 document.getElementById('autocomplete-list').style.display = 'none';
+                document.getElementById('circulationForm').submit();
             },
             (errorMessage) => {
             }

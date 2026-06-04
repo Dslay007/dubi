@@ -12,7 +12,29 @@
 </div>
 
 <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 1.5rem 4rem 1.5rem;">
-    <div style="display: grid; grid-template-columns: 340px 1fr; gap: 3rem; align-items: start;">
+    <style>
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+        .dashboard-card-flex {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        @media (min-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 340px 1fr;
+            }
+            .dashboard-card-flex {
+                flex-direction: row;
+                align-items: center;
+            }
+        }
+    </style>
+    <div class="dashboard-grid">
         
         <!-- Kolom Kiri: Profil & ID Card -->
         <div style="display: flex; flex-direction: column; gap: 1.5rem;">
@@ -145,7 +167,7 @@
                     <div style="display: grid; gap: 1rem;">
                         @foreach($loans as $loan)
                         @php $isLate = \Carbon\Carbon::parse($loan->due_date)->isPast(); @endphp
-                        <div style="background: white; padding: 1.5rem; border-radius: 1.25rem; border: 1px solid {{ $isLate ? '#fecaca' : 'rgba(0,0,0,0.05)' }}; display: flex; gap: 1.5rem; align-items: center; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 20px 40px -10px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 10px 30px -10px rgba(0,0,0,0.05)';">
+                        <div class="dashboard-card-flex" style="background: white; padding: 1.5rem; border-radius: 1.25rem; border: 1px solid {{ $isLate ? '#fecaca' : 'rgba(0,0,0,0.05)' }}; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 20px 40px -10px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 10px 30px -10px rgba(0,0,0,0.05)';">
                             <div style="width: 56px; height: 56px; background: {{ $isLate ? '#fef2f2' : '#f0f9ff' }}; border-radius: 1rem; display: flex; align-items: center; justify-content: center; color: {{ $isLate ? '#ef4444' : '#0284c7' }}; flex-shrink: 0;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
                             </div>
@@ -203,7 +225,7 @@
                 @if(isset($reservations) && $reservations->count() > 0)
                     <div style="display: grid; gap: 1rem;">
                         @foreach($reservations as $reserve)
-                        <div style="background: white; padding: 1.25rem 1.5rem; border-radius: 1.25rem; border: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
+                        <div class="dashboard-card-flex" style="background: white; padding: 1.25rem 1.5rem; border-radius: 1.25rem; border: 1px solid rgba(0,0,0,0.05); justify-content: space-between; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
                             <div>
                                 <h4 style="font-weight: 800; font-size: 1.1rem; color: #1e293b; margin-bottom: 0.35rem;">
                                     {{ optional(optional($reserve->item)->biblio)->title ?? 'Unknown Title' }}

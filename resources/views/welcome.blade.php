@@ -7,10 +7,10 @@
     <!-- Abstract Background Blob -->
     <div style="position: absolute; top: -10%; right: -5%; width: 50%; height: 80%; background: radial-gradient(circle, rgba(235,240,255,1) 0%, rgba(255,255,255,0) 70%); z-index: -1; pointer-events: none;"></div>
     
-    <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;">
+    <div class="responsive-grid-2" style="max-width: 1200px; margin: 0 auto; align-items: center;">
         <div>
             <span style="color: hsl(var(--primary)); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem; display: block; margin-bottom: 1.5rem;">Komunitas Literasi & Lapak Baca</span>
-            <h1 style="font-size: 4rem; line-height: 1.1; margin-bottom: 1.5rem; color: #0f172a; font-weight: 800; letter-spacing: -0.03em;">
+            <h1 class="hero-title" style="line-height: 1.1; margin-bottom: 1.5rem; color: #0f172a; font-weight: 800; letter-spacing: -0.03em;">
                 Lebih dari sekadar <br>
                 <span style="background: linear-gradient(120deg, hsl(var(--primary)), hsl(var(--accent))); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">tempat membaca.</span>
             </h1>
@@ -18,7 +18,7 @@
                 Duduk Baca menciptakan ruang publik yang inklusif untuk meresapi pengetahuan dan berbagi cerita di tengah hiruk pikuk Kota Malang.
             </p>
             
-            <div style="display: flex; gap: 1rem;">
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
                 <a href="{{ route('opac.index') }}" class="btn" style="padding: 1rem 2rem; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
                     Cari Buku di OPAC &rarr;
                 </a>
@@ -38,17 +38,17 @@
 
 <!-- Stats Section -->
 <section style="background: white; padding: 4rem 1rem; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9;">
-    <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; text-align: center;">
+    <div class="responsive-grid-3" style="max-width: 1200px; margin: 0 auto; gap: 2rem; text-align: center;">
         <div>
-            <div style="font-size: 3.5rem; font-weight: 800; color: hsl(var(--primary)); margin-bottom: 0.5rem;" id="stat-borrowings">0</div>
+            <div class="stat-value" style="font-weight: 800; color: hsl(var(--primary)); margin-bottom: 0.5rem;" id="stat-borrowings">0</div>
             <div style="font-size: 1rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Total Peminjaman</div>
         </div>
-        <div style="border-left: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;">
-            <div style="font-size: 3.5rem; font-weight: 800; color: hsl(var(--accent)); margin-bottom: 0.5rem;" id="stat-members">0</div>
+        <div class="stat-divider" style="border-left: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;">
+            <div class="stat-value" style="font-weight: 800; color: hsl(var(--accent)); margin-bottom: 0.5rem;" id="stat-members">0</div>
             <div style="font-size: 1rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Bacawan Terdaftar</div>
         </div>
         <div>
-            <div style="font-size: 3.5rem; font-weight: 800; color: #0f172a; margin-bottom: 0.5rem;" id="stat-books">0</div>
+            <div class="stat-value" style="font-weight: 800; color: #0f172a; margin-bottom: 0.5rem;" id="stat-books">0</div>
             <div style="font-size: 1rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Koleksi Buku</div>
         </div>
     </div>
@@ -58,11 +58,11 @@
 <section style="padding: 6rem 1rem;">
     <div style="max-width: 1200px; margin: 0 auto;">
         <div style="text-align: center; margin-bottom: 4rem;">
-            <h2 style="font-size: 2.5rem; font-weight: 800; color: #0f172a; margin-bottom: 1rem;">Membangun Budaya Literasi</h2>
+            <h2 class="section-title" style="font-weight: 800; color: #0f172a; margin-bottom: 1rem;">Membangun Budaya Literasi</h2>
             <p style="color: #64748b; max-width: 600px; margin: 0 auto; font-size: 1.1rem;">Kami hadir untuk memastikan akses buku yang merata dan menciptakan ekosistem membaca yang menyenangkan.</p>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;">
+        <div class="responsive-grid-2" style="gap: 3rem;">
             <div style="background: white; padding: 3rem; border-radius: 1.5rem; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;">
                 <div style="width: 50px; height: 50px; background: hsl(var(--primary-light)); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="hsl(var(--primary))" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -94,11 +94,11 @@
          <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem;">
             <div>
                  <span style="color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem; display: block; margin-bottom: 0.5rem;">Jadwal Kegiatan</span>
-                 <h2 style="font-size: 2.5rem; font-weight: 800; color: #0f172a;">Agenda Komunitas</h2>
+                 <h2 class="section-title" style="font-weight: 800; color: #0f172a;">Agenda Komunitas</h2>
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;">
+        <div class="responsive-grid-2" style="gap: 4rem;">
             <!-- Upcoming -->
             <div>
                  <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; color: #0f172a; display: flex; align-items: center;">
@@ -144,9 +144,9 @@
 @if($campaign)
 <section style="padding: 6rem 1rem;">
     <div style="max-width: 1200px; margin: 0 auto; background: #0f172a; border-radius: 2rem; overflow: hidden; color: white;">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; align-items: stretch; min-height: 500px;">
+        <div class="responsive-grid-2" style="align-items: stretch; min-height: 500px;">
             <!-- Image / Carousel Side -->
-            <div style="position: relative; background: #1e293b; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+            <div style="position: relative; background: #1e293b; display: flex; align-items: center; justify-content: center; overflow: hidden; min-height: 300px;">
                 @php
                     $photos = $campaign->photos ? json_decode($campaign->photos, true) : [];
                 @endphp
@@ -195,9 +195,9 @@
             </div>
 
             <!-- Content Side -->
-            <div style="padding: 4rem; display: flex; flex-direction: column; justify-content: center;">
+            <div class="campaign-content" style="display: flex; flex-direction: column; justify-content: center;">
                 <span style="color: hsl(var(--accent)); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem; display: block; margin-bottom: 1rem;">Bergabung Bersama Kami</span>
-                <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1.5rem; line-height: 1.2;">{{ $campaign->title }}</h2>
+                <h2 class="section-title" style="font-weight: 800; margin-bottom: 1.5rem; line-height: 1.2;">{{ $campaign->title }}</h2>
                 
                 <div style="color: #cbd5e1; font-size: 1.1rem; margin-bottom: 2.5rem; line-height: 1.7; white-space: pre-line;">
                     {!! nl2br(e($campaign->description)) !!}
@@ -224,9 +224,9 @@
 <!-- About Section -->
 <section id="tentang" style="background: white; padding: 6rem 1rem;">
     <div style="max-width: 1000px; margin: 0 auto; text-align: center;">
-         <h2 style="font-size: 2.5rem; font-weight: 800; color: #0f172a; margin-bottom: 3rem;">Tentang Duduk Baca</h2>
+         <h2 class="section-title" style="font-weight: 800; color: #0f172a; margin-bottom: 3rem;">Tentang Duduk Baca</h2>
          
-         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; text-align: left;">
+         <div class="responsive-grid-2" style="gap: 4rem; text-align: left;">
              <div>
                  <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: hsl(var(--primary));">Filosofi</h3>
                  <p style="color: #475569; line-height: 1.8; margin-bottom: 1.5rem;">
@@ -264,7 +264,7 @@
     <div style="max-width: 1200px; margin: 0 auto;">
          <div style="text-align: center; margin-bottom: 4rem;">
              <span style="color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem; display: block; margin-bottom: 0.5rem;">Jurnal Lapak</span>
-             <h2 style="font-size: 2.5rem; font-weight: 800; color: #0f172a;">Cerita & Kabar Terbaru</h2>
+             <h2 class="section-title" style="font-weight: 800; color: #0f172a;">Cerita & Kabar Terbaru</h2>
          </div>
 
          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
@@ -294,7 +294,7 @@
                          {{ Str::limit(strip_tags($jurnal->content), 120) }}
                      </p>
                      
-                     <a href="#" style="display: inline-flex; align-items: center; gap: 0.5rem; color: #0f172a; font-weight: 700; text-decoration: none; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='hsl(var(--primary))'" onmouseout="this.style.color='#0f172a'">
+                     <a href="{{ route('page.jurnal.detail', $jurnal->id) }}" style="display: inline-flex; align-items: center; gap: 0.5rem; color: #0f172a; font-weight: 700; text-decoration: none; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='hsl(var(--primary))'" onmouseout="this.style.color='#0f172a'">
                          Baca Selengkapnya
                          <i data-lucide="arrow-right" style="width: 1rem; height: 1rem;"></i>
                      </a>

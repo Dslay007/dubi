@@ -63,9 +63,9 @@
     </div>
 </div>
 
-<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+<div style="display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem;">
     <!-- Main Trend Chart -->
-    <div style="background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); display: flex; flex-direction: column;">
+    <div style="flex: 2 1 300px; min-width: 0; background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); display: flex; flex-direction: column;">
         <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-start;">
             <div>
                 <h4 style="font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
@@ -82,7 +82,7 @@
     </div>
 
     <!-- Secondary Metrics & Top Lists -->
-    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    <div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 1.5rem;">
         
         <!-- Status Operasional Cards -->
         <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
@@ -203,3 +203,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endsection
+

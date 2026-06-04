@@ -2,15 +2,36 @@
 
 @section('content')
 
+<style>
+    .opac-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        align-items: start;
+    }
+    .opac-sidebar {
+        position: relative;
+    }
+    @media (min-width: 768px) {
+        .opac-grid {
+            grid-template-columns: 300px 1fr;
+            gap: 3rem;
+        }
+        .opac-sidebar {
+            position: sticky;
+            top: 100px;
+        }
+    }
+</style>
 <div style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;">
     <a href="{{ url('/') }}" style="display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem; font-weight: 500; color: #64748b;">
-        &larr; Back to Catalog
+        &larr; Kembali ke Katalog
     </a>
 
-    <div style="display: grid; grid-template-columns: 300px 1fr; gap: 3rem; align-items: start;">
+    <div class="opac-grid">
         
         <!-- Sidebar: Image -->
-        <div style="position: sticky; top: 100px;">
+        <div class="opac-sidebar">
             <div style="background: white; padding: 1rem; border-radius: 0.75rem; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
                 @if($biblio->image)
                     @if(\str_starts_with($biblio->image, 'http'))
@@ -26,7 +47,7 @@
             </div>
 
             @if($biblio->isbn_issn)
-            <div style="margin-top: 1.5rem; padding: 1rem; background: #eff6ff; border-radius: 0.5rem; color: #1e40af; font-size: 0.9rem; font-weight: 500; text-align: center;">
+            <div style="margin-top: 1.5rem; padding: 1rem; background: #eff6ff; border-radius: 0.5rem; color: #1e40af; font-size: 0.9rem; font-weight: 500; text-align: center; word-break: break-word; overflow-wrap: anywhere;">
                 ISBN: {{ $biblio->isbn_issn }}
             </div>
             @endif
@@ -48,12 +69,12 @@
                     📅 {{ $biblio->publish_year }}
                 </span>
                 <span style="display: flex; align-items: center; color: #64748b;">
-                    🏢 {{ $biblio->publisher->publisher_name ?? 'Unknown Publisher' }}
+                    🏢 {{ $biblio->publisher->publisher_name ?? 'Penerbit Tidak Diketahui' }}
                 </span>
             </div>
 
             <!-- Detail Informasi (SLiMS Style) -->
-            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow-x: auto;">
                 <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem;">Detail Informasi</h3>
                 
                 <table style="width: 100%; border-collapse: collapse; font-size: 0.95rem; color: #475569;">
@@ -73,7 +94,7 @@
                         <tr style="border-bottom: 1px solid #f1f5f9;">
                             <td style="padding: 0.75rem 0; width: 30%; font-weight: 600; vertical-align: top;">Penerbit</td>
                             <td style="padding: 0.75rem 0; color: #1e293b;">
-                                {{ $biblio->place->place_name ?? '' }} : {{ $biblio->publisher->publisher_name ?? 'Unknown Publisher' }}., {{ $biblio->publish_year }}
+                                {{ $biblio->place->place_name ?? '' }} : {{ $biblio->publisher->publisher_name ?? 'Penerbit Tidak Diketahui' }}., {{ $biblio->publish_year }}
                             </td>
                         </tr>
                         @if($biblio->collation)
@@ -215,7 +236,7 @@
                     }
                 @endphp
 
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
                     <h3 style="font-size: 1.25rem; font-weight: 700; color: #334155; margin-bottom: 0;">Ketersediaan Eksemplar</h3>
                     @if($biblio->is_reservable)
                         @if($hasAvailableCopy)
@@ -238,7 +259,7 @@
                 </div>
                 
                 @if($biblio->items->count() > 0)
-                <div style="background: white; border: 1px solid #e2e8f0; border-radius: 0.75rem; overflow: hidden;">
+                <div style="background: white; border: 1px solid #e2e8f0; border-radius: 0.75rem; overflow-x: auto;">
                     <table style="width: 100%; border-collapse: collapse;">
                         <thead style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
                             <tr>

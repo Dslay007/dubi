@@ -58,9 +58,9 @@
 </div>
 
 <!-- Monthly Chart + Per Institusi -->
-<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+<div style="display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem;">
     <!-- Monthly Chart -->
-    <div style="background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); overflow: hidden; display: flex; flex-direction: column;">
+    <div style="flex: 2 1 300px; min-width: 0; background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); overflow: hidden; display: flex; flex-direction: column;">
         <div style="padding: 1.5rem; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; background: #f8fafc;">
             <h4 style="font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
                 <i data-lucide="calendar" style="width: 18px; height: 18px; color: #10b981;"></i>
@@ -92,7 +92,7 @@
     </div>
 
     <!-- Top 10 Institusi -->
-    <div style="background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
+    <div style="flex: 1 1 300px; min-width: 0; background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
         <h4 style="font-weight: 800; color: #0f172a; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
             <i data-lucide="building-2" style="width: 18px; height: 18px; color: #f59e0b;"></i>
             Top 10 Institusi Asal
@@ -240,3 +240,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endsection
+

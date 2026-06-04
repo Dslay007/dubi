@@ -3,9 +3,38 @@
 @section('pageTitle', 'Circulation Transaction')
 
 @section('content')
-<div style="display: grid; grid-template-columns: 320px 1fr; gap: 2.5rem; align-items: start;">
+<style>
+    .transaction-layout {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 2.5rem;
+        align-items: start;
+    }
+    @media (max-width: 900px) {
+        .transaction-layout {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+    }
+    .loan-form-container {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+    @media (max-width: 768px) {
+        .loan-form-container {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .loan-form-container button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+<div class="transaction-layout">
     <!-- Left Column: Member Info and Finish -->
-    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    <div style="display: flex; flex-direction: column; gap: 1.5rem; min-width: 0;">
         <div style="background: white; border-radius: 1.25rem; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); overflow: hidden;">
             <div style="padding: 1.5rem; border-bottom: 1px solid rgba(0,0,0,0.05); background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
                 <h4 style="font-weight: 800; color: #1e293b; text-align: center; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
@@ -39,10 +68,10 @@
         </a>
     </div>
 
-    <!-- Right Column: Loan Form and Current Loans -->
-    <div style="display: flex; flex-direction: column; gap: 2rem;">
+    <!-- Right Column: Transaction Actions & List -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem; min-width: 0;">
         
-        <!-- Loan Form -->
+        <!-- New Loan Form -->
         <div style="background: white; padding: 2rem; border-radius: 1.25rem; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); position: relative; overflow: hidden;">
             <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(to right, #3b82f6, #8b5cf6);"></div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
@@ -62,13 +91,13 @@
                 <button type="button" onclick="stopScanner()" style="width: 100%; color: white; background: #ef4444; border: none; padding: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">Hentikan Kamera</button>
             </div>
 
-            <form id="loanForm" action="{{ route('admin.circulation.loan.store', $member->member_id) }}" method="POST" style="display: flex; gap: 1rem;" onsubmit="confirmLoan(event, this)">
+            <form id="loanForm" class="loan-form-container" action="{{ route('admin.circulation.loan.store', $member->member_id) }}" method="POST" onsubmit="confirmLoan(event, this)">
                 @csrf
                 <div style="flex: 1; position: relative;">
                     <div style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
                     </div>
-                    <input type="text" id="item_code_input" name="item_code" required autofocus autocomplete="off"
+                    <input type="text" id="item_code_input" name="item_code" required autocomplete="off"
                         style="width: 100%; padding: 1rem 1rem 1rem 3rem; border: 2px solid #cbd5e1; border-radius: 0.75rem; outline: none; font-size: 1.05rem; font-weight: 500; color: #1e293b; transition: border-color 0.2s;"
                         placeholder="Ketik / Scan Kode Eksemplar Buku..."
                         onfocus="this.style.borderColor='#8b5cf6'; this.style.boxShadow='0 0 0 3px rgba(139,92,246,0.1)';" 
@@ -88,8 +117,8 @@
         <div style="display: flex; flex-direction: column; gap: 1rem;">
             <h4 style="font-weight: 800; color: #0f172a; font-size: 1.25rem;">Buku di Tangan Anggota</h4>
             
-            <div style="background: white; border-radius: 1.25rem; border: 1px solid rgba(0,0,0,0.05); overflow: hidden; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
-                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+            <div style="background: white; border-radius: 1.25rem; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); overflow: hidden;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; min-width: 600px;">
                     <thead>
                         <tr style="background: #f8fafc; color: #64748b; text-transform: uppercase; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em;">
                             <th style="padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(0,0,0,0.05);">Eksemplar</th>
@@ -166,13 +195,13 @@
         document.getElementById('reader-container').style.display = 'block';
         html5QrcodeScanner = new Html5Qrcode("reader");
         html5QrcodeScanner.start(
-            { facingMode: "user" }, // Changed to 'user' (front camera) for laptop compatibility
+            { facingMode: "environment" }, // Changed to 'environment' (rear camera)
             { fps: 10, qrbox: { width: 250, height: 150 } },
             (decodedText, decodedResult) => {
                 document.getElementById('item_code_input').value = decodedText;
                 stopScanner();
-                // Optional: Auto submit
-                // document.querySelector('form').submit();
+                // Auto submit form bypassing the confirmation Swal
+                document.getElementById('loanForm').submit();
             },
             (errorMessage) => {
             }
@@ -322,3 +351,4 @@
     @endif
 </script>
 @endsection
+

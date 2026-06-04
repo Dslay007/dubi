@@ -432,12 +432,21 @@ class MemberController extends Controller
     public function storeAttendance(Request $request)
     {
         $request->validate([
-            'member_id' => 'required|exists:member,member_id'
+            'member_id' => 'required'
         ], [
-            'member_id.exists' => 'Anggota dengan ID tersebut tidak ditemukan.'
+            'member_id.required' => 'Input ID atau Nama Anggota diperlukan.'
         ]);
 
-        $member = Member::where('member_id', $request->member_id)->first();
+        $member = Member::where('member_id', $request->member_id)
+                        ->orWhere('member_name', $request->member_id)
+                        ->first();
+
+        if (!$member) {
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Anggota dengan ID atau Nama tersebut tidak ditemukan.']);
+            }
+            return back()->withErrors(['member_id' => 'Anggota dengan ID atau Nama tersebut tidak ditemukan.']);
+        }
 
         \App\Models\VisitorCount::create([
             'member_id' => $member->member_id,
@@ -448,7 +457,22 @@ class MemberController extends Controller
 
         $totalVisits = \App\Models\VisitorCount::where('member_id', $member->member_id)->count();
         
-        if ($totalVisits > 0 && $totalVisits % 6 === 0) {
+        $isMerchReward = ($totalVisits > 0 && $totalVisits % 6 === 0);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Absensi berhasil.',
+                'member' => [
+                    'name' => $member->member_name,
+                    'nik' => $member->member_id,
+                    'visit_count' => $totalVisits
+                ],
+                'merch_reward' => $isMerchReward
+            ]);
+        }
+        
+        if ($isMerchReward) {
             return back()->with('success', 'Selamat datang, ' . $member->member_name . '! Absensi berhasil.')
                          ->with('merch_reward', true)
                          ->with('visit_count', $totalVisits);

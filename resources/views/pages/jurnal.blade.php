@@ -39,7 +39,7 @@
                         {{ Str::limit(strip_tags($jurnal->content), 120) }}
                     </p>
                     
-                    <a href="#" style="display: inline-flex; align-items: center; gap: 0.5rem; color: #0f172a; font-weight: 700; text-decoration: none; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='hsl(var(--primary))'" onmouseout="this.style.color='#0f172a'">
+                    <a href="{{ route('page.jurnal.detail', $jurnal->id) }}" style="display: inline-flex; align-items: center; gap: 0.5rem; color: #0f172a; font-weight: 700; text-decoration: none; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='hsl(var(--primary))'" onmouseout="this.style.color='#0f172a'">
                         Baca Selengkapnya
                         <i data-lucide="arrow-right" style="width: 1rem; height: 1rem;"></i>
                     </a>

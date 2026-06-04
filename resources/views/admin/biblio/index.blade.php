@@ -11,7 +11,7 @@
         </h2>
         <p style="color: #64748b; font-size: 0.95rem; margin: 0;">Kelola data buku, eksemplar, dan sumber referensi perpustakaan.</p>
     </div>
-    <div style="display: flex; gap: 0.75rem;">
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
         <a href="{{ route('admin.biblio.import') }}" class="btn" style="background: #fffbeb; color: #d97706; border: 1px solid #fde68a; padding: 0.75rem 1.5rem; border-radius: 99px; text-decoration: none; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; transition: 0.2s;" onmouseover="this.style.background='#fef3c7';" onmouseout="this.style.background='#fffbeb';">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
             Import
@@ -45,7 +45,7 @@
     </div>
 
     <div style="overflow-x: auto; padding: 1rem 2rem;">
-        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+        <table data-visible-cols="1" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
             <thead>
                 <tr style="color: #64748b; text-transform: uppercase; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em;">
                     <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Judul & ISBN</th>
@@ -64,9 +64,9 @@
                             ISBN: {{ $biblio->isbn_issn ?: '-' }}
                         </div>
                     </td>
-                    <td style="padding: 1.25rem 1rem; color: #475569;">
+                    <td class="mobile-force-hide" style="padding: 1.25rem 1rem;">
                         @if($biblio->authors->count() > 0)
-                            <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
                                 @foreach($biblio->authors as $author)
                                     <div style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.85rem; background: #f1f5f9; padding: 0.2rem 0.6rem; border-radius: 99px; width: fit-content; border: 1px solid #e2e8f0;">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #64748b;"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -129,3 +129,4 @@
     @endif
 </div>
 @endsection
+

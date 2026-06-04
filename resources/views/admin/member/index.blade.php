@@ -3,6 +3,35 @@
 @section('pageTitle', 'Membership')
 
 @section('content')
+<style>
+    .filter-form {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    @media (max-width: 768px) {
+        .filter-form {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+        .filter-form > * {
+            width: 100% !important;
+        }
+        .filter-form input, .filter-form select, .filter-form button, .filter-form a {
+            width: 100% !important;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .filter-form .search-container {
+            width: 100% !important;
+        }
+        .filter-form .search-container input {
+            width: 100% !important;
+            text-align: left;
+        }
+    }
+</style>
 <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 2.5rem; background: white; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05);">
     <div>
         <h2 style="font-weight: 800; font-size: 1.5rem; color: #0f172a; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
@@ -11,7 +40,7 @@
         </h2>
         <p style="color: #64748b; font-size: 0.95rem; margin: 0;">Kelola data anggota perpustakaan, pencetakan kartu, dan status member.</p>
     </div>
-    <div style="display: flex; gap: 0.75rem;">
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
         <a href="{{ route('admin.member.create') }}" class="btn" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 99px; text-decoration: none; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 6px -1px rgba(59,130,246,0.2); transition: 0.2s;" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='none';">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Tambah Anggota
@@ -22,8 +51,8 @@
 <div style="background: white; border-radius: 1.5rem; overflow: hidden; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
     
     <div style="padding: 1.5rem 2rem; border-bottom: 1px solid rgba(0,0,0,0.05); background: #f8fafc; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;">
-        <form action="{{ route('admin.member.index') }}" method="GET" style="display: flex; gap: 0.75rem; width: 100%; flex-wrap: wrap; align-items: center;">
-            <div style="position: relative;">
+        <form action="{{ route('admin.member.index') }}" method="GET" class="filter-form">
+            <div class="search-container" style="position: relative;">
                 <div style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 </div>
@@ -189,3 +218,4 @@
     }
 </script>
 @endsection
+

@@ -11,7 +11,7 @@
         </h2>
         <p style="color: #64748b; font-size: 0.95rem; margin: 0;">Kelola data fisik buku dan cetak barcode.</p>
     </div>
-    <div style="display: flex; gap: 0.75rem;">
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
         <a href="{{ route('admin.item.import') }}" class="btn" style="background: #fffbeb; color: #d97706; border: 1px solid #fde68a; padding: 0.75rem 1.5rem; border-radius: 99px; text-decoration: none; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; transition: 0.2s;" onmouseover="this.style.background='#fef3c7';" onmouseout="this.style.background='#fffbeb';">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
             Import
@@ -140,3 +140,4 @@
     }
 </script>
 @endsection
+

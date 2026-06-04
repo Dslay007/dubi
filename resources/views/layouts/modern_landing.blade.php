@@ -40,6 +40,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: -webkit-sticky;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -135,14 +136,18 @@
              box-shadow: none !important;
              display: flex;
              justify-content: center;
+             flex-wrap: wrap;
+             gap: 0.25rem;
         }
 
         /* Individual Links */
-        nav[role="navigation"] .relative {
+        nav[role="navigation"] > div:nth-child(2) > div:last-child a,
+        nav[role="navigation"] > div:nth-child(2) > div:last-child span[aria-disabled] > span,
+        nav[role="navigation"] > div:nth-child(2) > div:last-child span[aria-current] > span {
             border: none !important;
             padding: 0.5rem 0.75rem !important;
-            border-radius: 8px !important; /* Slightly rounded squares/rects */
-            margin: 0 0.15rem !important;
+            border-radius: 8px !important;
+            margin: 0 !important;
             font-weight: 600 !important;
             box-shadow: none !important;
             background: transparent !important;
@@ -152,12 +157,13 @@
             justify-content: center;
             min-width: 2rem;
             height: 2rem;
+            text-decoration: none;
         }
-        nav[role="navigation"] .relative:hover {
+        nav[role="navigation"] > div:nth-child(2) > div:last-child a:hover {
             background: #f1f5f9 !important;
             color: hsl(var(--primary)) !important;
         }
-        nav[role="navigation"] span[aria-current="page"] .relative {
+        nav[role="navigation"] > div:nth-child(2) > div:last-child span[aria-current="page"] > span {
             background: hsl(var(--primary)) !important;
             color: white !important;
         }
@@ -168,11 +174,130 @@
             height: 1rem;
             display: inline-block;
         }
+        /* Responsive Grid Utilities */
+        .responsive-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        .responsive-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        /* Typography Utilities */
+        .hero-title {
+            font-size: 2.5rem !important;
+        }
+        .section-title {
+            font-size: 2rem !important;
+        }
+        .stat-value {
+            font-size: 2.5rem !important;
+        }
+
+        /* Base Sections */
+        section {
+            padding: 4rem 1rem !important;
+        }
+        .campaign-content {
+            padding: 2rem !important;
+        }
+        .stat-divider {
+            border-left: none !important;
+            border-right: none !important;
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 2rem 0;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: hsl(var(--text-main));
+            padding: 0.5rem;
+        }
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            background: white;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            padding: 1rem 2rem 2rem;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            gap: 1rem;
+        }
+        .mobile-menu.active {
+            display: flex;
+        }
+
+        @media (min-width: 768px) {
+            .responsive-grid-2 {
+                grid-template-columns: 1fr 1fr;
+                gap: 4rem;
+            }
+            .responsive-grid-3 {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 2rem;
+            }
+            .hero-title {
+                font-size: 4rem !important;
+            }
+            .section-title {
+                font-size: 2.5rem !important;
+            }
+            .stat-value {
+                font-size: 3.5rem !important;
+            }
+            section {
+                padding: 6rem 1rem !important;
+            }
+            .campaign-content {
+                padding: 4rem !important;
+            }
+            .stat-divider {
+                border-top: none !important;
+                border-bottom: none !important;
+                border-left: 1px solid #e2e8f0 !important;
+                border-right: 1px solid #e2e8f0 !important;
+                padding: 0 !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            .mobile-menu-btn {
+                display: block;
+            }
+            .brand {
+                font-size: 1.5rem;
+            }
+            footer {
+                padding: 3rem 1rem;
+            }
+        }
     </style>
 </head>
 <body>
     <nav class="navbar">
-        <a href="{{ url('/') }}" class="brand">Dudukbaca.</a>
+        <a href="{{ url('/') }}" class="brand" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo Dudukbaca" style="height: 2.5rem; width: auto; object-fit: contain;">
+            Dudukbaca.
+        </a>
+        
+        <button id="mobile-menu-btn" class="mobile-menu-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+        </button>
+
         <div class="nav-links">
             <a href="{{ route('landing') }}" class="nav-link {{ request()->routeIs('landing') ? 'active' : '' }}">Beranda</a>
             <a href="{{ route('page.struktur') }}" class="nav-link {{ request()->routeIs('page.struktur') ? 'active' : '' }}">Struktur Komunitas</a>
@@ -185,6 +310,19 @@
                 <a href="{{ route('login') }}" class="btn">Login Member</a>
             @endif
         </div>
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu">
+        <a href="{{ route('landing') }}" class="nav-link {{ request()->routeIs('landing') ? 'active' : '' }}">Beranda</a>
+        <a href="{{ route('page.struktur') }}" class="nav-link {{ request()->routeIs('page.struktur') ? 'active' : '' }}">Struktur Komunitas</a>
+        <a href="{{ route('page.jurnal') }}" class="nav-link {{ request()->routeIs('page.jurnal') ? 'active' : '' }}">Jurnal Lapak</a>
+        <a href="{{ route('opac.index') }}" class="nav-link {{ request()->routeIs('opac.*') ? 'active' : '' }}" style="{{ request()->routeIs('opac.*') ? '' : 'color: hsl(var(--accent));' }}">Perpustakaan (OPAC)</a>
+        
+        @if(Auth::guard('member')->check())
+            <a href="{{ route('member.dashboard') }}" class="btn" style="text-align: center;">Dashboard Saya</a>
+        @else
+            <a href="{{ route('login') }}" class="btn" style="text-align: center;">Login Member</a>
+        @endif
+    </div>
     </nav>
 
     @yield('content')
@@ -212,5 +350,25 @@
             <a href="{{ route('opac.index') }}" style="margin: 0 0.5rem;">OPAC</a>
         </div>
     </footer>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        // Initialize Lucide icons if used
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileBtn && mobileMenu) {
+                mobileBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    mobileMenu.classList.toggle('active');
+                });
+            }
+        });
+    </script>
 </body>
 </html>

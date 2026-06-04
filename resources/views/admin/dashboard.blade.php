@@ -69,3 +69,4 @@
     <i data-lucide="library" style="position: absolute; right: -2rem; bottom: -2rem; width: 20rem; height: 20rem; opacity: 0.05; transform: rotate(-15deg);"></i>
 </div>
 @endsection
+

@@ -48,9 +48,9 @@
 </div>
 
 <!-- Charts Row -->
-<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+<div style="display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem;">
     <!-- Registrasi per Bulan (Area) -->
-    <div style="background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
+    <div style="flex: 2 1 300px; min-width: 0; background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
             <h4 style="font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
                 <i data-lucide="trending-up" style="width: 18px; height: 18px; color: #6366f1;"></i>
@@ -69,7 +69,7 @@
         @endif
     </div>
 
-    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    <div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 1.5rem;">
         <!-- Gender Pie -->
         <div style="background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); flex: 1;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
@@ -91,9 +91,9 @@
     </div>
 </div>
 
-<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; margin-bottom: 2rem;">
+<div style="display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem;">
     <!-- Active vs Expired Status -->
-    <div style="background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: center;">
+    <div style="flex: 1 1 300px; min-width: 0; background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: center;">
         <h4 style="font-weight: 800; color: #0f172a; margin-bottom: 1.5rem; text-align: center;">Tingkat Keaktifan</h4>
         
         @php
@@ -119,7 +119,7 @@
     </div>
 
     <!-- Per Tipe Anggota (Horizontal Bar) -->
-    <div style="background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
+    <div style="flex: 2 1 300px; min-width: 0; background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
             <h4 style="font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
                 <i data-lucide="bar-chart-2" style="width: 18px; height: 18px; color: #8b5cf6;"></i>
@@ -287,3 +287,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endsection
+

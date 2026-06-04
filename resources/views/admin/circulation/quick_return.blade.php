@@ -37,7 +37,7 @@
             <div style="display: flex; align-items: center; justify-content: center; padding-left: 1rem; color: #94a3b8;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             </div>
-            <input type="text" id="item_code_input" placeholder="Masukkan Kode Eksemplar Buku..." class="input" style="flex: 1; padding: 1rem 0.5rem; border: none; background: transparent; outline: none; font-size: 1.05rem; font-weight: 500; color: #1e293b;" autocomplete="off" oninput="searchLoanItem(this.value)" onfocus="document.getElementById('input-container').style.borderColor='#10b981'; document.getElementById('input-container').style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)';" onblur="document.getElementById('input-container').style.borderColor='#cbd5e1'; document.getElementById('input-container').style.boxShadow='none';" autofocus>
+            <input type="text" id="item_code_input" placeholder="Masukkan Kode Eksemplar Buku..." class="input" style="flex: 1; padding: 1rem 0.5rem; border: none; background: transparent; outline: none; font-size: 1.05rem; font-weight: 500; color: #1e293b;" autocomplete="off" oninput="searchLoanItem(this.value)" onfocus="document.getElementById('input-container').style.borderColor='#10b981'; document.getElementById('input-container').style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)';" onblur="document.getElementById('input-container').style.borderColor='#cbd5e1'; document.getElementById('input-container').style.boxShadow='none';">
             <button type="button" onclick="lookupLoan()" class="btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 0 2rem; border-radius: 0.75rem; border: none; font-weight: 800; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 10px rgba(16,185,129,0.3);" onmouseover="this.style.transform='scale(1.02)';" onmouseout="this.style.transform='none';">Cek Data</button>
         </div>
         
@@ -63,7 +63,7 @@
         
         html5QrcodeScanner = new Html5Qrcode("reader");
         html5QrcodeScanner.start(
-            { facingMode: "user" }, // Changed to 'user' (front camera) for laptop compatibility
+            { facingMode: "environment" }, // Changed to 'environment' (rear camera)
             { fps: 10, qrbox: { width: 250, height: 150 } },
             (decodedText, decodedResult) => {
                 document.getElementById('item_code_input').value = decodedText;
@@ -154,7 +154,7 @@
                 document.getElementById('returnForm').submit();
             } else {
                 document.getElementById('item_code_input').value = '';
-                document.getElementById('item_code_input').focus();
+                // document.getElementById('item_code_input').focus();
             }
         });
     }
@@ -214,3 +214,4 @@
     @endif
 </script>
 @endsection
+

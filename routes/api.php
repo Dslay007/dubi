@@ -14,6 +14,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\ReservationController;
+
+// Rute Terbuka (Public)
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
+
+// Rute Terkunci (Butuh Token)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    
+    Route::get('/dashboard', [DashboardController::class, 'index']);
+    
+    Route::get('/books', [ReservationController::class, 'books']);
+    Route::post('/reserve', [ReservationController::class, 'store']);
 });

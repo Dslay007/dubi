@@ -326,7 +326,7 @@
                             @if(\str_starts_with($biblio->image, 'http'))
                                 <img src="{{ $biblio->image }}" alt="Cover" style="width: 100%; height: 100%; object-fit: cover;">
                             @else
-                                <img src="{{ asset('images/' . $biblio->image) }}" alt="Cover" style="width: 100%; height: 100%; object-fit: cover;">
+                                <img src="{{ asset('images/docs/' . $biblio->image) }}" alt="Cover" style="width: 100%; height: 100%; object-fit: cover;">
                             @endif
                         </div>
                         <div>

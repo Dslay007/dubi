@@ -37,7 +37,7 @@
                     @if(\str_starts_with($biblio->image, 'http'))
                         <img src="{{ $biblio->image }}" alt="{{ $biblio->title }}" style="width: 100%; border-radius: 0.5rem;">
                     @else
-                        <img src="{{ asset('images/' . $biblio->image) }}" alt="{{ $biblio->title }}" style="width: 100%; border-radius: 0.5rem;">
+                        <img src="{{ asset('images/docs/' . $biblio->image) }}" alt="{{ $biblio->title }}" style="width: 100%; border-radius: 0.5rem;">
                     @endif
                 @else
                     <div style="aspect-ratio: 2/3; background: #f1f5f9; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 4rem; color: #94a3b8;">

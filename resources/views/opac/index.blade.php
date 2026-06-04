@@ -75,8 +75,8 @@
                         
                         <!-- Cover Image -->
                         <div style="aspect-ratio: 2/3; background: #f8fafc; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; border-bottom: 1px solid #f1f5f9;">
-                            @if($biblio->image && file_exists(public_path('images/' . $biblio->image)))
-                                <img src="{{ asset('images/' . $biblio->image) }}" alt="{{ $biblio->title }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            @if($biblio->image && file_exists(public_path('images/docs/' . $biblio->image)))
+                                <img src="{{ asset('images/docs/' . $biblio->image) }}" alt="{{ $biblio->title }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                             @else
                                 <div style="text-align: center; color: #94a3b8; padding: 1rem;">
                                     <div style="font-size: 3rem; margin-bottom: 0.5rem; opacity: 0.5;">📖</div>

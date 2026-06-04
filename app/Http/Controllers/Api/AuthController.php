@@ -19,12 +19,30 @@ class AuthController extends Controller
 
         $member = Member::where('member_id', $request->member_id)->first();
 
-        // Cek kecocokan password. Kita asumsikan password menggunakan bcrypt standar Laravel.
-        if (!$member || !Hash::check($request->password, $member->mpasswd)) {
+        // Cek kecocokan password dengan berbagai format (Bcrypt, SHA256, atau MD5)
+        $passwordMatches = false;
+        $needsUpgrade = false;
+
+        if (Hash::check($request->password, $member->mpasswd)) {
+            $passwordMatches = true;
+        } elseif (hash('sha256', $request->password) === $member->mpasswd) {
+            $passwordMatches = true;
+            $needsUpgrade = true;
+        } elseif (md5($request->password) === $member->mpasswd) {
+            $passwordMatches = true;
+            $needsUpgrade = true;
+        }
+
+        if (!$member || !$passwordMatches) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'ID Member atau Password salah.'
             ], 401);
+        }
+
+        // Auto-upgrade password lama ke Bcrypt yang aman
+        if ($needsUpgrade) {
+            $member->update(['mpasswd' => Hash::make($request->password)]);
         }
 
         // Generate Sanctum Token

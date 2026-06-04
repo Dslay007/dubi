@@ -24,6 +24,13 @@ class User extends Authenticatable
 
     protected $guarded = ['user_id'];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     */
+    protected $hidden = [
+        'passwd',
+    ];
+
     public function getDateFormat()
     {
         return 'Y-m-d';

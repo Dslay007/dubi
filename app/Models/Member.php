@@ -34,6 +34,14 @@ class Member extends Authenticatable
 
     protected $guarded = [];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     */
+    protected $hidden = [
+        'mpasswd',
+        'personal_id',
+    ];
+
     // Relationships
     public function loans()
     {

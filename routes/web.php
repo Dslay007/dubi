@@ -7,58 +7,25 @@ use App\Http\Controllers\OpacController;
 use App\Http\Controllers\Admin\LoginController as AdminLoginController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 
-Route::get('/', function () {
-    $stats = [
-        'borrowings' => \App\Models\Loan::count(),
-        'members' => \App\Models\Member::count(),
-        'books' => \App\Models\Item::count(),
-    ];
+use App\Http\Controllers\PageController;
 
-    $upcomingEvents = \App\Models\Agenda::where('event_date', '>=', now()->toDateString())
-        ->where('is_active', true)
-        ->orderBy('event_date', 'asc')
-        ->take(4)
-        ->get();
+// ==========================================
+// PUBLIC & LANDING PAGES
+// ==========================================
+Route::get('/', [PageController::class, 'landing'])->name('landing');
+Route::get('/struktur', [PageController::class, 'struktur'])->name('page.struktur');
+Route::get('/jurnal', [PageController::class, 'jurnal'])->name('page.jurnal');
+Route::get('/jurnal/{id}', [PageController::class, 'jurnalDetail'])->name('page.jurnal.detail');
 
-    $pastEvents = \App\Models\Agenda::where('event_date', '<', now()->toDateString())
-        ->where('is_active', true)
-        ->orderBy('event_date', 'desc')
-        ->take(4)
-        ->get();
-        
-    $campaign = \App\Models\Event::where('is_active', true)->first();
-    
-    $jurnals = \App\Models\Jurnal::where('is_published', true)
-        ->orderBy('created_at', 'desc')
-        ->take(3)
-        ->get();
-
-    return view('welcome', compact('stats', 'upcomingEvents', 'pastEvents', 'campaign', 'jurnals'));
-})->name('landing');
-
-Route::get('/struktur', function () {
-    $founders = \App\Models\CommunityStructure::where('type', 'founder')->get();
-    $cores = \App\Models\CommunityStructure::where('type', 'core')->get();
-    $divisions = \App\Models\CommunityStructure::where('type', 'division')->get();
-    return view('pages.struktur', compact('founders', 'cores', 'divisions'));
-})->name('page.struktur');
-
-Route::get('/jurnal', function () {
-    $jurnals = \App\Models\Jurnal::where('is_published', true)
-        ->orderBy('created_at', 'desc')
-        ->paginate(9);
-    return view('pages.jurnal', compact('jurnals'));
-})->name('page.jurnal');
-
-Route::get('/jurnal/{id}', function ($id) {
-    $jurnal = \App\Models\Jurnal::where('is_published', true)->findOrFail($id);
-    return view('pages.jurnal_detail', compact('jurnal'));
-})->name('page.jurnal.detail');
-
+// ==========================================
+// OPAC (Online Public Access Catalog)
+// ==========================================
 Route::get('/opac', [OpacController::class, 'index'])->name('opac.index');
 Route::get('/opac/detail/{id}', [OpacController::class, 'show'])->name('opac.show');
 
-// Click Tracker Route
+// ==========================================
+// EVENT & CLICK TRACKER
+// ==========================================
 Route::get('/kegiatan/daftar/{id}', function($id) {
     $event = \App\Models\Event::findOrFail($id);
     if($event->registration_link) {
@@ -68,10 +35,14 @@ Route::get('/kegiatan/daftar/{id}', function($id) {
     return redirect()->route('landing');
 })->name('kegiatan.daftar');
 
-// Content Routes
+// ==========================================
+// DYNAMIC CONTENT PAGES
+// ==========================================
 Route::get('/page/{path}', [ContentController::class, 'show'])->name('content.show');
 
-// Member Routes
+// ==========================================
+// MEMBER AUTHENTICATION
+// ==========================================
 Route::get('/member/login', [MemberAuthController::class, 'showLoginForm'])->name('login');
 Route::post('/member/login', [MemberAuthController::class, 'login'])->name('member.login');
 Route::get('/register', [\App\Http\Controllers\MemberRegisterController::class, 'showRegistrationForm'])->name('member.register');
@@ -86,16 +57,22 @@ Route::middleware('auth:member')->group(function () {
     Route::post('/opac/reserve/{biblio_id}', [OpacController::class, 'reserve'])->name('opac.reserve');
 });
 
-// Admin Routes
-
+// ==========================================
+// ADMIN AUTHENTICATION
+// ==========================================
 Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
 Route::post('/admin/login', [AdminLoginController::class, 'login'])->name('admin.login.post');
 Route::post('/admin/logout', [AdminLoginController::class, 'logout'])->name('admin.logout');
 
+// ==========================================
+// ADMIN PANEL ROUTES (PROTECTED)
+// ==========================================
 Route::middleware(['auth:admin', 'menu_access'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     
-    // Bibliografi Group
+    // ==========================================
+    // BIBLIOGRAFI
+    // ==========================================
     Route::prefix('biblio')->name('biblio.')->group(function () {
         // Main Bibliography
         Route::get('/', [\App\Http\Controllers\Admin\BiblioController::class, 'index'])->name('index');
@@ -109,7 +86,9 @@ Route::middleware(['auth:admin', 'menu_access'])->prefix('admin')->name('admin.'
         Route::get('/export', [\App\Http\Controllers\Admin\BiblioController::class, 'export'])->name('export');
     });
 
-    // Items (Eksemplar)
+    // ==========================================
+    // EKSEMPLAR (ITEMS)
+    // ==========================================
     Route::prefix('item')->name('item.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\ItemController::class, 'index'])->name('index');
         Route::get('/import', [\App\Http\Controllers\Admin\ItemController::class, 'import'])->name('import');
@@ -126,44 +105,56 @@ Route::middleware(['auth:admin', 'menu_access'])->prefix('admin')->name('admin.'
         Route::delete('/{id}', [\App\Http\Controllers\Admin\ItemController::class, 'destroy'])->name('destroy');
     });
 
-    // MARC
+    // ==========================================
+    // MARC IMPORT / EXPORT
+    // ==========================================
     Route::prefix('marc')->name('marc.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\MarcController::class, 'index'])->name('index');
         Route::post('/import', [\App\Http\Controllers\Admin\MarcController::class, 'import'])->name('import');
         Route::get('/export', [\App\Http\Controllers\Admin\MarcController::class, 'export'])->name('export');
     });
 
-    // Other Modules (Keeping existing ones)
+    // ==========================================
+    // MEMBER MANAGEMENT (KEANGGOTAAN)
+    // ==========================================
     Route::get('/member/import', [\App\Http\Controllers\Admin\MemberController::class, 'import'])->name('member.import');
     Route::post('/member/import', [\App\Http\Controllers\Admin\MemberController::class, 'processImport'])->name('member.process_import');
     Route::get('/member/export', [\App\Http\Controllers\Admin\MemberController::class, 'export'])->name('member.export');
     
-    // Member Verification
+    // --- Member Verification ---
     Route::get('/member/verifikasi', [\App\Http\Controllers\Admin\MemberController::class, 'verifikasiIndex'])->name('member.verifikasi');
     Route::post('/member/verifikasi/{id}/approve', [\App\Http\Controllers\Admin\MemberController::class, 'approve'])->name('member.verifikasi.approve');
     Route::post('/member/verifikasi/{id}/reject', [\App\Http\Controllers\Admin\MemberController::class, 'reject'])->name('member.verifikasi.reject');
 
-    // Member Barcodes
+    // --- Member Barcodes ---
     Route::get('/member/barcode', [\App\Http\Controllers\Admin\MemberController::class, 'barcodeIndex'])->name('member.barcode');
     Route::post('/member/print-barcodes', [\App\Http\Controllers\Admin\MemberController::class, 'printBarcodes'])->name('member.print_barcodes');
     Route::post('/member/print-barcodes-filter', [\App\Http\Controllers\Admin\MemberController::class, 'printBarcodesByFilter'])->name('member.print_barcodes_filter');
     
-    // Member Attendance (Absensi Anggota)
+    // ==========================================
+    // MEMBER ATTENDANCE (ABSENSI ANGGOTA)
+    // ==========================================
     Route::get('/member/attendance', [\App\Http\Controllers\Admin\MemberController::class, 'attendance'])->name('member.attendance');
     Route::get('/member/attendance/check', [\App\Http\Controllers\Admin\MemberController::class, 'checkAttendance'])->name('member.attendance.check');
     Route::post('/member/attendance', [\App\Http\Controllers\Admin\MemberController::class, 'storeAttendance'])->name('member.attendance.store');
     
-    // Guest Counter (Counter Tamu)
+    // ==========================================
+    // GUEST COUNTER (COUNTER TAMU)
+    // ==========================================
     Route::get('/member/guest-counter', [\App\Http\Controllers\Admin\MemberController::class, 'guestCounter'])->name('member.guest_counter');
     Route::post('/member/guest-counter', [\App\Http\Controllers\Admin\MemberController::class, 'storeGuestVisit'])->name('member.guest_counter.store');
     
     Route::resource('member', \App\Http\Controllers\Admin\MemberController::class);
     
+    // --- Member Types & Loan Rules ---
     Route::get('/member_type/import', [\App\Http\Controllers\Admin\MemberTypeController::class, 'import'])->name('member_type.import');
     Route::post('/member_type/import', [\App\Http\Controllers\Admin\MemberTypeController::class, 'processImport'])->name('member_type.process_import');
     Route::get('/member_type/export', [\App\Http\Controllers\Admin\MemberTypeController::class, 'export'])->name('member_type.export');
     Route::resource('member_type', \App\Http\Controllers\Admin\MemberTypeController::class); // Added for Loan Rules CRUD
     
+    // ==========================================
+    // CIRCULATION (SIRKULASI)
+    // ==========================================
     Route::prefix('circulation')->name('circulation.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\CirculationController::class, 'index'])->name('index'); // Manual Transaction (Start)
         Route::get('/search-member', [\App\Http\Controllers\Admin\CirculationController::class, 'searchMember'])->name('search_member');
@@ -198,7 +189,9 @@ Route::middleware(['auth:admin', 'menu_access'])->prefix('admin')->name('admin.'
         Route::get('/rules', [\App\Http\Controllers\Admin\CirculationController::class, 'rules'])->name('rules');
     });
 
-    // Master Files
+    // ==========================================
+    // MASTER FILES (DAFTAR TERKENDALI & REFERENSI)
+    // ==========================================
     Route::prefix('master')->name('master.')->group(function () {
         Route::get('/terkendali', [\App\Http\Controllers\Admin\MasterFileController::class, 'terkendali'])->name('terkendali');
         Route::get('/referensi', [\App\Http\Controllers\Admin\MasterFileController::class, 'referensi'])->name('referensi');
@@ -232,7 +225,9 @@ Route::middleware(['auth:admin', 'menu_access'])->prefix('admin')->name('admin.'
         Route::resource($prefix, $controller);
     }
 
-    // Peralatan Modules
+    // ==========================================
+    // PERALATAN (TOOLS / SETTINGS)
+    // ==========================================
     Route::get('visitor/export', [\App\Http\Controllers\Admin\VisitorCountController::class, 'export'])->name('visitor.export');
     Route::resource('visitor', \App\Http\Controllers\Admin\VisitorCountController::class)->only(['index', 'destroy']);
     
@@ -247,7 +242,9 @@ Route::middleware(['auth:admin', 'menu_access'])->prefix('admin')->name('admin.'
     Route::get('orphan/{type}', [\App\Http\Controllers\Admin\OrphanDataController::class, 'index'])->name('orphan.index');
     Route::delete('orphan/{type}/destroy-all', [\App\Http\Controllers\Admin\OrphanDataController::class, 'destroyAll'])->name('orphan.destroyAll');
 
-    // Inventarisasi / Stock Take
+    // ==========================================
+    // INVENTARISASI (STOCK TAKE)
+    // ==========================================
     Route::prefix('inventarisasi')->name('inventarisasi.')->group(function () {
         Route::get('/rekaman', [\App\Http\Controllers\Admin\StockTakeController::class, 'rekaman'])->name('rekaman');
         Route::get('/inisialisasi', [\App\Http\Controllers\Admin\StockTakeController::class, 'inisialisasi'])->name('inisialisasi');
@@ -258,9 +255,11 @@ Route::middleware(['auth:admin', 'menu_access'])->prefix('admin')->name('admin.'
         Route::get('/export/{id}/{type}', [\App\Http\Controllers\Admin\StockTakeController::class, 'exportCsv'])->name('export');
     });
 
-    // Sistem Modules
+    // ==========================================
+    // SISTEM MODULES (SYSTEM CONFIGURATION)
+    // ==========================================
     Route::prefix('sistem')->name('sistem.')->group(function () {
-        // Konten (CMS)
+        // --- Konten (CMS) ---
         Route::delete('konten/bulk-delete', [\App\Http\Controllers\Admin\SystemContentController::class, 'bulkDelete'])->name('konten.bulk_delete');
         Route::resource('konten', \App\Http\Controllers\Admin\SystemContentController::class);
         

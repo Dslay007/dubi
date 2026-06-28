@@ -59,7 +59,7 @@ class MemberController extends Controller
 
         if ($request->hasFile('member_image')) {
             $image = $request->file('member_image');
-            $name = time().'.'.$image->getClientOriginalExtension();
+            $name = time() . '_' . $image->hashName();
             $destinationPath = public_path('/images/persons');
             
             if ($member->member_image && file_exists($destinationPath.'/'.$member->member_image)) {

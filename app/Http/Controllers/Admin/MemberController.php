@@ -136,7 +136,7 @@ class MemberController extends Controller
         
         if ($request->hasFile('member_image')) {
             $image = $request->file('member_image');
-            $imageName = time() . '.' . $image->extension();
+            $imageName = time() . '_' . $image->hashName();
             $image->move(public_path('images/members'), $imageName);
             // Optionally delete old image if needed
             $member->member_image = $imageName;

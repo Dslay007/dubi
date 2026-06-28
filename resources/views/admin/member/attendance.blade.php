@@ -150,78 +150,130 @@
     document.getElementById('attendanceForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
-        if (!isProcessing) {
-            isProcessing = true;
+        if (isProcessing) return;
+        isProcessing = true;
+
+        let inputEl = document.getElementById('member_id_input');
+        let memberId = inputEl.value;
+
+        if(!memberId) {
+            isProcessing = false;
+            return;
         }
 
-        let formData = new FormData(this);
-        let inputEl = document.getElementById('member_id_input');
+        // 1. Cek data member dulu untuk konfirmasi
+        fetch(`{{ url('admin/member/check-attendance') }}?member_id=${encodeURIComponent(memberId)}`)
+            .then(res => res.json())
+            .then(checkData => {
+                if (checkData.success) {
+                    let m = checkData.data;
+                    
+                    // 2. Tampilkan Konfirmasi Pop-up
+                    Swal.fire({
+                        title: 'Konfirmasi Kunjungan',
+                        html: `Apakah Anda yakin ingin mencatat absensi untuk:<br><br>
+                               <div style="background:#f8fafc; padding:1rem; border-radius:0.5rem; text-align:left; border:1px solid #e2e8f0;">
+                                   <strong style="color:#0f172a; font-size:1.1rem;">${m.member_name}</strong><br>
+                                   <span style="color:#64748b; font-size:0.9rem;">ID: ${m.member_id}</span>
+                               </div>`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3b82f6',
+                        cancelButtonColor: '#94a3b8',
+                        confirmButtonText: 'Ya, Catat',
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // 3. Jika OK, submit data sebenarnya
+                            let formData = new FormData(document.getElementById('attendanceForm'));
+                            
+                            fetch("{{ route('admin.member.attendance.store') }}", {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'application/json'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    let storedMember = data.member;
+                                    let titleHtml = data.merch_reward 
+                                        ? `<div style="color: #f59e0b; font-size: 1.25rem; font-weight: 800;">🎉 SELAMAT! MERCHANDISE GRATIS 🎉</div>` 
+                                        : `Berhasil!`;
 
-        fetch("{{ route('admin.member.attendance.store') }}", {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                let m = data.member;
-                let titleHtml = data.merch_reward 
-                    ? `<div style="color: #f59e0b; font-size: 1.25rem; font-weight: 800;">🎉 SELAMAT! MERCHANDISE GRATIS 🎉</div>` 
-                    : `Berhasil!`;
+                                    let bodyHtml = `
+                                        <h3 style="font-weight: 800; color: #1e293b; margin-bottom: 0.5rem; font-size: 1.25rem;">${storedMember.name}</h3>
+                                        <div style="background: #f8fafc; padding: 1rem; border-radius: 1rem; text-align: left; margin-top: 1rem; border: 1px solid #f1f5f9;">
+                                            <div style="display: flex; justify-content: space-between;">
+                                                <span style="color: #64748b; font-weight: 600; font-size: 0.9rem;">Total Kunjungan</span>
+                                                <span style="color: #3b82f6; font-weight: 800; font-size: 0.9rem;">${storedMember.visit_count} Kali</span>
+                                            </div>
+                                        </div>
+                                    `;
 
-                let bodyHtml = `
-                    <h3 style="font-weight: 800; color: #1e293b; margin-bottom: 0.5rem; font-size: 1.25rem;">${m.name}</h3>
-                    <div style="background: #f8fafc; padding: 1rem; border-radius: 1rem; text-align: left; margin-top: 1rem; border: 1px solid #f1f5f9;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                            <span style="color: #64748b; font-weight: 600; font-size: 0.9rem;">ID / NIK</span>
-                            <span style="color: #0f172a; font-weight: 700; font-size: 0.9rem;">${m.nik}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="color: #64748b; font-weight: 600; font-size: 0.9rem;">Total Kunjungan</span>
-                            <span style="color: #3b82f6; font-weight: 800; font-size: 0.9rem;">${m.visit_count} Kali</span>
-                        </div>
-                    </div>
-                `;
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: titleHtml,
+                                        html: bodyHtml,
+                                        timer: data.merch_reward ? undefined : 2000,
+                                        showConfirmButton: !!data.merch_reward,
+                                        confirmButtonText: 'Luar Biasa!',
+                                        confirmButtonColor: '#f59e0b'
+                                    }).then(() => {
+                                        inputEl.value = '';
+                                        isProcessing = false;
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Gagal!',
+                                        text: data.message || 'Gagal menyimpan absensi.',
+                                        timer: 2500,
+                                        showConfirmButton: false
+                                    }).then(() => {
+                                        inputEl.value = '';
+                                        isProcessing = false;
+                                    });
+                                }
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                Swal.fire('Error', 'Terjadi kesalahan sistem saat menyimpan.', 'error').then(() => {
+                                    inputEl.value = '';
+                                    isProcessing = false;
+                                });
+                            });
+                        } else {
+                            // Dibatalkan
+                            inputEl.value = '';
+                            isProcessing = false;
+                        }
+                    });
 
-                Swal.fire({
-                    icon: 'success',
-                    title: titleHtml,
-                    html: bodyHtml,
-                    timer: data.merch_reward ? undefined : 2000,
-                    showConfirmButton: !!data.merch_reward,
-                    confirmButtonText: 'Luar Biasa!',
-                    confirmButtonColor: '#f59e0b'
-                }).then(() => {
+                } else {
+                    // Member tidak ditemukan
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Tidak Ditemukan',
+                        text: checkData.message || 'Anggota tidak terdaftar.',
+                        timer: 2500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        inputEl.value = '';
+                        isProcessing = false;
+                    });
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire('Error', 'Gagal memverifikasi data anggota.', 'error').then(() => {
                     inputEl.value = '';
-                    // inputEl.focus(); // Disabled to prevent mobile keyboard from popping up
                     isProcessing = false;
                 });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal!',
-                    text: data.message || 'Anggota tidak ditemukan.',
-                    timer: 2500,
-                    showConfirmButton: false
-                }).then(() => {
-                    inputEl.value = '';
-                    // inputEl.focus(); // Disabled to prevent mobile keyboard from popping up
-                    isProcessing = false;
-                });
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            Swal.fire('Error', 'Terjadi kesalahan sistem.', 'error').then(() => {
-                inputEl.value = '';
-                // inputEl.focus(); // Disabled to prevent mobile keyboard from popping up
-                isProcessing = false;
             });
-        });
     });
 </script>
 @endsection

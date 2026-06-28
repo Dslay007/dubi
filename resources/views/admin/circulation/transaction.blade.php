@@ -202,8 +202,8 @@
             (decodedText, decodedResult) => {
                 document.getElementById('item_code_input').value = decodedText;
                 stopScanner();
-                // Auto submit form bypassing the confirmation Swal
-                document.getElementById('loanForm').submit();
+                // Call confirmLoan to show the Swal popup instead of direct submit
+                confirmLoan(null, document.getElementById('loanForm'));
             },
             (errorMessage) => {
             }

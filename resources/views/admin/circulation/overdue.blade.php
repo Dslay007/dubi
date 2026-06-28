@@ -53,6 +53,8 @@
                     $dueDate = \Carbon\Carbon::parse($loan->due_date);
                     $daysOverdue = max(0, $dueDate->diffInDays(now(), false));
                     
+                    $finePerDay = $loan->member->memberType->fine_each_day ?? 1000;
+                    
                     // Format phone for WA
                     $phone = $loan->member->member_phone ?? '';
                     if (str_starts_with($phone, '0')) {
@@ -76,7 +78,7 @@
                         </span>
                     </td>
                     <td style="padding: 1.25rem 1rem; text-align: right;">
-                        <button type="button" class="btn" onclick="showNotifyOptions('{{ addslashes($loan->member->member_name ?? '') }}', '{{ $phone }}', '{{ $email }}', '{{ addslashes($loan->item->biblio->title ?? '') }}', {{ floor($daysOverdue) }}, {{ $loan->loan_id }})" style="background: white; color: #d97706; padding: 0.4rem 1rem; border-radius: 99px; border: 1px solid #fcd34d; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; box-shadow: 0 2px 4px rgba(245,158,11,0.1); transition: 0.2s;" onmouseover="this.style.background='#fffbeb';" onmouseout="this.style.background='white';">
+                        <button type="button" class="btn" onclick="showNotifyOptions('{{ addslashes($loan->member->member_name ?? '') }}', '{{ $phone }}', '{{ $email }}', '{{ addslashes($loan->item->biblio->title ?? '') }}', {{ floor($daysOverdue) }}, {{ $loan->loan_id }}, {{ $finePerDay }})" style="background: white; color: #d97706; padding: 0.4rem 1rem; border-radius: 99px; border: 1px solid #fcd34d; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; box-shadow: 0 2px 4px rgba(245,158,11,0.1); transition: 0.2s;" onmouseover="this.style.background='#fffbeb';" onmouseout="this.style.background='white';">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> 
                             Peringatkan
                         </button>
@@ -103,8 +105,8 @@
 </div>
 
 <script>
-    function showNotifyOptions(memberName, phone, email, title, daysOverdue, loanId) {
-        const fines = daysOverdue * 1000;
+    function showNotifyOptions(memberName, phone, email, title, daysOverdue, loanId, finePerDay) {
+        const fines = daysOverdue * finePerDay;
         const formattedFines = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(fines);
         
         let htmlText = `

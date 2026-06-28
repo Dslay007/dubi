@@ -58,9 +58,17 @@ class CirculationController extends Controller
             'item_code' => 'required|exists:item,item_code'
         ]);
 
-        $member = Member::findOrFail($member_id);
+        $member = Member::with('memberType')->findOrFail($member_id);
         if (empty($member->member_email) || empty($member->member_phone)) {
             return back()->withErrors(['item_code' => 'Peminjaman Gagal: Nomor telepon dan email anggota harus diisi terlebih dahulu. Silakan lengkapi data anggota.']);
+        }
+
+        // Cek Batas Pinjaman (Loan Limit)
+        $loanLimit = $member->memberType->loan_limit ?? 2;
+        $activeLoansCount = Loan::where('member_id', $member_id)->where('is_return', 0)->count();
+
+        if ($activeLoansCount >= $loanLimit) {
+            return back()->withErrors(['item_code' => 'Peminjaman Gagal: Anggota telah mencapai batas maksimal peminjaman (' . $loanLimit . ' eksemplar).']);
         }
 
         $item = Item::where('item_code', $request->item_code)->first();
@@ -71,13 +79,15 @@ class CirculationController extends Controller
             return back()->withErrors(['item_code' => 'Item is currently on loan to ' . $activeLoan->member_id]);
         }
 
+        // Dapatkan Lama Pinjaman (Loan Tenure)
+        $loanTenure = $member->memberType->loan_tenure ?? 7;
+
         // Create Loan
         $loan = new Loan();
         $loan->item_code = $request->item_code;
         $loan->member_id = $member_id;
         $loan->loan_date = now()->toDateString();
-        // Default 7 days loan
-        $loan->due_date = Carbon::now()->addDays(7)->toDateString();
+        $loan->due_date = Carbon::now()->addDays($loanTenure)->toDateString();
         $loan->is_return = 0;
         $loan->input_date = now();
         $loan->last_update = now();
@@ -235,7 +245,7 @@ class CirculationController extends Controller
     public function overdue(Request $request)
     {
         // Peringatan jatuh tempo / Daftar Keterlambatan
-        $query = Loan::with(['member', 'item.biblio'])
+        $query = Loan::with(['member.memberType', 'item.biblio'])
             ->where('is_return', 0)
             ->where('due_date', '<', now()->toDateString());
 
@@ -255,14 +265,15 @@ class CirculationController extends Controller
 
     public function notifyOverdue($loan_id)
     {
-        $loan = Loan::with(['member', 'item.biblio'])->findOrFail($loan_id);
+        $loan = Loan::with(['member.memberType', 'item.biblio'])->findOrFail($loan_id);
         
         if (empty($loan->member->member_email)) {
             return back()->with('error', 'Gagal: Anggota tidak memiliki alamat email.');
         }
 
         $daysOverdue = max(0, \Carbon\Carbon::parse($loan->due_date)->diffInDays(now(), false));
-        $fines = $daysOverdue * 1000;
+        $finePerDay = $loan->member->memberType->fine_each_day ?? 1000;
+        $fines = $daysOverdue * $finePerDay;
         $formattedFines = "Rp " . number_format($fines, 0, ',', '.');
         $title = $loan->item->biblio->title ?? 'Buku Tidak Diketahui';
         $memberName = $loan->member->member_name;

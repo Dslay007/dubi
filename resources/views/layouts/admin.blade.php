@@ -35,6 +35,13 @@
             overflow-x: hidden; /* Crucial: prevent body from zooming out on mobile */
         }
 
+        /* Hide default browser eye icon for password inputs */
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear,
+        input[type="password"]::-webkit-reveal {
+            display: none;
+        }
+
         /* Sidebar Styles */
         .sidebar {
             width: 280px;
@@ -404,7 +411,7 @@
         </div>
 
         <nav class="nav-menu">
-            <div class="nav-category">Main</div>
+            <div class="nav-category">Utama</div>
             @if(__canSee('dashboard', $__isSuper, $__perms))
             <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                 <i data-lucide="layout-dashboard"></i> Dashboard
@@ -456,7 +463,7 @@
             </div>
             @endif
             <!-- Membership Group (Dropdown) -->
-            @if(__anyVisible(['membership.verifikasi','membership.data_anggota','membership.tipe_keanggotaan','membership.cetak_kartu','membership.absensi'], $__isSuper, $__perms))
+            @if(__anyVisible(['membership.verifikasi','membership.data_anggota','membership.tipe_keanggotaan','membership.cetak_kartu','membership.absensi','membership.counter_tamu'], $__isSuper, $__perms))
             <div x-data="{ open: {{ request()->is('admin/member*') || request()->is('admin/member_type*') ? 'true' : 'false' }} }">
                 <button @click="open = !open" class="nav-item" style="width: 100%; justify-content: space-between; background: none; border: none; cursor: pointer;">
                     <span style="display: flex; align-items: center; gap: 0.75rem;">
@@ -489,6 +496,11 @@
                     @if(__canSee('membership.absensi', $__isSuper, $__perms))
                     <a href="{{ route('admin.member.attendance') }}" class="nav-item {{ request()->routeIs('admin.member.attendance') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
                         Absensi Anggota
+                    </a>
+                    @endif
+                    @if(__canSee('membership.counter_tamu', $__isSuper, $__perms))
+                    <a href="{{ route('admin.member.guest_counter') }}" class="nav-item {{ request()->routeIs('admin.member.guest_counter') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
+                        Counter Tamu
                     </a>
                     @endif
                 </div>
@@ -675,13 +687,13 @@
                     <a href="{{ route('admin.sistem.backup.index') }}" class="nav-item {{ request()->routeIs('admin.sistem.backup.*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Salinan Pangkalan</a>
                     @endif
                     @if(__canSee('sistem.role', $__isSuper, $__perms))
-                    <a href="{{ route('admin.sistem.role.index') }}" class="nav-item {{ request()->routeIs('admin.sistem.role.*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Role and Permission</a>
+                    <a href="{{ route('admin.sistem.role.index') }}" class="nav-item {{ request()->routeIs('admin.sistem.role.*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Hak Akses</a>
                     @endif
                     @if(__canSee('sistem.staff', $__isSuper, $__perms))
-                    <a href="{{ route('admin.sistem.staff.index') }}" class="nav-item {{ request()->routeIs('admin.sistem.staff.*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Manajemen Staff</a>
+                    <a href="{{ route('admin.sistem.staff.index') }}" class="nav-item {{ request()->routeIs('admin.sistem.staff.*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Manajemen Staf</a>
                     @endif
                     @if(__canSee('sistem.aktifitas', $__isSuper, $__perms))
-                    <a href="{{ route('admin.sistem.aktifitas.index') }}" class="nav-item {{ request()->routeIs('admin.sistem.aktifitas.*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Aktifitas Staff</a>
+                    <a href="{{ route('admin.sistem.aktifitas.index') }}" class="nav-item {{ request()->routeIs('admin.sistem.aktifitas.*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Aktifitas Staf</a>
                     @endif
                     @if(__canSee('sistem.plugin', $__isSuper, $__perms))
                     <a href="{{ route('admin.sistem.plugin.csp') }}" class="nav-item {{ request()->routeIs('admin.sistem.plugin.csp') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">Plugin (CSP)</a>
@@ -690,7 +702,7 @@
             </div>
             @endif
 
-            <div class="nav-category">Account</div>
+            <div class="nav-category">Akun</div>
             <form action="{{ route('admin.logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="nav-item" style="background: none; border: none; width: 100%; cursor: pointer;">
@@ -703,7 +715,7 @@
             <div class="user-avatar">{{ strtoupper(substr($__user->realname ?? $__user->username ?? 'A', 0, 1)) }}</div>
             <div>
                 <div style="font-weight: 600; font-size: 0.9rem;">{{ $__user->realname ?? $__user->username ?? 'Admin' }}</div>
-                <div style="font-size: 0.75rem; color: #64748b;">{{ $__isSuper ? 'Administrator' : ($__user->groups ?? 'Staff') }}</div>
+                <div style="font-size: 0.75rem; color: #64748b;">{{ $__isSuper ? 'Administrator' : ($__user->groups ?? 'Staf') }}</div>
             </div>
         </div>
     </aside>
@@ -720,7 +732,7 @@
             </div>
             <div style="display: flex; gap: 1rem;">
                 <a href="{{ url('/') }}" target="_blank" class="btn" style="background: white; border: 1px solid #e2e8f0; padding: 0.5rem 1rem; border-radius: 0.5rem; color: #475569; font-size: 0.875rem;">
-                    <i data-lucide="external-link" style="width: 1rem; height: 1rem; margin-right: 0.5rem;"></i> <span class="hide-mobile">View OPAC</span>
+                    <i data-lucide="external-link" style="width: 1rem; height: 1rem; margin-right: 0.5rem;"></i> <span class="hide-mobile">Lihat OPAC</span>
                 </a>
             </div>
         </header>

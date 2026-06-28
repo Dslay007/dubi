@@ -16,7 +16,7 @@ class UserSeeder extends Seeder
             [
                 'realname' => 'System Administrator',
                 'passwd' => Hash::make('admin'), // Force Bcrypt
-                'groups' => 'admin',
+                'groups' => '1',
             ]
         );
         

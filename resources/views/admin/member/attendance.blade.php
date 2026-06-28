@@ -34,11 +34,17 @@
                         style="width: 100%; padding: 1.1rem 3.5rem 1.1rem 3rem; border: 2px solid #cbd5e1; border-radius: 0.75rem; outline: none; font-size: 1.05rem; font-weight: 500; color: #1e293b; transition: border-color 0.2s;"
                         placeholder="Scan Barcode atau Ketik Nama..."
                         onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.1)';" 
-                        onblur="this.style.borderColor='#cbd5e1'; this.style.boxShadow='none';">
+                        onblur="setTimeout(() => { document.getElementById('autocomplete-dropdown').style.display='none'; this.style.borderColor='#cbd5e1'; this.style.boxShadow='none'; }, 200);"
+                        oninput="searchMembers(this.value)">
                         
                     <button type="button" onclick="startScanner()" style="position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: #3b82f6; cursor: pointer; padding: 0.25rem; display: flex; align-items: center; justify-content: center; border-radius: 0.5rem; transition: 0.2s;" onmouseover="this.style.background='#eff6ff';">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
                     </button>
+
+                    <!-- Dropdown untuk autocomplete -->
+                    <div id="autocomplete-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #e2e8f0; border-radius: 0.5rem; margin-top: 0.5rem; max-height: 200px; overflow-y: auto; z-index: 50; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); text-align: left;">
+                        <!-- Items will be injected here -->
+                    </div>
                 </div>
                 
                 <button type="submit" class="btn" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 1rem 2rem; border: none; border-radius: 99px; font-weight: 800; font-size: 1rem; width: 100%; box-shadow: 0 4px 6px -1px rgba(59,130,246,0.2); transition: 0.2s;" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='none';">
@@ -93,6 +99,52 @@
                 document.getElementById('reader-container').style.display = 'none';
             });
         }
+    }
+
+    // Autocomplete Logic
+    let searchTimeout = null;
+    function searchMembers(query) {
+        clearTimeout(searchTimeout);
+        const dropdown = document.getElementById('autocomplete-dropdown');
+        
+        if (query.length < 2) {
+            dropdown.style.display = 'none';
+            return;
+        }
+
+        searchTimeout = setTimeout(() => {
+            fetch(`{{ route('admin.circulation.search_member') }}?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    dropdown.innerHTML = '';
+                    if (data.length > 0) {
+                        data.forEach(member => {
+                            const item = document.createElement('div');
+                            item.style.cssText = 'padding: 0.75rem 1rem; cursor: pointer; border-bottom: 1px solid #f1f5f9; transition: background 0.2s;';
+                            item.innerHTML = `<div style="font-weight: 600; color: #1e293b;">${member.member_name}</div><div style="font-size: 0.8rem; color: #64748b;">NIK: ${member.member_id}</div>`;
+                            
+                            item.onmouseover = () => item.style.background = '#f8fafc';
+                            item.onmouseout = () => item.style.background = 'transparent';
+                            
+                            item.onclick = () => {
+                                document.getElementById('member_id_input').value = member.member_id;
+                                dropdown.style.display = 'none';
+                                // Otomatis submit setelah dipilih
+                                document.getElementById('attendanceForm').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                            };
+                            dropdown.appendChild(item);
+                        });
+                        dropdown.style.display = 'block';
+                    } else {
+                        const noItem = document.createElement('div');
+                        noItem.style.cssText = 'padding: 0.75rem 1rem; color: #94a3b8; font-style: italic; text-align: center; font-size: 0.9rem;';
+                        noItem.textContent = 'Tidak ditemukan.';
+                        dropdown.appendChild(noItem);
+                        dropdown.style.display = 'block';
+                    }
+                })
+                .catch(error => console.error('Error fetching members:', error));
+        }, 300); // debounce
     }
 
     document.getElementById('attendanceForm').addEventListener('submit', function(e) {

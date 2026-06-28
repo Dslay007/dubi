@@ -251,8 +251,14 @@
                                 <a href="{{ route('login') }}" style="padding: 0.5rem 1rem; background: #e2e8f0; color: #475569; border-radius: 0.5rem; text-decoration: none; font-weight: 600; font-size: 0.875rem;">Login untuk Reservasi</a>
                             @endif
                         @else
+                            @php
+                                $allOnLoan = true;
+                                foreach($itemStatuses as $status) {
+                                    if($status !== 'loan') $allOnLoan = false;
+                                }
+                            @endphp
                             <span style="padding: 0.5rem 1rem; background: #fef2f2; color: #dc2626; border-radius: 0.5rem; font-weight: 600; font-size: 0.875rem; border: 1px solid #fecaca;">
-                                Semua eksemplar sedang dipinjam
+                                {{ $allOnLoan ? 'Semua eksemplar sedang dipinjam' : 'Buku saat ini tidak tersedia untuk direservasi' }}
                             </span>
                         @endif
                     @endif
@@ -300,7 +306,7 @@
                 </div>
                 @else
                     <div style="padding: 1rem; background: #fff1f2; color: #be123c; border-radius: 0.5rem; border: 1px solid #fecdd3;">
-                        No physical copies recorded in the system.
+                        Tidak ada salinan fisik yang tercatat dalam sistem.
                     </div>
                 @endif
             </div>
@@ -308,7 +314,7 @@
             <!-- Topics -->
             @if($biblio->topics->isNotEmpty())
             <div>
-                <h3 style="font-size: 1.25rem; font-weight: 700; color: #334155; margin-bottom: 1rem;">Topics</h3>
+                <h3 style="font-size: 1.25rem; font-weight: 700; color: #334155; margin-bottom: 1rem;">Topik</h3>
                 <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
                     @foreach($biblio->topics as $topic)
                         <a href="{{ route('opac.index', ['keywords' => $topic->topic]) }}" style="padding: 0.4rem 1rem; background: white; border: 1px solid #e2e8f0; border-radius: 0.5rem; color: #475569; text-decoration: none; transition: all 0.2s;">

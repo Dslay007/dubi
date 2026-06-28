@@ -36,7 +36,7 @@
 
         <!-- Content -->
         <div class="jurnal-content" style="color: #334155; font-size: 1.1rem; line-height: 1.8;">
-            {!! $jurnal->content !!}
+            {!! clean($jurnal->content) !!}
         </div>
 
         <style>

@@ -6,6 +6,7 @@ use App\Models\Member;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Rules\StrongPassword;
 
 class MemberRegisterController extends Controller
 {
@@ -17,13 +18,13 @@ class MemberRegisterController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'member_id' => 'required|string|size:16|unique:member,member_id', // Ini NIK
+            'member_id' => 'required|string|max:20|unique:member,member_id', // Ini NIK/NIM
             'member_name' => 'required|string|max:255',
             'member_email' => 'required|string|email|max:255|unique:member,member_email',
-            'member_phone' => 'required|string|max:20',
+            'member_phone' => 'required|string|max:20|unique:member,member_phone',
             'member_address' => 'required|string',
             'gender' => 'required|in:0,1',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => ['required', 'string', 'min:8', 'confirmed', new StrongPassword],
         ]);
 
         $member = new Member();
@@ -34,7 +35,7 @@ class MemberRegisterController extends Controller
         $member->member_phone = $validated['member_phone'];
         $member->member_address = $validated['member_address'];
         $member->gender = $validated['gender'];
-        $member->mpasswd = hash('sha256', $validated['password']); 
+        $member->mpasswd = Hash::make($validated['password']); 
         
         $member->member_type_id = 1; // Default to Standard Member
         $member->member_image = 'person.png'; // Default image
@@ -49,6 +50,6 @@ class MemberRegisterController extends Controller
         
         $member->save();
 
-        return redirect()->route('login')->with('success', 'Pendaftaran berhasil! Akun Anda sedang dalam status MASA TUNGGU. Silakan datang ke perpustakaan dengan membawa KTP asli untuk verifikasi dan aktivasi akun.');
+        return redirect()->route('login')->with('success', 'Pendaftaran berhasil! Akun Anda sedang dalam status MASA TUNGGU. Silakan datang ke lapak baca dengan membawa KTP asli untuk verifikasi dan aktivasi akun.');
     }
 }

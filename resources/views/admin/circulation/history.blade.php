@@ -65,6 +65,7 @@
                 <tr style="color: #64748b; text-transform: uppercase; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em;">
                      <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Eksemplar</th>
                      <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Judul Buku</th>
+                     <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Pengarang</th>
                      <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Anggota</th>
                      <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Status</th>
                      <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Tgl Pinjam</th>
@@ -81,6 +82,7 @@
                             <span style="font-size: 0.7rem; background: #f1f5f9; color: #64748b; padding: 0.15rem 0.4rem; border-radius: 4px; margin-left: 0.25rem;" title="Buku telah dihapus dari sistem">Dihapus</span>
                         @endif
                     </td>
+                    <td style="padding: 1.25rem 1rem; font-weight: 500; color: #334155;">{{ optional(optional(optional($loan->item)->biblio)->author)->author_name ?? '-' }}</td>
                     <td style="padding: 1.25rem 1rem; font-weight: 500; color: #334155;">{{ $loan->member->member_name ?? optional($loan->loanHistory)->member_name ?? 'N/A' }}</td>
                     <td style="padding: 1.25rem 1rem;">
                         @if($loan->is_return)
@@ -94,7 +96,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" style="padding: 4rem 2rem; text-align: center;">
+                    <td colspan="7" style="padding: 4rem 2rem; text-align: center;">
                         <div style="width: 64px; height: 64px; background: #f8fafc; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #cbd5e1; margin: 0 auto 1rem;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
                         </div>

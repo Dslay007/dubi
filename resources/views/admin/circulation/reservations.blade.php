@@ -120,13 +120,16 @@
                         <span style="background: #ecfdf5; color: #059669; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; border: 1px solid #a7f3d0;">Approved</span>
                     </td>
                     <td style="padding: 1.25rem 1rem; text-align: right;">
-                        <form action="{{ route('admin.circulation.reservations.handover', $res->reserve_id) }}" method="POST" style="display: flex; justify-content: flex-end;" onsubmit="confirmHandover(event, this, '{{ addslashes($res->member->member_name ?? '') }}', '{{ addslashes($res->item->biblio->title ?? '') }}')">
-                            @csrf
-                            <button type="submit" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 0.5rem 1.25rem; border-radius: 99px; font-size: 0.8rem; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem; box-shadow: 0 4px 6px -1px rgba(16,185,129,0.2); transition: 0.2s;" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='none';">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
-                                Serahkan Buku
-                            </button>
-                        </form>
+                        <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+                            <form action="{{ route('admin.circulation.reservations.handover', $res->reserve_id) }}" method="POST" onsubmit="confirmHandover(event, this, '{{ addslashes($res->member->member_name ?? '') }}', '{{ addslashes($res->item->biblio->title ?? '') }}')">
+                                @csrf
+                                <button type="submit" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 0.5rem 1.25rem; border-radius: 99px; font-size: 0.8rem; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem; box-shadow: 0 4px 6px -1px rgba(16,185,129,0.2); transition: 0.2s;" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='none';">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                                    Serahkan Buku
+                                </button>
+                            </form>
+                            <button onclick="openCancelModal({{ $res->reserve_id }})" style="background: white; color: #64748b; border: 1px solid #cbd5e1; padding: 0.5rem 1.25rem; border-radius: 99px; font-size: 0.8rem; cursor: pointer; font-weight: 700; transition: 0.2s;" onmouseover="this.style.background='#f1f5f9'; this.style.color='#0f172a';">Batal</button>
+                        </div>
                     </td>
                 </tr>
                 @empty
@@ -226,6 +229,27 @@
     </div>
 </div>
 
+<!-- Modal Cancel -->
+<div id="cancelModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 50; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 2rem; border-radius: 1.5rem; width: 100%; max-width: 450px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+        <h3 style="font-weight: 800; margin-bottom: 1.5rem; color: #0f172a; font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #64748b;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            Batalkan Reservasi
+        </h3>
+        <form id="cancelForm" method="POST">
+            @csrf
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-size: 0.85rem; color: #475569; margin-bottom: 0.5rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Alasan Dibatalkan (Opsional)</label>
+                <textarea name="notes" rows="3" placeholder="Misal: Anggota tidak datang mengambil..." style="width: 100%; padding: 1rem; border: 2px solid #cbd5e1; border-radius: 0.75rem; outline: none; font-family: inherit; font-size: 1rem; transition: 0.2s;" onfocus="this.style.borderColor='#64748b';" onblur="this.style.borderColor='#cbd5e1';"></textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                <button type="button" onclick="closeCancelModal()" style="padding: 0.75rem 1.5rem; background: #f1f5f9; color: #475569; border: none; border-radius: 99px; font-weight: 700; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#e2e8f0';">Kembali</button>
+                <button type="submit" style="padding: 0.75rem 1.5rem; background: #64748b; color: white; border: none; border-radius: 99px; font-weight: 700; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#475569';">Batalkan Reservasi</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- Modal Tambah Reservasi -->
 <div id="addModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 50; align-items: center; justify-content: center;">
     <div style="background: white; padding: 2rem; border-radius: 1.5rem; width: 100%; max-width: 550px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
@@ -274,6 +298,15 @@
 
     function closeAddModal() {
         document.getElementById('addModal').style.display = 'none';
+    }
+
+    function openCancelModal(id) {
+        document.getElementById('cancelModal').style.display = 'flex';
+        document.getElementById('cancelForm').action = "{{ url('admin/circulation/reservations/cancel') }}/" + id;
+    }
+    
+    function closeCancelModal() {
+        document.getElementById('cancelModal').style.display = 'none';
     }
 
     function confirmApprove(event, form, memberName, title) {

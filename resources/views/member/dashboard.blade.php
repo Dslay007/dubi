@@ -11,6 +11,29 @@
     </div>
 </div>
 
+<div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;">
+    @if(session('success'))
+        <div style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857; padding: 1rem 1.5rem; border-radius: 0.75rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.75rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            {{ session('success') }}
+        </div>
+    @endif
+    
+    @if($errors->any())
+        <div style="background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; padding: 1rem 1.5rem; border-radius: 0.75rem; margin-bottom: 2rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; font-weight: 600; margin-bottom: 0.5rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                Terdapat Kesalahan:
+            </div>
+            <ul style="margin: 0; padding-left: 2rem; font-size: 0.95rem;">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+</div>
+
 <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 1.5rem 4rem 1.5rem;">
     <style>
         .dashboard-grid {
@@ -32,6 +55,15 @@
                 flex-direction: row;
                 align-items: center;
             }
+        }
+        details > summary {
+            list-style: none;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+        details[open] summary svg.accordion-icon {
+            transform: rotate(180deg);
         }
     </style>
     <div class="dashboard-grid">
@@ -65,14 +97,17 @@
 
                         <!-- Body Card -->
                         <div style="text-align: center;">
-                            <div style="width: 100px; height: 100px; margin: 0 auto 1.25rem; border-radius: 50%; padding: 4px; background: linear-gradient(135deg, #38bdf8, #818cf8); box-shadow: 0 10px 25px -5px rgba(56,189,248,0.5);">
-                                <div style="width: 100%; height: 100%; background: #1e293b; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                            <div style="width: 100px; height: 100px; margin: 0 auto 1.25rem; border-radius: 50%; padding: 4px; background: linear-gradient(135deg, #38bdf8, #818cf8); box-shadow: 0 10px 25px -5px rgba(56,189,248,0.5); position: relative;">
+                                <div style="width: 100%; height: 100%; background: #1e293b; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative;">
                                     @if($member->member_image)
-                                        <img src="{{ asset('storage/member_images/' . $member->member_image) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
+                                        <img src="{{ asset('images/persons/' . $member->member_image) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
                                     @else
                                         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                                     @endif
                                 </div>
+                                <button onclick="document.getElementById('modal-image').style.display='flex'" style="position: absolute; bottom: 0; right: 0; background: #38bdf8; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); transition: all 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                                </button>
                             </div>
 
                             <h3 style="color: white; font-size: 1.35rem; font-weight: 700; margin-bottom: 0.25rem; letter-spacing: -0.01em;">{{ $member->member_name }}</h3>
@@ -118,7 +153,11 @@
                             {{ $isValidDate ? \Carbon\Carbon::parse($member->expire_date)->format('d F Y') : '-' }}
                         </div>
                     </div>
-                </div>
+
+                    <button type="button" onclick="document.getElementById('modal-password').style.display='flex'" style="width: 100%; margin-top: 0.5rem; padding: 0.75rem 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.75rem; color: #475569; font-weight: 600; font-size: 0.95rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.5rem; transition: all 0.2s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#f8fafc'">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        Ubah Password
+                    </button>
                 </div>
             </div>
 
@@ -237,22 +276,50 @@
                                 </div>
                             </div>
                             
-                            <!-- Badges Status -->
-                            <div>
-                                @if($reserve->status === 'pending')
-                                    <span style="background: #fffbeb; color: #d97706; border: 1px solid #fde68a; padding: 0.5rem 1rem; border-radius: 99px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem;">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                        Menunggu
-                                    </span>
-                                @elseif($reserve->status === 'approved')
-                                    <span style="background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; padding: 0.5rem 1.25rem; border-radius: 99px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; box-shadow: 0 2px 4px rgba(21,128,61,0.1);">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                                        Tersedia (Bisa Diambil)
-                                    </span>
-                                @else
-                                    <span style="background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; padding: 0.5rem 1rem; border-radius: 99px; font-size: 0.8rem; font-weight: 700;">
-                                        {{ ucfirst($reserve->status) }}
-                                    </span>
+                            <!-- Badges & Notes -->
+                            <div style="text-align: right; max-width: 250px;">
+                                @php
+                                    $statusStr = !empty($reserve->status) ? $reserve->status : 'Menunggu Persetujuan Admin';
+                                    $statusLower = strtolower($statusStr);
+                                    
+                                    $badgeColor = '#d97706'; // orange
+                                    $bgColor = '#fffbeb';
+                                    $borderColor = '#fde68a';
+                                    $icon = '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'; // clock
+                                    $displayText = $statusStr;
+
+                                    if (str_contains($statusLower, 'tolak') || str_contains($statusLower, 'reject') || str_contains($statusLower, 'batal')) {
+                                        $badgeColor = '#dc2626'; // red
+                                        $bgColor = '#fef2f2';
+                                        $borderColor = '#fecaca';
+                                        $icon = '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'; // x
+                                    } elseif (str_contains($statusLower, 'completed') || str_contains($statusLower, 'selesai')) {
+                                        $badgeColor = '#2563eb'; // blue
+                                        $bgColor = '#eff6ff';
+                                        $borderColor = '#bfdbfe';
+                                        $icon = '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'; // check
+                                    } elseif (str_contains($statusLower, 'approved') || str_contains($statusLower, 'setuju') || str_contains($statusLower, 'siap') || str_contains($statusLower, 'lapak')) {
+                                        $badgeColor = '#16a34a'; // green
+                                        $bgColor = '#f0fdf4';
+                                        $borderColor = '#bbf7d0';
+                                        $icon = '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'; // check
+                                        $displayText = 'Silahkan ambil ke lapak';
+                                    }
+                                @endphp
+
+                                <span style="background: {{ $bgColor }}; color: {{ $badgeColor }}; border: 1px solid {{ $borderColor }}; padding: 0.5rem 1rem; border-radius: 99px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">{!! $icon !!}</svg>
+                                    {{ $displayText }}
+                                </span>
+
+                                @if(!empty($reserve->notes))
+                                    <div style="margin-top: 0.75rem; padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.75rem; text-align: left; display: flex; gap: 0.5rem; align-items: flex-start;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: 2px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                        <div style="font-size: 0.8rem; color: #475569; font-style: italic; line-height: 1.4;">
+                                            <strong style="color: #1e293b; display: block; font-style: normal; margin-bottom: 2px;">Keterangan Admin:</strong>
+                                            {{ $reserve->notes }}
+                                        </div>
+                                    </div>
                                 @endif
                             </div>
                         </div>
@@ -264,7 +331,145 @@
                     </div>
                 @endif
             </section>
+
+            <!-- Section: Riwayat Peminjaman -->
+            <section style="background: white; border-radius: 1.25rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
+                <details style="cursor: pointer;">
+                    <summary style="display: flex; align-items: center; justify-content: space-between; font-weight: 800; color: #0f172a; font-size: 1.25rem; outline: none; margin-bottom: 0; list-style: none;">
+                        <div>
+                            Tampilkan Riwayat Peminjaman
+                            <p style="color: #64748b; font-size: 0.85rem; font-weight: 500; margin-top: 0.25rem;">Buku yang telah Anda kembalikan.</p>
+                        </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="accordion-icon" style="transition: 0.3s ease;"><polyline points="6 9 12 15 18 9"/></svg>
+                    </summary>
+                    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed #e2e8f0;">
+                        @if(isset($loanHistory) && $loanHistory->count() > 0)
+                            <div style="display: grid; gap: 1rem;">
+                                @foreach($loanHistory->take(5) as $loan)
+                                <div class="dashboard-card-flex" style="background: #f8fafc; padding: 1rem 1.25rem; border-radius: 1rem; border: 1px solid rgba(0,0,0,0.05);">
+                                    <div style="width: 40px; height: 40px; background: #ecfdf5; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: #10b981; flex-shrink: 0;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <h4 style="font-weight: 700; font-size: 1rem; color: #1e293b; margin-bottom: 0.25rem; line-height: 1.3;">
+                                            {{ optional(optional($loan->item)->biblio)->title ?? 'Unknown Title' }}
+                                        </h4>
+                                        <div style="display: flex; flex-wrap: wrap; gap: 1rem; color: #64748b; font-size: 0.8rem; font-weight: 500;">
+                                            <span>Dikembalikan: {{ \Carbon\Carbon::parse($loan->return_date)->format('d M Y') }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div style="padding: 1rem; text-align: center;">
+                                <p style="color: #94a3b8; font-size: 0.9rem; font-weight: 500; margin: 0;">Belum ada riwayat peminjaman.</p>
+                            </div>
+                        @endif
+                    </div>
+                </details>
+            </section>
+
+            <!-- Section: Riwayat Reservasi -->
+            <section style="background: white; border-radius: 1.25rem; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
+                <details style="cursor: pointer;">
+                    <summary style="display: flex; align-items: center; justify-content: space-between; font-weight: 800; color: #0f172a; font-size: 1.25rem; outline: none; margin-bottom: 0; list-style: none;">
+                        <div>
+                            Tampilkan Riwayat Reservasi
+                            <p style="color: #64748b; font-size: 0.85rem; font-weight: 500; margin-top: 0.25rem;">Reservasi yang sudah selesai atau ditolak.</p>
+                        </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="accordion-icon" style="transition: 0.3s ease;"><polyline points="6 9 12 15 18 9"/></svg>
+                    </summary>
+                    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed #e2e8f0;">
+                        @if(isset($reservationHistory) && $reservationHistory->count() > 0)
+                            <div style="display: grid; gap: 1rem;">
+                                @foreach($reservationHistory->take(5) as $reserve)
+                                @php
+                                    $isRejected = str_contains(strtolower($reserve->status), 'reject') || str_contains(strtolower($reserve->status), 'tolak');
+                                @endphp
+                                <div class="dashboard-card-flex" style="background: #f8fafc; padding: 1rem 1.25rem; border-radius: 1rem; border: 1px solid rgba(0,0,0,0.05);">
+                                    <div style="width: 40px; height: 40px; background: {{ $isRejected ? '#fef2f2' : '#ecfdf5' }}; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: {{ $isRejected ? '#ef4444' : '#10b981' }}; flex-shrink: 0;">
+                                        @if($isRejected)
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                                        @else
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                        @endif
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <h4 style="font-weight: 700; font-size: 1rem; color: #1e293b; margin-bottom: 0.25rem; line-height: 1.3;">
+                                            {{ optional(optional($reserve->item)->biblio)->title ?? 'Unknown Title' }}
+                                        </h4>
+                                        <div style="display: flex; flex-wrap: wrap; gap: 1rem; color: #64748b; font-size: 0.8rem; font-weight: 500;">
+                                            <span>{{ \Carbon\Carbon::parse($reserve->reserve_date)->format('d M Y') }}</span>
+                                            <span style="color: {{ $isRejected ? '#ef4444' : '#10b981' }}; font-weight: 700;">&bull; {{ $isRejected ? 'Ditolak' : 'Selesai' }}</span>
+                                        </div>
+                                        @if($isRejected && !empty($reserve->notes))
+                                            <div style="margin-top: 0.5rem; padding: 0.5rem 0.75rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.5rem; text-align: left; display: flex; gap: 0.5rem; align-items: flex-start;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: 2px; flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                                <div style="font-size: 0.75rem; color: #b91c1c; font-style: italic; line-height: 1.4;">
+                                                    <strong style="color: #991b1b; display: block; font-style: normal; margin-bottom: 2px;">Alasan Ditolak:</strong>
+                                                    {{ $reserve->notes }}
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div style="padding: 1rem; text-align: center;">
+                                <p style="color: #94a3b8; font-size: 0.9rem; font-weight: 500; margin: 0;">Belum ada riwayat reservasi.</p>
+                            </div>
+                        @endif
+                    </div>
+                </details>
+            </section>
         </div>
+    </div>
+</div>
+
+<!-- Modal Update Foto Profil -->
+<div id="modal-image" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; padding: 1rem;">
+    <div style="background: white; border-radius: 1rem; width: 100%; max-width: 400px; padding: 2rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+        <h3 style="margin-top: 0; margin-bottom: 1.5rem; font-weight: 700; color: #1e293b;">Update Foto Profil</h3>
+        <form action="{{ route('member.update_image') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">Pilih Foto Baru</label>
+                <input type="file" name="member_image" accept="image/*" required style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.5rem;">
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button type="button" onclick="document.getElementById('modal-image').style.display='none'" style="padding: 0.5rem 1rem; background: #f1f5f9; color: #475569; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 600;">Batal</button>
+                <button type="submit" style="padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 600;">Simpan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Ubah Password -->
+<div id="modal-password" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; padding: 1rem;">
+    <div style="background: white; border-radius: 1rem; width: 100%; max-width: 400px; padding: 2rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+        <h3 style="margin-top: 0; margin-bottom: 1.5rem; font-weight: 700; color: #1e293b;">Ubah Password</h3>
+        <form action="{{ route('member.change_password') }}" method="POST">
+            @csrf
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">Password Lama</label>
+                <input type="password" name="old_password" required style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.5rem;" placeholder="Masukkan password saat ini">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">Password Baru</label>
+                <input type="password" name="new_password" id="new_password_modal" required minlength="8" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.5rem;" placeholder="Min 8 karakter, huruf besar, kecil, angka & simbol">
+                @include('components.password-strength', ['inputId' => 'new_password_modal'])
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">Konfirmasi Password Baru</label>
+                <input type="password" name="new_password_confirmation" required minlength="8" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.5rem;" placeholder="Ulangi password baru">
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button type="button" onclick="document.getElementById('modal-password').style.display='none'" style="padding: 0.5rem 1rem; background: #f1f5f9; color: #475569; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 600;">Batal</button>
+                <button type="submit" style="padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 600;">Simpan Password</button>
+            </div>
+        </form>
     </div>
 </div>
 

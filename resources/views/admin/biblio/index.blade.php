@@ -48,6 +48,7 @@
         <table data-visible-cols="1" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
             <thead>
                 <tr style="color: #64748b; text-transform: uppercase; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em;">
+                    <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05); width: 80px;">Cover</th>
                     <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Judul & ISBN</th>
                     <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Pengarang</th>
                     <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Penerbit</th>
@@ -58,6 +59,15 @@
             <tbody>
                 @forelse($biblios as $biblio)
                 <tr style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                    <td style="padding: 1.25rem 1rem;">
+                        @if($biblio->image)
+                            <img src="{{ asset('images/docs/' . $biblio->image) }}" alt="Cover" style="width: 50px; height: 70px; object-fit: cover; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        @else
+                            <div style="width: 50px; height: 70px; background: #e2e8f0; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #94a3b8;">
+                                <i data-lucide="image" style="width: 20px; height: 20px;"></i>
+                            </div>
+                        @endif
+                    </td>
                     <td style="padding: 1.25rem 1rem;">
                         <div style="font-weight: 800; color: #1e293b; margin-bottom: 0.25rem;">{{ $biblio->title }}</div>
                         <div style="color: #64748b; font-size: 0.8rem; font-family: monospace; letter-spacing: 0.05em;">
@@ -109,7 +119,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" style="padding: 4rem 2rem; text-align: center;">
+                    <td colspan="6" style="padding: 4rem 2rem; text-align: center;">
                         <div style="width: 64px; height: 64px; background: #f8fafc; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #cbd5e1; margin: 0 auto 1rem;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
                         </div>

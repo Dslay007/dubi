@@ -61,7 +61,7 @@
         <div style="position: relative;">
             <input type="password" name="password" id="passwordInput"
                    {{ $staff ? '' : 'required' }}
-                   placeholder="{{ $staff ? '••••••••' : 'Minimal 4 karakter' }}"
+                   placeholder="{{ $staff ? '••••••••' : 'Minimal 8 karakter, huruf besar, kecil, angka & simbol' }}"
                    class="form-input" style="padding-right: 3rem;">
             <button type="button" onclick="togglePassword()" 
                     style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer; padding: 0.25rem;"
@@ -70,6 +70,7 @@
             </button>
         </div>
         @error('password') <div style="color: #ef4444; font-size: 0.8rem; margin-top: 0.35rem;">{{ $message }}</div> @enderror
+        @include('components.password-strength', ['inputId' => 'passwordInput'])
     </div>
 
     {{-- Role --}}

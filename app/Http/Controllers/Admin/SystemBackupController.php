@@ -23,11 +23,33 @@ class SystemBackupController extends Controller
 
     public function runBackup(Request $request)
     {
-        // Simulasi pembuatan backup database (Di produksi, gunakan spatie/laravel-backup atau mysqldump)
         $fileName = 'backup_dudukbaca_' . date('Y_m_d_His') . '.sql';
+        $path = storage_path('app/backups/');
         
-        // Simpan file dummy untuk demonstrasi fitur
-        Storage::disk('local')->put('backups/' . $fileName, '-- Dummy SQL Backup File generated at ' . Carbon::now());
+        if (!file_exists($path)) {
+            mkdir($path, 0777, true);
+        }
+
+        $filePath = $path . $fileName;
+        
+        $dbHost = env('DB_HOST', '127.0.0.1');
+        $dbPort = env('DB_PORT', '3306');
+        $dbUser = env('DB_USERNAME', 'root');
+        $dbPass = env('DB_PASSWORD', '');
+        $dbName = env('DB_DATABASE', 'dudukbaca');
+
+        // Note: mysqldump must be available in system PATH
+        $command = "mysqldump -h {$dbHost} -P {$dbPort} -u {$dbUser} ";
+        if (!empty($dbPass)) {
+            $command .= "-p{$dbPass} ";
+        }
+        $command .= "{$dbName} > {$filePath}";
+
+        exec($command, $output, $returnVar);
+
+        if ($returnVar !== 0) {
+            return back()->withErrors(['Gagal membuat backup database. Pastikan mysqldump terinstall dan dapat diakses.']);
+        }
 
         DB::table('backup_log')->insert([
             'user_id' => auth()->user()->user_id ?? 1,

@@ -80,6 +80,8 @@ Route::post('/member/logout', [MemberAuthController::class, 'logout'])->name('me
 
 Route::middleware('auth:member')->group(function () {
     Route::get('/member/dashboard', [MemberController::class, 'dashboard'])->name('member.dashboard');
+    Route::post('/member/update-image', [MemberController::class, 'updateImage'])->name('member.update_image');
+    Route::post('/member/change-password', [MemberController::class, 'changePassword'])->name('member.change_password');
     Route::get('/digital/download/{id}', [OpacController::class, 'downloadDigital'])->name('digital.download');
     Route::post('/opac/reserve/{biblio_id}', [OpacController::class, 'reserve'])->name('opac.reserve');
 });
@@ -151,6 +153,10 @@ Route::middleware(['auth:admin', 'menu_access'])->prefix('admin')->name('admin.'
     Route::get('/member/attendance/check', [\App\Http\Controllers\Admin\MemberController::class, 'checkAttendance'])->name('member.attendance.check');
     Route::post('/member/attendance', [\App\Http\Controllers\Admin\MemberController::class, 'storeAttendance'])->name('member.attendance.store');
     
+    // Guest Counter (Counter Tamu)
+    Route::get('/member/guest-counter', [\App\Http\Controllers\Admin\MemberController::class, 'guestCounter'])->name('member.guest_counter');
+    Route::post('/member/guest-counter', [\App\Http\Controllers\Admin\MemberController::class, 'storeGuestVisit'])->name('member.guest_counter.store');
+    
     Route::resource('member', \App\Http\Controllers\Admin\MemberController::class);
     
     Route::get('/member_type/import', [\App\Http\Controllers\Admin\MemberTypeController::class, 'import'])->name('member_type.import');
@@ -170,6 +176,7 @@ Route::middleware(['auth:admin', 'menu_access'])->prefix('admin')->name('admin.'
         Route::get('/lookup-item', [\App\Http\Controllers\Admin\CirculationController::class, 'getItemDetails'])->name('lookup_item');
         Route::get('/quick-return', [\App\Http\Controllers\Admin\CirculationController::class, 'quickReturn'])->name('quick_return');
         Route::get('/search-loan', [\App\Http\Controllers\Admin\CirculationController::class, 'searchLoan'])->name('search_loan');
+        Route::get('/search-item', [\App\Http\Controllers\Admin\CirculationController::class, 'searchItem'])->name('search_item');
         Route::post('/process-quick-return', [\App\Http\Controllers\Admin\CirculationController::class, 'processQuickReturn'])->name('process_quick_return');
         Route::get('/history', [\App\Http\Controllers\Admin\CirculationController::class, 'history'])->name('history');
         Route::get('/history/export', [\App\Http\Controllers\Admin\CirculationController::class, 'exportHistory'])->name('history.export');
@@ -179,6 +186,7 @@ Route::middleware(['auth:admin', 'menu_access'])->prefix('admin')->name('admin.'
         Route::post('/reservations/approve/{id}', [\App\Http\Controllers\Admin\CirculationController::class, 'approveReservation'])->name('reservations.approve');
         Route::post('/reservations/handover/{id}', [\App\Http\Controllers\Admin\CirculationController::class, 'handoverReservation'])->name('reservations.handover');
         Route::post('/reservations/reject/{id}', [\App\Http\Controllers\Admin\CirculationController::class, 'rejectReservation'])->name('reservations.reject');
+        Route::post('/reservations/cancel/{id}', [\App\Http\Controllers\Admin\CirculationController::class, 'cancelReservation'])->name('reservations.cancel');
         
         Route::get('/reservations/search-biblio', [\App\Http\Controllers\Admin\CirculationController::class, 'searchBiblio'])->name('reservations.search_biblio');
         Route::post('/reservations/store', [\App\Http\Controllers\Admin\CirculationController::class, 'storeReservation'])->name('reservations.store');

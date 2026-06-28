@@ -33,6 +33,13 @@
 
         a { text-decoration: none; color: inherit; transition: 0.2s; }
 
+        /* Hide default browser eye icon for password inputs */
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear,
+        input[type="password"]::-webkit-reveal {
+            display: none;
+        }
+
         /* Modern Navbar */
         .navbar {
             background: rgba(255, 255, 255, 0.9);
@@ -57,7 +64,7 @@
             letter-spacing: -0.05em;
         }
 
-        .nav-links { display: flex; gap: 2.5rem; align-items: center; }
+        .nav-links { display: flex; gap: 1.5rem; align-items: center; }
         .nav-link { 
             font-weight: 600; 
             color: hsl(var(--text-muted)); 
@@ -71,24 +78,40 @@
             padding: 0.7rem 1.7rem;
             border-radius: 99px;
             font-weight: 600;
-            border: none;
+            border: 2px solid hsl(var(--primary));
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.2s;
         }
         .btn:hover { 
             transform: translateY(-2px); 
             box-shadow: 0 8px 16px rgba(0,0,0,0.15);
         }
+        .btn-outline {
+            background: transparent;
+            color: hsl(var(--primary));
+            box-shadow: none;
+        }
+        .btn-outline:hover {
+            background: hsl(var(--primary));
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
 
         /* Active Nav Link */
         .nav-link {
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 1.25rem;
             border-radius: 99px;
             transition: all 0.2s;
         }
-        .nav-link.active {
-            background: rgba(15, 23, 42, 0.05);
+        .nav-link:hover { 
+            background: rgba(15, 23, 42, 0.03);
             color: hsl(var(--primary));
+        }
+        .nav-link.active {
+            background: hsl(var(--primary));
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
         }
 
         /* Footer */
@@ -305,9 +328,19 @@
             <a href="{{ route('opac.index') }}" class="nav-link {{ request()->routeIs('opac.*') ? 'active' : '' }}" style="{{ request()->routeIs('opac.*') ? '' : 'color: hsl(var(--accent));' }}">Perpustakaan (OPAC)</a>
             
             @if(Auth::guard('member')->check())
-                <a href="{{ route('member.dashboard') }}" class="btn">Dashboard Saya</a>
+                <a href="{{ route('member.dashboard') }}" class="nav-link {{ request()->routeIs('member.dashboard') ? 'active' : '' }}">Dashboard Saya</a>
+                <form action="{{ route('member.logout') }}" method="POST" style="display:inline;" onsubmit="return confirm('Apakah Anda yakin ingin keluar dari akun ini?');">
+                    @csrf
+                    <button type="submit" class="btn" style="background: #ef4444; color: white; border: 1px solid #dc2626; box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2); font-weight: 600; padding: 0.5rem 1.25rem; border-radius: 99px; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 0.4rem;" onmouseover="this.style.background='#dc2626'; this.style.borderColor='#b91c1c'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='#ef4444'; this.style.borderColor='#dc2626'; this.style.transform='none';">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        Logout
+                    </button>
+                </form>
             @else
-                <a href="{{ route('login') }}" class="btn">Login Member</a>
+                <a href="{{ route('login') }}" class="btn btn-outline" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1.5rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                    Login Member
+                </a>
             @endif
         </div>
     <!-- Mobile Menu -->
@@ -318,9 +351,19 @@
         <a href="{{ route('opac.index') }}" class="nav-link {{ request()->routeIs('opac.*') ? 'active' : '' }}" style="{{ request()->routeIs('opac.*') ? '' : 'color: hsl(var(--accent));' }}">Perpustakaan (OPAC)</a>
         
         @if(Auth::guard('member')->check())
-            <a href="{{ route('member.dashboard') }}" class="btn" style="text-align: center;">Dashboard Saya</a>
+            <a href="{{ route('member.dashboard') }}" class="nav-link" style="font-size: 1.1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.5rem;">Dashboard Saya</a>
+            <form action="{{ route('member.logout') }}" method="POST" style="margin-top: 1rem;" onsubmit="return confirm('Apakah Anda yakin ingin keluar dari akun ini?');">
+                @csrf
+                <button type="submit" class="btn" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 0.5rem; background: #ef4444; color: white; border: 1px solid #dc2626; box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2); font-weight: 600; padding: 0.75rem; border-radius: 0.75rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Logout
+                </button>
+            </form>
         @else
-            <a href="{{ route('login') }}" class="btn" style="text-align: center;">Login Member</a>
+            <a href="{{ route('login') }}" class="btn btn-outline" style="margin-top: 1rem; width: 100%; display: flex; justify-content: center; align-items: center; gap: 0.5rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                Login Member
+            </a>
         @endif
     </div>
     </nav>
@@ -343,7 +386,7 @@
             </a>
         </div>
 
-        <p style="color: hsl(var(--text-muted))">&copy; {{ date('Y') }} Komunitas Literasi Malang. All rights reserved.</p>
+        <p style="color: hsl(var(--text-muted))">&copy; {{ date('Y') }} Komunitas Literasi Malang. Hak Cipta Dilindungi.</p>
         <div style="margin-top: 1rem; font-size: 0.9rem; color: #94a3b8;">
             <a href="{{ route('page.struktur') }}" style="margin: 0 0.5rem;">Struktur</a> &middot;
             <a href="{{ route('page.jurnal') }}" style="margin: 0 0.5rem;">Jurnal</a> &middot;

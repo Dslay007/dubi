@@ -23,6 +23,12 @@ class Biblio extends Model
     }
 
     protected $guarded = ['biblio_id'];
+    protected $appends = ['author'];
+
+    public function getAuthorAttribute()
+    {
+        return $this->authors->first();
+    }
 
     public function gmd()
     {

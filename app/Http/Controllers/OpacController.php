@@ -44,6 +44,10 @@ class OpacController extends Controller
 
     public function downloadDigital($id)
     {
+        if (!\Illuminate\Support\Facades\Auth::guard('member')->check()) {
+            return redirect()->route('member.login')->withErrors(['member_id' => 'Anda harus login sebagai member untuk mengunduh file digital.']);
+        }
+
         $biblio = Biblio::findOrFail($id);
 
         if (!$biblio->file_att) {
@@ -80,7 +84,9 @@ class OpacController extends Controller
             $isReserved = \App\Models\Reservation::where('item_code', $item->item_code)
                                         ->whereIn('status', ['pending', 'approved'])
                                         ->exists();
-            if (!$isOnLoan && !$isReserved) {
+            $isNoLoan = optional($item->status)->no_loan;
+            
+            if (!$isOnLoan && !$isReserved && !$isNoLoan) {
                 $availableItem = $item;
                 break;
             }
@@ -96,6 +102,15 @@ class OpacController extends Controller
                         ->first();
         if ($existing) {
              return back()->withErrors(['Anda sudah melakukan reservasi untuk buku ini.']);
+        }
+
+        $memberId = \Illuminate\Support\Facades\Auth::guard('member')->id();
+        $member = \App\Models\Member::with('memberType')->find($memberId);
+        $loanLimit = $member->memberType->loan_limit ?? 3;
+        $activeLoansCount = \App\Models\Loan::where('member_id', $memberId)->where('is_return', 0)->count();
+
+        if ($activeLoansCount >= $loanLimit) {
+            return back()->withErrors(['Maksimal peminjaman tercapai. Anda sudah meminjam ' . $activeLoansCount . ' dari batas maksimal ' . $loanLimit . ' buku. Kembalikan buku terlebih dahulu untuk melakukan reservasi.']);
         }
 
         $max_reservations = \Illuminate\Support\Facades\DB::table('setting')

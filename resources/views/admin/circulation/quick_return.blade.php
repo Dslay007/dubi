@@ -3,7 +3,73 @@
 @section('pageTitle', 'Pengembalian Kilat')
 
 @section('content')
-<div style="background: white; padding: 3.5rem 3rem; border-radius: 1.5rem; max-width: 650px; margin: 3rem auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1), 0 0 0 1px rgba(226, 232, 240, 0.5); text-align: center;">
+<style>
+    .quick-return-card {
+        background: white;
+        padding: 3.5rem 3rem;
+        border-radius: 1.5rem;
+        max-width: 650px;
+        margin: 3rem auto;
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1), 0 0 0 1px rgba(226, 232, 240, 0.5);
+        text-align: center;
+    }
+
+    .quick-return-input-container {
+        display: flex;
+        gap: 0.5rem;
+        background: #f8fafc;
+        padding: 0.5rem;
+        border-radius: 1rem;
+        border: 1px solid #cbd5e1;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .quick-return-input {
+        flex: 1;
+        min-width: 0;
+        padding: 1rem 0.5rem;
+        border: none;
+        background: transparent;
+        outline: none;
+        font-size: 1.05rem;
+        font-weight: 500;
+        color: #1e293b;
+    }
+
+    .quick-return-btn {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 0 2rem;
+        border-radius: 0.75rem;
+        border: none;
+        font-weight: 800;
+        cursor: pointer;
+        transition: transform 0.2s;
+        box-shadow: 0 4px 10px rgba(16,185,129,0.3);
+        white-space: nowrap;
+    }
+
+    @media (max-width: 640px) {
+        .quick-return-card {
+            padding: 2.5rem 1.25rem !important;
+            margin: 1.5rem auto !important;
+            border-radius: 1rem !important;
+        }
+        .quick-return-input-container {
+            padding: 0.35rem !important;
+        }
+        .quick-return-input {
+            font-size: 0.95rem !important;
+            padding: 0.75rem 0.25rem !important;
+        }
+        .quick-return-btn {
+            padding: 0 1.25rem !important;
+            font-size: 0.9rem !important;
+        }
+    }
+</style>
+
+<div class="quick-return-card">
     
     <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-radius: 50%; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 2px 4px rgba(255,255,255,0.5), 0 4px 6px -1px rgba(16,185,129,0.1);">
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h13a5 5 0 0 1 0 10H7"/><polyline points="7 4 3 9 7 14"/></svg>
@@ -33,12 +99,12 @@
 
     <!-- Input Form -->
     <div style="position: relative; max-width: 550px; margin: 0 auto;">
-        <div style="display: flex; gap: 0.5rem; background: #f8fafc; padding: 0.5rem; border-radius: 1rem; border: 1px solid #cbd5e1; transition: border-color 0.2s, box-shadow 0.2s;" id="input-container">
+        <div class="quick-return-input-container" id="input-container">
             <div style="display: flex; align-items: center; justify-content: center; padding-left: 1rem; color: #94a3b8;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             </div>
-            <input type="text" id="item_code_input" placeholder="Masukkan Kode Eksemplar Buku..." class="input" style="flex: 1; padding: 1rem 0.5rem; border: none; background: transparent; outline: none; font-size: 1.05rem; font-weight: 500; color: #1e293b;" autocomplete="off" oninput="searchLoanItem(this.value)" onfocus="document.getElementById('input-container').style.borderColor='#10b981'; document.getElementById('input-container').style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)';" onblur="document.getElementById('input-container').style.borderColor='#cbd5e1'; document.getElementById('input-container').style.boxShadow='none';">
-            <button type="button" onclick="lookupLoan()" class="btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 0 2rem; border-radius: 0.75rem; border: none; font-weight: 800; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 10px rgba(16,185,129,0.3);" onmouseover="this.style.transform='scale(1.02)';" onmouseout="this.style.transform='none';">Cek Data</button>
+            <input type="text" id="item_code_input" placeholder="Masukkan Kode Eksemplar Buku..." class="input quick-return-input" autocomplete="off" oninput="searchLoanItem(this.value)" onfocus="document.getElementById('input-container').style.borderColor='#10b981'; document.getElementById('input-container').style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)';" onblur="document.getElementById('input-container').style.borderColor='#cbd5e1'; document.getElementById('input-container').style.boxShadow='none';">
+            <button type="button" onclick="lookupLoan()" class="btn quick-return-btn" onmouseover="this.style.transform='scale(1.02)';" onmouseout="this.style.transform='none';">Cek Data</button>
         </div>
         
         <!-- Autocomplete Dropdown -->

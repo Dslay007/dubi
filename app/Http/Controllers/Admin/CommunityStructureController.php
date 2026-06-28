@@ -41,7 +41,7 @@ class CommunityStructureController extends Controller
             }
 
             $image = $request->file('photo');
-            $imageName = time() . '_' . $image->getClientOriginalName();
+            $imageName = time() . '_' . $image->hashName();
             $image->move(public_path('uploads/struktur'), $imageName);
             $data['photo'] = $imageName;
         }

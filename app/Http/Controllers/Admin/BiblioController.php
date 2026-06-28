@@ -51,7 +51,6 @@ class BiblioController extends Controller
             'collation' => 'nullable|string',
             'spec_detail_info' => 'nullable|string',
             'topic_id' => 'nullable|array',
-            'topic_id.*' => 'exists:mst_topic,topic_id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'image_url' => 'nullable|url',
             'file_att_upload' => 'nullable|file|mimes:pdf,epub|max:51200', // max 50MB
@@ -85,7 +84,7 @@ class BiblioController extends Controller
         }
 
         if ($request->hasFile('file_att_upload')) {
-            $fileName = time().'_'.str_replace(' ', '_', $request->file_att_upload->getClientOriginalName());  
+            $fileName = time().'_'.$request->file_att_upload->hashName();  
             $request->file_att_upload->storeAs('books', $fileName); // saves in storage/app/books
             $biblio->file_att = $fileName;
         } elseif ($request->filled('file_att_link')) {
@@ -106,8 +105,21 @@ class BiblioController extends Controller
             $biblio->authors()->sync($syncData);
         }
         
-        if (isset($validated['topic_id'])) {
-            $biblio->topics()->attach($validated['topic_id']);
+        if ($request->has('topic_id')) {
+            $topicIdsToSync = [];
+            foreach ($request->topic_id as $tid) {
+                if (\str_starts_with($tid, 'new_')) {
+                    $topicName = \substr($tid, 4);
+                    $newTopic = \App\Models\Topic::firstOrCreate(
+                        ['topic' => $topicName],
+                        ['input_date' => now(), 'last_update' => now()]
+                    );
+                    $topicIdsToSync[] = $newTopic->topic_id;
+                } else {
+                    $topicIdsToSync[] = $tid;
+                }
+            }
+            $biblio->topics()->attach($topicIdsToSync);
         }
 
         // Catat log aktifitas
@@ -144,7 +156,6 @@ class BiblioController extends Controller
             'collation' => 'nullable|string',
             'spec_detail_info' => 'nullable|string',
             'topic_id' => 'nullable|array',
-            'topic_id.*' => 'exists:mst_topic,topic_id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'image_url' => 'nullable|url',
             'file_att_upload' => 'nullable|file|mimes:pdf,epub|max:51200',
@@ -190,7 +201,7 @@ class BiblioController extends Controller
             if ($biblio->file_att && !\str_starts_with($biblio->file_att, 'http')) {
                 \Illuminate\Support\Facades\Storage::delete('books/' . $biblio->file_att);
             }
-            $fileName = time().'_'.str_replace(' ', '_', $request->file_att_upload->getClientOriginalName());  
+            $fileName = time().'_'.$request->file_att_upload->hashName();  
             $request->file_att_upload->storeAs('books', $fileName);
             $biblio->file_att = $fileName;
         } elseif ($request->filled('file_att_link')) {
@@ -215,8 +226,21 @@ class BiblioController extends Controller
             $biblio->authors()->detach();
         }
 
-        if (isset($validated['topic_id'])) {
-            $biblio->topics()->sync($validated['topic_id']);
+        if ($request->has('topic_id')) {
+            $topicIdsToSync = [];
+            foreach ($request->topic_id as $tid) {
+                if (\str_starts_with($tid, 'new_')) {
+                    $topicName = \substr($tid, 4);
+                    $newTopic = \App\Models\Topic::firstOrCreate(
+                        ['topic' => $topicName],
+                        ['input_date' => now(), 'last_update' => now()]
+                    );
+                    $topicIdsToSync[] = $newTopic->topic_id;
+                } else {
+                    $topicIdsToSync[] = $tid;
+                }
+            }
+            $biblio->topics()->sync($topicIdsToSync);
         } else {
             $biblio->topics()->detach();
         }

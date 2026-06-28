@@ -67,7 +67,7 @@ class LoginController extends Controller
         RateLimiter::hit($this->throttleKey($request));
 
         return back()->withErrors([
-            'username' => 'These credentials do not match our records.',
+            'username' => 'Login gagal! Username atau password salah.',
         ])->onlyInput('username');
     }
 

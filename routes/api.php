@@ -21,13 +21,18 @@ use App\Http\Controllers\Api\ReservationController;
 // Rute Terbuka (Public)
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::get('/books', [ReservationController::class, 'books']);
+Route::get('/books/{id}', [ReservationController::class, 'show']);
 
 // Rute Terkunci (Butuh Token)
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     
     Route::get('/dashboard', [DashboardController::class, 'index']);
+    Route::get('/history', [DashboardController::class, 'history']);
+    Route::get('/profile', [AuthController::class, 'profile']);
+    Route::post('/profile/update-image', [AuthController::class, 'updateImage']);
+    Route::post('/profile/change-password', [AuthController::class, 'changePassword']);
     
-    Route::get('/books', [ReservationController::class, 'books']);
     Route::post('/reserve', [ReservationController::class, 'store']);
 });

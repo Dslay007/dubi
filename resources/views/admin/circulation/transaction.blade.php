@@ -72,8 +72,8 @@
     <div style="display: flex; flex-direction: column; gap: 1.5rem; min-width: 0;">
         
         <!-- New Loan Form -->
-        <div style="background: white; padding: 2rem; border-radius: 1.25rem; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); position: relative; overflow: hidden;">
-            <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(to right, #3b82f6, #8b5cf6);"></div>
+        <div style="background: white; padding: 2rem; border-radius: 1.25rem; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); position: relative;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(to right, #3b82f6, #8b5cf6); border-top-left-radius: 1.25rem; border-top-right-radius: 1.25rem;"></div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                 <h4 style="font-weight: 800; color: #0f172a; font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
@@ -101,7 +101,9 @@
                         style="width: 100%; padding: 1rem 1rem 1rem 3rem; border: 2px solid #cbd5e1; border-radius: 0.75rem; outline: none; font-size: 1.05rem; font-weight: 500; color: #1e293b; transition: border-color 0.2s;"
                         placeholder="Ketik / Scan Kode Eksemplar Buku..."
                         onfocus="this.style.borderColor='#8b5cf6'; this.style.boxShadow='0 0 0 3px rgba(139,92,246,0.1)';" 
-                        onblur="this.style.borderColor='#cbd5e1'; this.style.boxShadow='none';">
+                        onblur="setTimeout(() => { this.style.borderColor='#cbd5e1'; this.style.boxShadow='none'; document.getElementById('item_suggestions').style.display='none'; }, 200);">
+                    <div id="item_suggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #cbd5e1; border-radius: 0.75rem; margin-top: 0.5rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); z-index: 50; max-height: 250px; overflow-y: auto;">
+                    </div>
                 </div>
                 <button type="submit" style="padding: 1rem 2.5rem; background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); color: white; border: none; border-radius: 0.75rem; font-weight: 800; font-size: 1.05rem; cursor: pointer; box-shadow: 0 4px 10px rgba(139,92,246,0.3); transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='none';">Proses Pinjam</button>
             </form>
@@ -224,8 +226,64 @@
         }
     }
 
+    let itemTimeout = null;
+    document.getElementById('item_code_input').addEventListener('input', function(e) {
+        let q = e.target.value;
+        let suggestionBox = document.getElementById('item_suggestions');
+        
+        if (q.length < 2) {
+            suggestionBox.style.display = 'none';
+            return;
+        }
+
+        clearTimeout(itemTimeout);
+        itemTimeout = setTimeout(() => {
+            fetch(`{{ url('admin/circulation/search-item?q=') }}${encodeURIComponent(q)}`)
+                .then(res => res.json())
+                .then(data => {
+                    suggestionBox.innerHTML = '';
+                    if (data.length > 0) {
+                        data.forEach(item => {
+                            let div = document.createElement('div');
+                            div.style.padding = '0.75rem 1rem';
+                            div.style.borderBottom = '1px solid #f1f5f9';
+                            div.style.cursor = 'pointer';
+                            div.style.display = 'flex';
+                            div.style.flexDirection = 'column';
+                            
+                            if (!item.is_available) {
+                                div.style.opacity = '0.6';
+                                div.style.cursor = 'not-allowed';
+                                div.innerHTML = `
+                                    <span style="font-weight: 700; color: #1e293b;">${item.title}</span>
+                                    <span style="font-size: 0.8rem; color: #ef4444;">${item.item_code} (Sedang Dipinjam)</span>
+                                `;
+                            } else {
+                                div.onmouseover = () => div.style.background = '#f8fafc';
+                                div.onmouseout = () => div.style.background = 'white';
+                                div.onclick = () => {
+                                    document.getElementById('item_code_input').value = item.item_code;
+                                    suggestionBox.style.display = 'none';
+                                    confirmLoan(new Event('submit'), document.getElementById('loanForm'));
+                                };
+                                div.innerHTML = `
+                                    <span style="font-weight: 700; color: #1e293b;">${item.title}</span>
+                                    <span style="font-size: 0.8rem; color: #64748b;">${item.item_code}</span>
+                                `;
+                            }
+                            suggestionBox.appendChild(div);
+                        });
+                        suggestionBox.style.display = 'block';
+                    } else {
+                        suggestionBox.innerHTML = '<div style="padding: 1rem; color: #64748b; text-align: center;">Tidak ada hasil ditemukan</div>';
+                        suggestionBox.style.display = 'block';
+                    }
+                });
+        }, 300);
+    });
+
     function confirmLoan(event, form) {
-        event.preventDefault();
+        if(event) event.preventDefault();
         let itemCode = document.getElementById('item_code_input').value;
         if (!itemCode) return;
 

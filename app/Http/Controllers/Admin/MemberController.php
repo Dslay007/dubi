@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Member;
 use App\Helpers\SystemLog;
+use App\Rules\StrongPassword;
 
 class MemberController extends Controller
 {
@@ -51,8 +52,9 @@ class MemberController extends Controller
         $validated = $request->validate([
             'member_id' => 'required|unique:member,member_id',
             'member_name' => 'required',
-            'passwd' => 'required|min:4',
-            'member_email' => 'nullable|email',
+            'passwd' => ['required', 'min:8', new StrongPassword],
+            'member_email' => 'nullable|email|unique:member,member_email',
+            'member_phone' => 'nullable|unique:member,member_phone',
             'gender' => 'required',
             'member_type_id' => 'required',
         ]);
@@ -60,13 +62,13 @@ class MemberController extends Controller
         $member = new Member();
         $member->member_id = $validated['member_id'];
         $member->member_name = $validated['member_name'];
-        // Default to SHA256 as per SLiMS standard or modern bcrypt?
-        // Let's use SHA256 for compatibility with old checks, or Bcrypt if we updated login logic.
-        // My MemberAuthController checks both. Let's use SHA256 to be "SLiMS native compatible".
-        $member->mpasswd = hash('sha256', $validated['passwd']);
+        // Password di-hash dengan Bcrypt (standar Laravel yang aman)
+        // Login controller sudah mendukung auto-upgrade dari SHA256/MD5 lama
+        $member->mpasswd = Hash::make($validated['passwd']);
         $member->gender = $validated['gender'];
         $member->member_type_id = $validated['member_type_id'];
-        $member->member_email = $validated['member_email'];
+        $member->member_email = $validated['member_email'] ?? null;
+        $member->member_phone = $validated['member_phone'] ?? null;
         $member->input_date = now();
         $member->last_update = now();
         $member->save();
@@ -106,13 +108,12 @@ class MemberController extends Controller
             'member_address' => 'nullable',
             'postal_code' => 'nullable',
             'member_mail_address' => 'nullable',
-            'member_phone' => 'nullable',
             'member_fax' => 'nullable',
-            'nik' => 'nullable',
             'member_notes' => 'nullable',
             'is_pending' => 'nullable|boolean',
-            'member_email' => 'nullable|email',
-            'passwd' => 'nullable|min:4|confirmed',
+            'member_email' => ['nullable', 'email', \Illuminate\Validation\Rule::unique('member', 'member_email')->ignore($member->member_id, 'member_id')],
+            'member_phone' => ['nullable', \Illuminate\Validation\Rule::unique('member', 'member_phone')->ignore($member->member_id, 'member_id')],
+            'passwd' => ['nullable', 'min:8', 'confirmed', new StrongPassword],
             'member_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -129,7 +130,6 @@ class MemberController extends Controller
         $member->member_mail_address = $validated['member_mail_address'] ?? null;
         $member->member_phone = $validated['member_phone'] ?? null;
         $member->member_fax = $validated['member_fax'] ?? null;
-        $member->nik = $validated['nik'] ?? null;
         $member->member_notes = $validated['member_notes'] ?? null;
         $member->is_pending = $request->has('is_pending') ? 1 : 0;
         $member->member_email = $validated['member_email'] ?? null;
@@ -143,7 +143,7 @@ class MemberController extends Controller
         }
         
         if (!empty($validated['passwd'])) {
-             $member->mpasswd = hash('sha256', $validated['passwd']);
+             $member->mpasswd = Hash::make($validated['passwd']);
         }
 
         $member->last_update = now();
@@ -265,7 +265,7 @@ class MemberController extends Controller
                 $member->member_email = $email;
                 $member->member_phone = $phone;
                 $member->member_address = $address;
-                $member->mpasswd = hash('sha256', '123456'); // Default password
+                $member->mpasswd = Hash::make('123456'); // Default password
                 $member->input_date = now();
                 $member->last_update = now();
                 $member->save();
@@ -465,7 +465,7 @@ class MemberController extends Controller
                 'message' => 'Absensi berhasil.',
                 'member' => [
                     'name' => $member->member_name,
-                    'nik' => $member->member_id,
+                   
                     'visit_count' => $totalVisits
                 ],
                 'merch_reward' => $isMerchReward
@@ -479,5 +479,51 @@ class MemberController extends Controller
         }
 
         return back()->with('success', 'Selamat datang, ' . $member->member_name . '! Absensi berhasil.');
+    }
+
+    public function guestCounter()
+    {
+        $todayCount = \App\Models\VisitorCount::whereNull('member_id')
+            ->whereDate('checkin_date', today())
+            ->count();
+
+        $recentGuests = \App\Models\VisitorCount::whereNull('member_id')
+            ->orderBy('checkin_date', 'desc')
+            ->take(10)
+            ->get();
+
+        return view('admin.member.guest_counter', compact('todayCount', 'recentGuests'));
+    }
+
+    public function storeGuestVisit(Request $request)
+    {
+        $request->validate([
+            'guest_name' => 'required|string|max:255',
+            'institution' => 'nullable|string|max:255',
+        ], [
+            'guest_name.required' => 'Nama tamu wajib diisi.',
+        ]);
+
+        \App\Models\VisitorCount::create([
+            'member_id' => null,
+            'member_name' => $request->guest_name,
+            'institution' => $request->institution ?? '-',
+            'checkin_date' => now(),
+        ]);
+
+        $todayCount = \App\Models\VisitorCount::whereNull('member_id')
+            ->whereDate('checkin_date', today())
+            ->count();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Kunjungan tamu berhasil dicatat.',
+                'guest_name' => $request->guest_name,
+                'today_count' => $todayCount,
+            ]);
+        }
+
+        return back()->with('success', 'Kunjungan tamu "' . $request->guest_name . '" berhasil dicatat.');
     }
 }

@@ -10,6 +10,48 @@ use Carbon\Carbon;
 class ReportController extends Controller
 {
     /**
+     * Generate base query for combined visitors (visitor_count + loan)
+     */
+    private function getCombinedVisitsQuery()
+    {
+        $visitorQuery = DB::table('visitor_count')
+            ->select(
+                'member_id',
+                DB::raw("COALESCE(member_id, CONCAT('GUEST_', visitor_id)) as group_id"),
+                'member_name',
+                DB::raw("COALESCE(institution, '-') as institution"),
+                DB::raw("DATE(checkin_date) as tgl"),
+                DB::raw("MAX(checkin_date) as checkin_date")
+            )
+            ->groupBy('member_id', 'group_id', 'member_name', 'institution', 'tgl');
+
+        $loanQuery = DB::table('loan')
+            ->join('member', 'loan.member_id', '=', 'member.member_id')
+            ->select(
+                'loan.member_id',
+                'loan.member_id as group_id',
+                'member.member_name',
+                DB::raw("COALESCE(member.inst_name, '-') as institution"),
+                DB::raw("DATE(loan.loan_date) as tgl"),
+                DB::raw("MAX(loan.loan_date) as checkin_date")
+            )
+            ->groupBy('loan.member_id', 'loan.member_id', 'member.member_name', 'member.inst_name', 'tgl');
+
+        return DB::query()->fromSub(function ($query) use ($visitorQuery, $loanQuery) {
+            $query->fromSub($visitorQuery->union($loanQuery), 'unioned')
+                  ->select(
+                      'member_id',
+                      'group_id',
+                      DB::raw("MAX(member_name) as member_name"),
+                      DB::raw("MAX(institution) as institution"),
+                      'tgl',
+                      DB::raw("MAX(checkin_date) as checkin_date")
+                  )
+                  ->groupBy('member_id', 'group_id', 'tgl');
+        }, 'final_visits');
+    }
+
+    /**
      * Laporan Ketua (Executive Summary)
      */
     public function laporanKetua()
@@ -22,11 +64,10 @@ class ReportController extends Controller
         $totalMember = DB::table('member')->count();
         $activeMember = DB::table('member')->where('is_pending', 0)->count();
         
-        // 3. Data Kunjungan
-        $totalVisitor = DB::table('visitor_count')->count();
-        $visitorBulanIni = DB::table('visitor_count')
-            ->whereYear('checkin_date', Carbon::now()->year)
-            ->whereMonth('checkin_date', Carbon::now()->month)
+        // 3. Data Kunjungan (Combined from visitor_count and loan)
+        $totalVisitor = $this->getCombinedVisitsQuery()->count();
+        $visitorBulanIni = $this->getCombinedVisitsQuery()
+            ->where(DB::raw("DATE_FORMAT(tgl, '%Y-%m')"), Carbon::now()->format('Y-m'))
             ->count();
             
         // 4. Data Transaksi Peminjaman
@@ -60,8 +101,8 @@ class ReportController extends Controller
             $yearMonth = $month->format('Y-m');
             $label = $month->translatedFormat('M Y');
             
-            $visitorCount = DB::table('visitor_count')
-                ->where(DB::raw("DATE_FORMAT(checkin_date, '%Y-%m')"), $yearMonth)
+            $visitorCount = $this->getCombinedVisitsQuery()
+                ->where(DB::raw("DATE_FORMAT(tgl, '%Y-%m')"), $yearMonth)
                 ->count();
                 
             $loanCount = DB::table('loan')
@@ -290,30 +331,29 @@ class ReportController extends Controller
         $dateFrom = $request->input('date_from', Carbon::now()->subMonths(3)->format('Y-m-d'));
         $dateTo = $request->input('date_to', Carbon::now()->format('Y-m-d'));
 
-        $totalVisitor = DB::table('visitor_count')->count();
-        $todayVisitor = DB::table('visitor_count')->whereDate('checkin_date', Carbon::today())->count();
-        $thisMonthVisitor = DB::table('visitor_count')
-            ->whereMonth('checkin_date', Carbon::now()->month)
-            ->whereYear('checkin_date', Carbon::now()->year)
+        $totalVisitor = $this->getCombinedVisitsQuery()->count();
+        $todayVisitor = $this->getCombinedVisitsQuery()->where('tgl', Carbon::today()->format('Y-m-d'))->count();
+        $thisMonthVisitor = $this->getCombinedVisitsQuery()
+            ->where(DB::raw("DATE_FORMAT(tgl, '%Y-%m')"), Carbon::now()->format('Y-m'))
             ->count();
 
-        $perDay = DB::table('visitor_count')
-            ->select(DB::raw("DATE(checkin_date) as tgl"), DB::raw('COUNT(*) as total'))
-            ->where('checkin_date', '>=', Carbon::now()->subDays(30))
+        $perDay = $this->getCombinedVisitsQuery()
+            ->select('tgl', DB::raw('COUNT(*) as total'))
+            ->where('tgl', '>=', Carbon::now()->subDays(30)->format('Y-m-d'))
             ->groupBy('tgl')->orderBy('tgl')->get();
 
-        $perMonth = DB::table('visitor_count')
-            ->select(DB::raw("DATE_FORMAT(checkin_date, '%Y-%m') as bulan"), DB::raw('COUNT(*) as total'))
-            ->where('checkin_date', '>=', $dateFrom)
-            ->where('checkin_date', '<=', $dateTo . ' 23:59:59')
+        $perMonth = $this->getCombinedVisitsQuery()
+            ->select(DB::raw("DATE_FORMAT(tgl, '%Y-%m') as bulan"), DB::raw('COUNT(*) as total'))
+            ->where('tgl', '>=', $dateFrom)
+            ->where('tgl', '<=', $dateTo)
             ->groupBy('bulan')->orderBy('bulan')->get();
 
-        $perInstitution = DB::table('visitor_count')
+        $perInstitution = $this->getCombinedVisitsQuery()
             ->select('institution', DB::raw('COUNT(*) as total'))
-            ->whereNotNull('institution')->where('institution', '!=', '')
+            ->whereNotNull('institution')->where('institution', '!=', '')->where('institution', '!=', '-')
             ->groupBy('institution')->orderByDesc('total')->limit(10)->get();
 
-        $recentVisitors = DB::table('visitor_count')->orderByDesc('checkin_date')->limit(20)->get();
+        $recentVisitors = $this->getCombinedVisitsQuery()->orderByDesc('checkin_date')->limit(20)->get();
 
         return view('admin.pelaporan.laporan_pengunjung', compact(
             'totalVisitor', 'todayVisitor', 'thisMonthVisitor',

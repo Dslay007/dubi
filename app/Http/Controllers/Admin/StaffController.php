@@ -7,16 +7,30 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Helpers\SystemLog;
+use App\Rules\StrongPassword;
+use Illuminate\Support\Facades\Hash;
 
 class StaffController extends Controller
 {
     public function index()
     {
-        $users = DB::table('user')
-            ->leftJoin('user_group', 'user.groups', '=', 'user_group.group_id')
-            ->select('user.*', 'user_group.group_name')
-            ->orderBy('user.user_id')
-            ->get();
+        $users = DB::table('user')->orderBy('user_id')->get();
+        $groups = DB::table('user_group')->pluck('group_name', 'group_id');
+
+        foreach ($users as $user) {
+            $groupId = is_numeric($user->groups) ? (int)$user->groups : null;
+            
+            // Antisipasi format serialize bawaan SLiMS (misal: a:1:{i:0;s:1:"1";})
+            if (is_string($user->groups) && strpos($user->groups, 'a:') === 0) {
+                $unserialized = @unserialize($user->groups);
+                if (is_array($unserialized) && count($unserialized) > 0) {
+                    $groupId = (int) $unserialized[0];
+                }
+            }
+            
+            $user->group_name = $groupId && isset($groups[$groupId]) ? $groups[$groupId] : 'Tidak ada grup';
+            $user->is_active = 1; // SLiMS tidak ada is_active, asumsikan selalu aktif
+        }
 
         return view('admin.sistem.staff.index', compact('users'));
     }
@@ -32,7 +46,7 @@ class StaffController extends Controller
         $request->validate([
             'username' => 'required|string|max:50|unique:user,username',
             'realname' => 'required|string|max:100',
-            'password' => 'required|string|min:4',
+            'password' => ['required', 'string', 'min:8', new StrongPassword],
             'groups'   => 'required|integer|exists:user_group,group_id',
             'email'    => 'nullable|email|max:100',
         ]);
@@ -40,11 +54,10 @@ class StaffController extends Controller
         DB::table('user')->insert([
             'username'   => $request->username,
             'realname'   => $request->realname,
-            'passwd'     => hash('sha256', $request->password),
+            'passwd'     => Hash::make($request->password),
             'groups'     => $request->groups,
             'email'      => $request->email,
             'user_type'  => 1,
-            'is_active'  => 1,
             'input_date' => Carbon::now()->toDateString(),
             'last_update' => Carbon::now()->toDateString(),
         ]);
@@ -71,7 +84,7 @@ class StaffController extends Controller
         $request->validate([
             'username' => 'required|string|max:50|unique:user,username,' . $id . ',user_id',
             'realname' => 'required|string|max:100',
-            'password' => 'nullable|string|min:4',
+            'password' => ['nullable', 'string', 'min:8', new StrongPassword],
             'groups'   => 'required|integer|exists:user_group,group_id',
             'email'    => 'nullable|email|max:100',
         ]);
@@ -86,7 +99,7 @@ class StaffController extends Controller
 
         // Update password only if provided
         if ($request->filled('password')) {
-            $data['passwd'] = hash('sha256', $request->password);
+            $data['passwd'] = Hash::make($request->password);
         }
 
         DB::table('user')->where('user_id', $id)->update($data);
@@ -123,21 +136,6 @@ class StaffController extends Controller
 
     public function toggleStatus($id)
     {
-        if ($id == 1 || $id == auth()->guard('admin')->id()) {
-            return back()->with('error', 'Tidak dapat mengubah status akun utama atau akun yang sedang digunakan.');
-        }
-
-        $user = DB::table('user')->where('user_id', $id)->first();
-        if (!$user) return back()->with('error', 'User tidak ditemukan.');
-
-        $currentStatus = $user->is_active ?? 1;
-        DB::table('user')->where('user_id', $id)->update([
-            'is_active' => $currentStatus == 1 ? 0 : 1
-        ]);
-
-        $statusText = $currentStatus == 1 ? 'Menonaktifkan' : 'Mengaktifkan';
-        SystemLog::write('update', $statusText . ' Akun Staff/Admin: ' . $user->username, 'System', 'Staff');
-
-        return back()->with('success', 'Status akun berhasil diperbarui.');
+        return back()->with('error', 'Maaf, SLiMS tidak mendukung fitur penonaktifan admin. Silakan hapus akun jika tidak diperlukan.');
     }
 }

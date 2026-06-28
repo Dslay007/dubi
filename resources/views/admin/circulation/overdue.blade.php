@@ -52,10 +52,22 @@
                 @php
                     $dueDate = \Carbon\Carbon::parse($loan->due_date);
                     $daysOverdue = max(0, $dueDate->diffInDays(now(), false));
+                    
+                    // Format phone for WA
+                    $phone = $loan->member->member_phone ?? '';
+                    if (str_starts_with($phone, '0')) {
+                        $phone = '62' . substr($phone, 1);
+                    }
+                    $email = $loan->member->member_email ?? '';
                 @endphp
                 <tr style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: background 0.2s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='transparent'">
                     <td style="padding: 1.25rem 1rem; color: #ef4444; font-weight: 700;">{{ $dueDate->format('d M Y') }}</td>
-                    <td style="padding: 1.25rem 1rem; font-weight: 600; color: #1e293b;">{{ $loan->member->member_name ?? 'N/A' }}</td>
+                    <td style="padding: 1.25rem 1rem; font-weight: 600; color: #1e293b;">
+                        {{ $loan->member->member_name ?? 'N/A' }}<br>
+                        <span style="font-size: 0.75rem; color: #64748b; font-weight: 500;">
+                            {{ $loan->member->member_phone ?? 'Tidak ada No WA' }}
+                        </span>
+                    </td>
                     <td style="padding: 1.25rem 1rem; font-weight: 700; color: #0f172a;">{{ $loan->item_code }}</td>
                     <td style="padding: 1.25rem 1rem; font-weight: 500; color: #334155;">{{ Str::limit($loan->item->biblio->title ?? 'N/A', 40) }}</td>
                     <td style="padding: 1.25rem 1rem;">
@@ -64,13 +76,10 @@
                         </span>
                     </td>
                     <td style="padding: 1.25rem 1rem; text-align: right;">
-                         <form action="{{ route('admin.circulation.overdue.notify', $loan->loan_id) }}" method="POST" style="display: inline;" onsubmit="confirmNotify(event, this, '{{ addslashes($loan->member->member_name ?? '') }}', '{{ addslashes($loan->item->biblio->title ?? '') }}', {{ floor($daysOverdue) }})">
-                            @csrf
-                            <button type="submit" class="btn" style="background: white; color: #d97706; padding: 0.4rem 1rem; border-radius: 99px; border: 1px solid #fcd34d; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; box-shadow: 0 2px 4px rgba(245,158,11,0.1); transition: 0.2s;" onmouseover="this.style.background='#fffbeb';" onmouseout="this.style.background='white';">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> 
-                                Kirim Peringatan
-                            </button>
-                         </form>
+                        <button type="button" class="btn" onclick="showNotifyOptions('{{ addslashes($loan->member->member_name ?? '') }}', '{{ $phone }}', '{{ $email }}', '{{ addslashes($loan->item->biblio->title ?? '') }}', {{ floor($daysOverdue) }}, {{ $loan->loan_id }})" style="background: white; color: #d97706; padding: 0.4rem 1rem; border-radius: 99px; border: 1px solid #fcd34d; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; box-shadow: 0 2px 4px rgba(245,158,11,0.1); transition: 0.2s;" onmouseover="this.style.background='#fffbeb';" onmouseout="this.style.background='white';">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> 
+                            Peringatkan
+                        </button>
                     </td>
                 </tr>
                 @empty
@@ -94,32 +103,75 @@
 </div>
 
 <script>
-    function confirmNotify(event, form, memberName, title, daysOverdue) {
-        event.preventDefault();
-        
+    function showNotifyOptions(memberName, phone, email, title, daysOverdue, loanId) {
         const fines = daysOverdue * 1000;
         const formattedFines = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(fines);
         
-        let htmlText = `Peringatan akan dikirimkan ke email <b>${memberName}</b> mengenai keterlambatan buku:<br><br>
-                        <b>${title}</b><br><br>
-                        <div style="background: #fef2f2; border: 1px solid #f87171; color: #b91c1c; padding: 0.75rem; border-radius: 0.375rem; font-size: 0.9rem;">
-                            Terlambat: <b>${daysOverdue} Hari</b><br>
-                            Perkiraan Denda: <b>${formattedFines}</b>
-                         </div><br>
-                        Apakah Anda yakin ingin mengirim peringatan ini?`;
+        let htmlText = `
+            <div style="font-size: 0.95rem; color: #334155; margin-bottom: 1rem; text-align: left;">
+                Pilih metode pengiriman peringatan keterlambatan buku untuk <b>${memberName}</b>.
+            </div>
+            <div style="background: #fef2f2; border: 1px solid #f87171; color: #b91c1c; padding: 0.75rem; border-radius: 0.375rem; font-size: 0.9rem; text-align: left; margin-bottom: 1rem;">
+                📚 <b>${title}</b><br>
+                ⏳ Terlambat: <b>${daysOverdue} Hari</b><br>
+                💰 Perkiraan Denda: <b>${formattedFines}</b>
+            </div>
+        `;
+
+        // Template Pesan
+        const msg = `Halo ${memberName},
+
+Kami dari Dudukbaca ingin mengingatkan bahwa Anda memiliki keterlambatan pengembalian buku:
+
+Judul: ${title}
+Terlambat: ${daysOverdue} Hari
+Estimasi Denda: ${formattedFines}
+
+Mohon segera mengembalikan buku tersebut untuk menghindari bertambahnya denda. Terima kasih.`;
 
         Swal.fire({
-            title: 'Kirim Peringatan?',
+            title: 'Kirim Peringatan',
             html: htmlText,
             icon: 'warning',
+            showDenyButton: true,
             showCancelButton: true,
-            confirmButtonColor: '#d97706',
-            cancelButtonColor: '#64748b',
-            confirmButtonText: 'Ya, Kirim Email!',
+            confirmButtonColor: '#25D366', // WA Green
+            denyButtonColor: '#ea4335',    // Gmail Red
+            cancelButtonColor: '#94a3b8',
+            confirmButtonText: 'WhatsApp',
+            denyButtonText: 'Email Langsung',
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                form.submit();
+                if(!phone) {
+                    Swal.fire('Gagal', 'Anggota ini tidak memiliki nomor HP (WhatsApp).', 'error');
+                } else {
+                    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+                }
+            } else if (result.isDenied) {
+                if(!email) {
+                    Swal.fire('Gagal', 'Anggota ini tidak memiliki alamat Email.', 'error');
+                } else {
+                    Swal.fire({
+                        title: 'Mengirim Email...',
+                        text: 'Mohon tunggu sebentar',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading() }
+                    });
+                    
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `{{ url('/admin/circulation/overdue/notify') }}/${loanId}`;
+                    
+                    const csrf = document.createElement('input');
+                    csrf.type = 'hidden';
+                    csrf.name = '_token';
+                    csrf.value = '{{ csrf_token() }}';
+                    
+                    form.appendChild(csrf);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
             }
         });
     }
@@ -128,9 +180,17 @@
         Swal.fire({
             icon: 'success',
             title: 'Berhasil!',
-            text: '{{ session('success') }}',
-            timer: 2500,
+            text: '{!! session('success') !!}',
+            timer: 3000,
             showConfirmButton: false
+        });
+    @endif
+
+    @if(session('error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal',
+            text: '{!! session('error') !!}'
         });
     @endif
 </script>

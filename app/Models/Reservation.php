@@ -19,6 +19,11 @@ class Reservation extends Model
         return $this->belongsTo(Member::class, 'member_id', 'member_id');
     }
 
+    public function biblio()
+    {
+        return $this->belongsTo(Biblio::class, 'biblio_id', 'biblio_id');
+    }
+
     public function item()
     {
         return $this->belongsTo(Item::class, 'item_code', 'item_code');

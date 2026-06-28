@@ -255,12 +255,35 @@ class CirculationController extends Controller
 
     public function notifyOverdue($loan_id)
     {
-        $loan = Loan::with('member')->findOrFail($loan_id);
+        $loan = Loan::with(['member', 'item.biblio'])->findOrFail($loan_id);
         
-        // TODO: Implement actual Email logic here using Mail::to()...
-        // For now simulate success
-        
-        return back()->with('success', 'Notification email sent to ' . $loan->member->member_email);
+        if (empty($loan->member->member_email)) {
+            return back()->with('error', 'Gagal: Anggota tidak memiliki alamat email.');
+        }
+
+        $daysOverdue = max(0, \Carbon\Carbon::parse($loan->due_date)->diffInDays(now(), false));
+        $fines = $daysOverdue * 1000;
+        $formattedFines = "Rp " . number_format($fines, 0, ',', '.');
+        $title = $loan->item->biblio->title ?? 'Buku Tidak Diketahui';
+        $memberName = $loan->member->member_name;
+
+        $messageText = "Halo {$memberName},\n\n" .
+            "Kami dari Dudukbaca ingin mengingatkan bahwa Anda memiliki keterlambatan pengembalian buku:\n\n" .
+            "Judul: {$title}\n" .
+            "Terlambat: {$daysOverdue} Hari\n" .
+            "Estimasi Denda: {$formattedFines}\n\n" .
+            "Mohon segera mengembalikan buku tersebut untuk menghindari bertambahnya denda. Terima kasih.";
+
+        try {
+            \Illuminate\Support\Facades\Mail::raw($messageText, function($message) use ($loan) {
+                $message->to($loan->member->member_email)
+                        ->subject('Peringatan Keterlambatan Pengembalian Buku');
+            });
+            return back()->with('success', 'Email Peringatan berhasil dikirim ke ' . $loan->member->member_email);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Mail Error: ' . $e->getMessage());
+            return back()->with('error', 'Gagal mengirim email! Pastikan SMTP Gmail di file .env sudah diatur. (Detail: ' . $e->getMessage() . ')');
+        }
     }
     
     public function reservations()
@@ -342,6 +365,28 @@ class CirculationController extends Controller
         SystemLog::write('update', 'Menolak Reservasi: ' . $reservation->item_code . ' oleh ' . $reservation->member_id, 'Circulation', 'Reservation');
 
         return back()->with('success', 'Reservasi ditolak dengan keterangan.');
+    }
+
+    public function cancelReservation(Request $request, $id)
+    {
+        $reservation = \App\Models\Reservation::findOrFail($id);
+        
+        // Status can only be cancelled if it's currently approved or pending
+        if (!in_array($reservation->status, ['pending', 'approved'])) {
+            return back()->withErrors(['Hanya reservasi aktif yang dapat dibatalkan.']);
+        }
+
+        $reservation->status = 'cancelled';
+        if ($request->has('notes') && !empty($request->notes)) {
+            $reservation->notes = $request->notes;
+        } else {
+            $reservation->notes = 'Dibatalkan admin.';
+        }
+        $reservation->save();
+
+        SystemLog::write('update', 'Membatalkan Reservasi: ' . $reservation->item_code . ' oleh ' . $reservation->member_id, 'Circulation', 'Reservation');
+
+        return back()->with('success', 'Reservasi berhasil dibatalkan.');
     }
 
     public function searchBiblio(Request $request)
@@ -518,6 +563,32 @@ class CirculationController extends Controller
                 'item_code' => $loan->item_code,
                 'title' => $loan->item->biblio->title ?? 'Unknown',
                 'member_name' => $loan->member->member_name ?? 'Unknown',
+            ];
+        }
+
+        return response()->json($results);
+    }
+
+    public function searchItem(Request $request)
+    {
+        $q = $request->q;
+        if (!$q) return response()->json([]);
+
+        $items = Item::with('biblio')
+            ->where('item_code', 'like', "%{$q}%")
+            ->orWhereHas('biblio', function($query) use ($q) {
+                $query->where('title', 'like', "%{$q}%");
+            })
+            ->limit(10)
+            ->get();
+
+        $results = [];
+        foreach($items as $item) {
+            $isOnLoan = Loan::where('item_code', $item->item_code)->where('is_return', 0)->exists();
+            $results[] = [
+                'item_code' => $item->item_code,
+                'title' => $item->biblio->title ?? 'Unknown Title',
+                'is_available' => !$isOnLoan
             ];
         }
 

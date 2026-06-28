@@ -8,7 +8,7 @@
     <div style="margin-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
         <div>
             <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b;">Daftar Antrean Verifikasi (Self-Registration)</h3>
-            <p style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">Pendaftar wajib diverifikasi setelah menunjukkan KTP asli di perpustakaan.</p>
+            <p style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">Pendaftar wajib diverifikasi setelah menunjukkan KTP asli di lapak baca.</p>
         </div>
         
         <form action="{{ route('admin.member.verifikasi') }}" method="GET" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     .then(data => {
                         if(data.success) {
                             const waNumber = formatWaNumber(phone);
-                            const message = `Halo ${memberName}, pendaftaran akun perpustakaan Anda (NIK: ${memberId}) telah berhasil kami verifikasi. Anda sekarang dapat menikmati seluruh layanan kami. Terima kasih.\n\n- Admin Dudukbaca`;
+                            const message = `Halo ${memberName}, pendaftaran akun lapak baca Anda (NIK: ${memberId}) telah berhasil kami verifikasi. Anda sekarang dapat menikmati seluruh layanan kami. Terima kasih.\n\n ~ Admin Buku Dudukbaca`;
                             const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
                             
                             window.open(waUrl, '_blank');
@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     .then(data => {
                         if(data.success) {
                             const waNumber = formatWaNumber(phone);
-                            const message = `Halo ${memberName}, mohon maaf pendaftaran akun perpustakaan Anda (NIK: ${memberId}) tidak dapat kami proses karena ketidaksesuaian data. Silakan datang ke perpustakaan untuk informasi lebih lanjut.\n\n- Admin Dudukbaca`;
+                            const message = `Halo ${memberName}, mohon maaf pendaftaran akun lapak baca Anda (NIK: ${memberId}) tidak dapat kami proses karena ketidaksesuaian data. Silakan datang ke lapak baca untuk informasi lebih lanjut.\n\n- Admin Buku Dudukbaca`;
                             const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
                             
                             window.open(waUrl, '_blank');

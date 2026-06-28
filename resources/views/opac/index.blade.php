@@ -6,7 +6,7 @@
 <header style="padding: 6rem 1rem; text-align: center; background: radial-gradient(circle at center, rgba(235, 240, 255, 0.5) 0%, rgba(255,255,255,0) 70%); position: relative;">
     <div style="position: absolute; top: 1.5rem; right: 1.5rem;">
         <a href="{{ route('admin.login') }}" style="color: #64748b; font-size: 0.85rem; text-decoration: none; font-weight: 600; padding: 0.5rem 1rem; border-radius: 99px; background: rgba(255,255,255,0.5); border: 1px solid #e2e8f0; transition: all 0.2s;" onmouseover="this.style.background='white'; this.style.color='#0f172a'" onmouseout="this.style.background='rgba(255,255,255,0.5)'; this.style.color='#64748b'">
-            Librarian Login
+            Login Pustakawan
         </a>
     </div>
     <div style="max-width: 800px; margin: 0 auto;">

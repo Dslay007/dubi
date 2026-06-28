@@ -43,7 +43,7 @@ class JurnalController extends Controller
 
         if ($request->hasFile('cover_image')) {
             $image = $request->file('cover_image');
-            $imageName = time() . '_' . $image->getClientOriginalName();
+            $imageName = time() . '_' . $image->hashName();
             $image->move(public_path('uploads/jurnal'), $imageName);
             $data['cover_image'] = $imageName;
         }
@@ -84,7 +84,7 @@ class JurnalController extends Controller
             }
 
             $image = $request->file('cover_image');
-            $imageName = time() . '_' . $image->getClientOriginalName();
+            $imageName = time() . '_' . $image->hashName();
             $image->move(public_path('uploads/jurnal'), $imageName);
             $data['cover_image'] = $imageName;
         }

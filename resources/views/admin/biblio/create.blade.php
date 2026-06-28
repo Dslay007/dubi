@@ -147,6 +147,21 @@
                             return this.topics.filter(t => t.name.toLowerCase().includes(this.topicSearch.toLowerCase()));
                         },
                         
+                        addNewTopic() {
+                            const newName = this.topicSearch.trim();
+                            if (!newName) return;
+                            
+                            // Prevent duplicates
+                            if (this.topics.some(t => t.name.toLowerCase() === newName.toLowerCase())) {
+                                return;
+                            }
+                            
+                            const newId = 'new_' + newName;
+                            this.topics.push({ id: newId, name: newName });
+                            this.selectedTopics.push(newId);
+                            this.topicSearch = '';
+                        },
+                        
                         // Dynamic Authors
                         showAuthorModal: false,
                         authorSearch: '',
@@ -271,6 +286,13 @@
                                             <input type="checkbox" name="topic_id[]" :value="topic.id" style="width: 1.25rem; height: 1.25rem; accent-color: #3b82f6;" x-model="selectedTopics">
                                             <span x-text="topic.name"></span>
                                         </label>
+                                    </div>
+                                </template>
+                                
+                                <template x-if="topicSearch.trim() !== '' && !topics.some(t => t.name.toLowerCase() === topicSearch.trim().toLowerCase())">
+                                    <div style="margin-top: 1rem; padding: 1rem; border: 1px dashed #cbd5e1; border-radius: 0.5rem; text-align: center; background: white;">
+                                        <p style="font-size: 0.85rem; color: #64748b; margin: 0 0 0.5rem 0;">Topik tidak ditemukan.</p>
+                                        <button type="button" @click="addNewTopic()" style="padding: 0.35rem 0.75rem; background: #10b981; color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; width: 100%; transition: 0.2s;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">+ Buat Topik Baru: "<span x-text="topicSearch"></span>"</button>
                                     </div>
                                 </template>
                             </div>

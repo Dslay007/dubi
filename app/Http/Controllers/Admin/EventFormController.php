@@ -49,7 +49,7 @@ class EventFormController extends Controller
     {
         $form = EventForm::findOrFail($id);
         
-        $request->validate([
+        $validated = $request->validate([
             'event_id' => 'required|exists:events,id',
             'form_title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -57,7 +57,7 @@ class EventFormController extends Controller
             'is_active' => 'boolean'
         ]);
 
-        $form->update($request->all());
+        $form->update($validated);
 
         return redirect()->route('admin.acara.pendaftaran.index')->with('success', 'Form pendaftaran berhasil diperbarui.');
     }

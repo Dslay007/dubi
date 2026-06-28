@@ -60,7 +60,7 @@ class AgendaController extends Controller
     {
         $agenda = Agenda::findOrFail($id);
 
-        $request->validate([
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
             'event_date' => 'required|date',
             'location' => 'nullable|string|max:255',
@@ -69,7 +69,7 @@ class AgendaController extends Controller
             'is_active' => 'boolean'
         ]);
 
-        $agenda->update($request->all());
+        $agenda->update($validated);
 
         return redirect()->route('admin.kegiatan.agenda.index')->with('success', 'Agenda berhasil diperbarui.');
     }

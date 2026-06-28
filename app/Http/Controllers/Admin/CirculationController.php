@@ -454,9 +454,8 @@ class CirculationController extends Controller
             'biblio_ids.*' => 'exists:biblio,biblio_id'
         ]);
 
-        $max_reservations = \Illuminate\Support\Facades\DB::table('setting')
-            ->where('setting_name', 'max_reservations')
-            ->value('setting_value') ?? 2;
+        $memberModel = \App\Models\Member::with('memberType')->find($request->member_id);
+        $max_reservations = $memberModel->memberType->reservation_limit ?? 2;
 
         $activeCount = \App\Models\Reservation::where('member_id', $request->member_id)
                         ->whereIn('status', ['pending', 'approved'])
@@ -634,7 +633,7 @@ class CirculationController extends Controller
     // Existing rules method...
     public function rules()
     {
-        // Aturan Peminjaman is effectively Member Type Management
-        return redirect()->route('admin.member_type.index');
+        $memberTypes = \App\Models\MemberType::latest('last_update')->get();
+        return view('admin.circulation.rules', compact('memberTypes'));
     }
 }

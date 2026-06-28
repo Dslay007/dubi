@@ -27,6 +27,7 @@
                 <tr style="color: #64748b; text-transform: uppercase; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em;">
                     <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Nama Tipe Anggota</th>
                     <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Batas Buku</th>
+                    <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Batas Reservasi</th>
                     <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Lama Pinjam</th>
                     <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05);">Denda / Hari</th>
                     <th style="padding: 1rem; border-bottom: 2px solid rgba(0,0,0,0.05); text-align: right;">Aksi</th>
@@ -41,6 +42,11 @@
                     <td style="padding: 1.25rem 1rem;">
                         <span style="background: #eff6ff; color: #2563eb; padding: 0.25rem 0.75rem; border-radius: 99px; font-weight: 700; font-size: 0.85rem;">
                             {{ $type->loan_limit }} Buku
+                        </span>
+                    </td>
+                    <td style="padding: 1.25rem 1rem;">
+                        <span style="background: #fdf4ff; color: #c026d3; padding: 0.25rem 0.75rem; border-radius: 99px; font-weight: 700; font-size: 0.85rem;">
+                            {{ $type->reservation_limit }} Buku
                         </span>
                     </td>
                     <td style="padding: 1.25rem 1rem;">

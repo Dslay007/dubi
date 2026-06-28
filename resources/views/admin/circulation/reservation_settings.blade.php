@@ -77,24 +77,6 @@ input:checked + .slider:before {
     </div>
 </div>
     
-    <div style="background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); margin-bottom: 2rem;">
-        <div style="padding: 1.5rem 2rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
-            <h4 style="font-weight: 800; font-size: 1.1rem; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #64748b;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                Pengaturan Umum
-            </h4>
-        </div>
-        <div style="padding: 2rem;">
-            <div style="max-width: 400px;">
-                <label style="display: block; font-size: 0.85rem; color: #475569; margin-bottom: 0.5rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Maksimal Reservasi per Anggota</label>
-                <div style="display: flex; gap: 1rem; align-items: center;">
-                    <input type="number" name="max_reservations" value="{{ $max_reservations }}" min="1" required style="width: 100px; padding: 0.85rem 1rem; border: 2px solid #cbd5e1; border-radius: 0.75rem; outline: none; font-size: 1.05rem; font-weight: 700; color: #1e293b; text-align: center; transition: 0.2s;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#cbd5e1'">
-                    <span style="color: #64748b; font-weight: 500;">Buku</span>
-                </div>
-                <p style="margin-top: 0.75rem; font-size: 0.85rem; color: #94a3b8; line-height: 1.5;">Tentukan batas maksimal jumlah buku yang dapat direservasi oleh seorang anggota dalam waktu yang bersamaan.</p>
-            </div>
-        </div>
-    </div>
 
     <div style="background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); overflow: hidden;">
         <div style="padding: 1.5rem 2rem; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">

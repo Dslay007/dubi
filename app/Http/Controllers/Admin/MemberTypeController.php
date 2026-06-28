@@ -25,7 +25,8 @@ class MemberTypeController extends Controller
             'loan_limit' => 'required|integer|min:0',
             'loan_periode' => 'required|integer|min:0', // in days
             'fine_each_day' => 'required|integer|min:0',
-            'grace_period' => 'required|integer|min:0'
+            'grace_period' => 'required|integer|min:0',
+            'reservation_limit' => 'required|integer|min:0'
         ]);
 
         \App\Models\MemberType::create([
@@ -34,6 +35,7 @@ class MemberTypeController extends Controller
             'loan_periode' => $request->loan_periode,
             'fine_each_day' => $request->fine_each_day,
             'grace_period' => $request->grace_period,
+            'reservation_limit' => $request->reservation_limit,
             'input_date' => now(),
             'last_update' => now()
         ]);
@@ -54,7 +56,8 @@ class MemberTypeController extends Controller
             'loan_limit' => 'required|integer|min:0',
             'loan_periode' => 'required|integer|min:0',
             'fine_each_day' => 'required|integer|min:0',
-            'grace_period' => 'required|integer|min:0'
+            'grace_period' => 'required|integer|min:0',
+            'reservation_limit' => 'required|integer|min:0'
         ]);
 
         $memberType = \App\Models\MemberType::findOrFail($id);
@@ -64,6 +67,7 @@ class MemberTypeController extends Controller
             'loan_periode' => $request->loan_periode,
             'fine_each_day' => $request->fine_each_day,
             'grace_period' => $request->grace_period,
+            'reservation_limit' => $request->reservation_limit,
             'last_update' => now()
         ]);
 

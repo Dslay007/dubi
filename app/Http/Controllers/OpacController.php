@@ -113,9 +113,7 @@ class OpacController extends Controller
             return back()->withErrors(['Maksimal peminjaman tercapai. Anda sudah meminjam ' . $activeLoansCount . ' dari batas maksimal ' . $loanLimit . ' buku. Kembalikan buku terlebih dahulu untuk melakukan reservasi.']);
         }
 
-        $max_reservations = \Illuminate\Support\Facades\DB::table('setting')
-            ->where('setting_name', 'max_reservations')
-            ->value('setting_value') ?? 2;
+        $max_reservations = $member->memberType->reservation_limit ?? 2;
 
         $activeCount = \App\Models\Reservation::where('member_id', \Illuminate\Support\Facades\Auth::guard('member')->id())
                         ->whereIn('status', ['pending', 'approved'])

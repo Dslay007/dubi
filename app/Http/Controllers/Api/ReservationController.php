@@ -84,9 +84,7 @@ class ReservationController extends Controller
         }
 
         // Cek Reservation Limit (Batas Reservasi)
-        $max_reservations = \Illuminate\Support\Facades\DB::table('setting')
-            ->where('setting_name', 'max_reservations')
-            ->value('setting_value') ?? 2;
+        $max_reservations = $memberModel->memberType->reservation_limit ?? 2;
 
         $activeReservationsCount = \App\Models\Reservation::where('member_id', $member->member_id)
             ->whereIn('status', ['pending', 'approved'])

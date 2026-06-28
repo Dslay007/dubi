@@ -67,10 +67,15 @@
         .brand { 
             font-size: 1.75rem; 
             font-weight: 800; 
-            background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             letter-spacing: -0.05em;
+        }
+        .brand-text {
+            background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent))) !important;
+            -webkit-background-clip: text !important;
+            background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            color: transparent !important;
+            display: inline-block;
         }
 
         .nav-links { display: flex; gap: 1.5rem; align-items: center; }
@@ -323,7 +328,7 @@
     <nav class="navbar">
         <a href="{{ url('/') }}" class="brand" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
             <img src="{{ asset('images/logo.png') }}" alt="Logo Dudukbaca" style="height: 2.5rem; width: auto; object-fit: contain;">
-            Dudukbaca.
+            <span class="brand-text">Dudukbaca.</span>
         </a>
         
         <button id="mobile-menu-btn" class="mobile-menu-btn">
@@ -353,8 +358,8 @@
             @endif
 
             <!-- Dark Mode Toggle Button (Desktop) -->
-            <button class="theme-toggle" style="background: transparent; border: 1px solid hsl(var(--text-muted)); padding: 0.5rem; border-radius: 99px; color: hsl(var(--text-main)); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; margin-left: 0.5rem;">
-                <i class="theme-icon" data-lucide="moon" style="width: 1.25rem; height: 1.25rem;"></i>
+            <button class="theme-toggle" style="background: transparent; border: 1px solid #94a3b8; padding: 0.5rem; border-radius: 99px; color: inherit; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; margin-left: 0.5rem;">
+                <i class="theme-icon" data-lucide="moon" style="width: 1.25rem; height: 1.25rem; stroke: currentColor;"></i>
             </button>
         </div>
     <!-- Mobile Menu -->
@@ -381,8 +386,8 @@
         @endif
         
         <!-- Dark Mode Toggle Button (Mobile) -->
-        <button class="theme-toggle" style="background: transparent; border: 1px solid hsl(var(--text-muted)); padding: 0.5rem; border-radius: 0.75rem; color: hsl(var(--text-main)); cursor: pointer; display: flex; align-items: center; justify-content: center; margin-top: 1rem; width: 100%; gap: 0.5rem;">
-            <i class="theme-icon" data-lucide="moon" style="width: 1.25rem; height: 1.25rem;"></i> Mode Gelap / Terang
+        <button class="theme-toggle" style="background: transparent; border: 1px solid #94a3b8; padding: 0.5rem; border-radius: 0.75rem; color: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; margin-top: 1rem; width: 100%; gap: 0.5rem;">
+            <i class="theme-icon" data-lucide="moon" style="width: 1.25rem; height: 1.25rem; stroke: currentColor;"></i> Mode Gelap / Terang
         </button>
     </div>
     </nav>
@@ -416,44 +421,45 @@
     <script>
         // Initialize Lucide icons if used
         if (typeof lucide !== 'undefined') {
-        // Initialize Icons
-        lucide.createIcons();
+            // Initialize Icons
+            lucide.createIcons();
 
-        // Dark Mode Toggle Logic
-        const themeToggles = document.querySelectorAll('.theme-toggle');
-        
-        if (localStorage.getItem('theme') === 'dark') {
-            DarkReader.enable({ brightness: 100, contrast: 100, sepia: 0 });
-            setTimeout(() => {
-                themeToggles.forEach(toggle => {
-                    const svg = toggle.querySelector('svg');
-                    if (svg) svg.outerHTML = '<i class="theme-icon" data-lucide="sun" style="width: 1.25rem; height: 1.25rem;"></i>';
+            // Dark Mode Toggle Logic
+            const themeToggles = document.querySelectorAll('.theme-toggle');
+            
+            if (localStorage.getItem('theme') === 'dark') {
+                DarkReader.enable({ brightness: 100, contrast: 100, sepia: 0 });
+                setTimeout(() => {
+                    themeToggles.forEach(toggle => {
+                        const svg = toggle.querySelector('svg');
+                        if (svg) svg.outerHTML = '<i class="theme-icon" data-lucide="sun" style="width: 1.25rem; height: 1.25rem; stroke: currentColor;"></i>';
+                    });
+                    lucide.createIcons();
+                }, 100);
+            }
+
+            themeToggles.forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    const isDark = DarkReader.isEnabled();
+                    if (isDark) {
+                        DarkReader.disable();
+                        localStorage.setItem('theme', 'light');
+                        themeToggles.forEach(btn => {
+                            const svg = btn.querySelector('svg');
+                            if (svg) svg.outerHTML = '<i class="theme-icon" data-lucide="moon" style="width: 1.25rem; height: 1.25rem; stroke: currentColor;"></i>';
+                        });
+                    } else {
+                        DarkReader.enable({ brightness: 100, contrast: 100, sepia: 0 });
+                        localStorage.setItem('theme', 'dark');
+                        themeToggles.forEach(btn => {
+                            const svg = btn.querySelector('svg');
+                            if (svg) svg.outerHTML = '<i class="theme-icon" data-lucide="sun" style="width: 1.25rem; height: 1.25rem; stroke: currentColor;"></i>';
+                        });
+                    }
+                    lucide.createIcons();
                 });
-                lucide.createIcons();
-            }, 100);
-        }
-
-        themeToggles.forEach(toggle => {
-            toggle.addEventListener('click', () => {
-                const isDark = DarkReader.isEnabled();
-                if (isDark) {
-                    DarkReader.disable();
-                    localStorage.setItem('theme', 'light');
-                    themeToggles.forEach(btn => {
-                        const svg = btn.querySelector('svg');
-                        if (svg) svg.outerHTML = '<i class="theme-icon" data-lucide="moon" style="width: 1.25rem; height: 1.25rem;"></i>';
-                    });
-                } else {
-                    DarkReader.enable({ brightness: 100, contrast: 100, sepia: 0 });
-                    localStorage.setItem('theme', 'dark');
-                    themeToggles.forEach(btn => {
-                        const svg = btn.querySelector('svg');
-                        if (svg) svg.outerHTML = '<i class="theme-icon" data-lucide="sun" style="width: 1.25rem; height: 1.25rem;"></i>';
-                    });
-                }
-                lucide.createIcons();
             });
-        });
+        }
         
         document.addEventListener('DOMContentLoaded', function() {
             // Mobile menu toggle

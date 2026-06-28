@@ -122,6 +122,12 @@
             color: var(--sidebar-active);
             border-left: 3px solid var(--sidebar-active);
         }
+        
+        .nav-item.active-sub {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--sidebar-active);
+            font-weight: 600;
+        }
 
         .nav-item i { width: 1.25rem; height: 1.25rem; }
 
@@ -562,27 +568,27 @@
 
             <!-- Master Files Group (Dropdown) -->
             @if(__anyVisible(['master.terkendali','master.referensi','master.peralatan'], $__isSuper, $__perms))
-            <div x-data="{ open: {{ request()->is('admin/master*') || request()->is('admin/gmd*') || request()->is('admin/author*') || request()->is('admin/publisher*') || request()->is('admin/topic*') || request()->is('admin/place*') || request()->is('admin/item_status*') ? 'true' : 'false' }} }">
+            <div x-data="{ open: {{ request()->is('admin/master*') || request()->is('admin/gmd*') || request()->is('admin/author*') || request()->is('admin/publisher*') || request()->is('admin/topic*') || request()->is('admin/content_type*') || request()->is('admin/media_type*') || request()->is('admin/carrier_type*') || request()->is('admin/supplier*') || request()->is('admin/location*') || request()->is('admin/place*') || request()->is('admin/item_status*') || request()->is('admin/coll_type*') || request()->is('admin/language*') || request()->is('admin/label*') || request()->is('admin/frequency*') || request()->is('admin/visitor*') || request()->is('admin/comment*') || request()->is('admin/server*') || request()->is('admin/setting/item_pattern*') || request()->is('admin/orphan*') ? 'true' : 'false' }} }">
                 <button @click="open = !open" class="nav-item" style="width: 100%; justify-content: space-between; background: none; border: none; cursor: pointer;">
                     <span style="display: flex; align-items: center; gap: 0.75rem;">
-                        <i data-lucide="database"></i> Daftar Terkendali
+                        <i data-lucide="database"></i> Master File
                     </span>
                     <i data-lucide="chevron-down" :style="open ? 'transform: rotate(180deg)' : ''" style="transition: transform 0.2s; width: 1rem; height: 1rem;"></i>
                 </button>
                 
                 <div x-show="open" style="padding-left: 2rem; display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.5rem;" x-transition>
                     @if(__canSee('master.terkendali', $__isSuper, $__perms))
-                    <a href="{{ route('admin.gmd.index') }}" class="nav-item {{ request()->is('admin/gmd*') || request()->is('admin/author*') || request()->is('admin/publisher*') || request()->is('admin/topic*') || request()->is('admin/master/terkendali*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
+                    <a href="{{ route('admin.gmd.index') }}" class="nav-item {{ request()->is('admin/gmd*') || request()->is('admin/author*') || request()->is('admin/publisher*') || request()->is('admin/topic*') || request()->is('admin/content_type*') || request()->is('admin/media_type*') || request()->is('admin/carrier_type*') || request()->is('admin/supplier*') || request()->is('admin/location*') || request()->is('admin/master/terkendali*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
                         Daftar Terkendali
                     </a>
                     @endif
                     @if(__canSee('master.referensi', $__isSuper, $__perms))
-                    <a href="{{ route('admin.place.index') }}" class="nav-item {{ request()->is('admin/place*') || request()->is('admin/item_status*') || request()->is('admin/master/referensi*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
+                    <a href="{{ route('admin.place.index') }}" class="nav-item {{ request()->is('admin/place*') || request()->is('admin/item_status*') || request()->is('admin/coll_type*') || request()->is('admin/language*') || request()->is('admin/label*') || request()->is('admin/frequency*') || request()->is('admin/master/referensi*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
                         Daftar Referensi
                     </a>
                     @endif
                     @if(__canSee('master.peralatan', $__isSuper, $__perms))
-                    <a href="{{ route('admin.master.peralatan') }}" class="nav-item {{ request()->is('admin/master/peralatan*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
+                    <a href="{{ route('admin.master.peralatan') }}" class="nav-item {{ request()->is('admin/master/peralatan*') || request()->is('admin/visitor*') || request()->is('admin/comment*') || request()->is('admin/server*') || request()->is('admin/setting/item_pattern*') || request()->is('admin/orphan*') ? 'active-sub' : '' }}" style="font-size: 0.9rem;">
                         Peralatan
                     </a>
                     @endif

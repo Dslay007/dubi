@@ -17,6 +17,19 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <!-- DarkReader -->
+    <script src="https://cdn.jsdelivr.net/npm/darkreader@4.9.89/darkreader.min.js"></script>
+    <script>
+        // Init Dark Mode before DOM loads to prevent flashing
+        if (localStorage.getItem('theme') === 'dark') {
+            DarkReader.enable({
+                brightness: 100,
+                contrast: 100,
+                sepia: 0
+            });
+        }
+    </script>
+
     <style>
         :root {
             --sidebar-bg: #0f172a;
@@ -730,7 +743,12 @@
                 </button>
                 <h2 style="font-size: 1.5rem; font-weight: 700; color: #0f172a;">@yield('pageTitle', 'Dashboard')</h2>
             </div>
-            <div style="display: flex; gap: 1rem;">
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <!-- Dark Mode Toggle Button -->
+                <button id="theme-toggle" class="btn" style="background: white; border: 1px solid #e2e8f0; padding: 0.5rem 0.75rem; border-radius: 0.5rem; color: #475569; font-size: 0.875rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <i id="theme-icon" data-lucide="moon" style="width: 1.25rem; height: 1.25rem;"></i>
+                </button>
+
                 <a href="{{ url('/') }}" target="_blank" class="btn" style="background: white; border: 1px solid #e2e8f0; padding: 0.5rem 1rem; border-radius: 0.5rem; color: #475569; font-size: 0.875rem;">
                     <i data-lucide="external-link" style="width: 1rem; height: 1rem; margin-right: 0.5rem;"></i> <span class="hide-mobile">Lihat OPAC</span>
                 </a>
@@ -760,6 +778,36 @@
     <script>
         // Initialize Icons
         lucide.createIcons();
+
+        // Dark Mode Toggle Logic
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+
+        // Set initial icon based on localStorage
+        if (localStorage.getItem('theme') === 'dark') {
+            // Already handled by head script for enabling, just update icon
+            setTimeout(() => {
+                const svg = themeToggle.querySelector('svg');
+                if (svg) svg.outerHTML = '<i data-lucide="sun" style="width: 1.25rem; height: 1.25rem;"></i>';
+                lucide.createIcons();
+            }, 100);
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const isDark = DarkReader.isEnabled();
+            if (isDark) {
+                DarkReader.disable();
+                localStorage.setItem('theme', 'light');
+                const svg = themeToggle.querySelector('svg');
+                if (svg) svg.outerHTML = '<i data-lucide="moon" style="width: 1.25rem; height: 1.25rem;"></i>';
+            } else {
+                DarkReader.enable({ brightness: 100, contrast: 100, sepia: 0 });
+                localStorage.setItem('theme', 'dark');
+                const svg = themeToggle.querySelector('svg');
+                if (svg) svg.outerHTML = '<i data-lucide="sun" style="width: 1.25rem; height: 1.25rem;"></i>';
+            }
+            lucide.createIcons();
+        });
 
         // Mobile Sidebar Toggle Logic
         const sidebar = document.querySelector('.sidebar');

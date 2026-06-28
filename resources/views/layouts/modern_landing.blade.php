@@ -9,6 +9,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
+    <!-- Icons & DarkReader -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/darkreader@4.9.92/darkreader.min.js"></script>
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            DarkReader.enable({ brightness: 100, contrast: 100, sepia: 0 });
+        }
+    </script>
+    
     <style>
         :root {
             /* Ultra Modern HSL Palette */
@@ -342,6 +351,11 @@
                     Login Member
                 </a>
             @endif
+
+            <!-- Dark Mode Toggle Button (Desktop) -->
+            <button class="theme-toggle" style="background: transparent; border: 1px solid hsl(var(--text-muted)); padding: 0.5rem; border-radius: 99px; color: hsl(var(--text-main)); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; margin-left: 0.5rem;">
+                <i class="theme-icon" data-lucide="moon" style="width: 1.25rem; height: 1.25rem;"></i>
+            </button>
         </div>
     <!-- Mobile Menu -->
     <div id="mobile-menu" class="mobile-menu">
@@ -365,6 +379,11 @@
                 Login Member
             </a>
         @endif
+        
+        <!-- Dark Mode Toggle Button (Mobile) -->
+        <button class="theme-toggle" style="background: transparent; border: 1px solid hsl(var(--text-muted)); padding: 0.5rem; border-radius: 0.75rem; color: hsl(var(--text-main)); cursor: pointer; display: flex; align-items: center; justify-content: center; margin-top: 1rem; width: 100%; gap: 0.5rem;">
+            <i class="theme-icon" data-lucide="moon" style="width: 1.25rem; height: 1.25rem;"></i> Mode Gelap / Terang
+        </button>
     </div>
     </nav>
 
@@ -397,8 +416,44 @@
     <script>
         // Initialize Lucide icons if used
         if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Dark Mode Toggle Logic
+        const themeToggles = document.querySelectorAll('.theme-toggle');
+        
+        if (localStorage.getItem('theme') === 'dark') {
+            DarkReader.enable({ brightness: 100, contrast: 100, sepia: 0 });
+            setTimeout(() => {
+                themeToggles.forEach(toggle => {
+                    const svg = toggle.querySelector('svg');
+                    if (svg) svg.outerHTML = '<i class="theme-icon" data-lucide="sun" style="width: 1.25rem; height: 1.25rem;"></i>';
+                });
+                lucide.createIcons();
+            }, 100);
         }
+
+        themeToggles.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const isDark = DarkReader.isEnabled();
+                if (isDark) {
+                    DarkReader.disable();
+                    localStorage.setItem('theme', 'light');
+                    themeToggles.forEach(btn => {
+                        const svg = btn.querySelector('svg');
+                        if (svg) svg.outerHTML = '<i class="theme-icon" data-lucide="moon" style="width: 1.25rem; height: 1.25rem;"></i>';
+                    });
+                } else {
+                    DarkReader.enable({ brightness: 100, contrast: 100, sepia: 0 });
+                    localStorage.setItem('theme', 'dark');
+                    themeToggles.forEach(btn => {
+                        const svg = btn.querySelector('svg');
+                        if (svg) svg.outerHTML = '<i class="theme-icon" data-lucide="sun" style="width: 1.25rem; height: 1.25rem;"></i>';
+                    });
+                }
+                lucide.createIcons();
+            });
+        });
         
         document.addEventListener('DOMContentLoaded', function() {
             // Mobile menu toggle

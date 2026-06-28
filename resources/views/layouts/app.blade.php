@@ -12,6 +12,19 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="//unpkg.com/alpinejs" defer></script>
     
+    <!-- DarkReader -->
+    <script src="https://cdn.jsdelivr.net/npm/darkreader@4.9.89/darkreader.min.js"></script>
+    <script>
+        // Init Dark Mode before DOM loads to prevent flashing
+        if (localStorage.getItem('theme') === 'dark') {
+            DarkReader.enable({
+                brightness: 100,
+                contrast: 100,
+                sepia: 0
+            });
+        }
+    </script>
+    
     <style>
         :root {
             /* Ultra Modern HSL Palette */
@@ -236,6 +249,11 @@
                     Login Member
                 </a>
             @endif
+
+            <!-- Dark Mode Toggle Button (Desktop) -->
+            <button class="theme-toggle" style="background: transparent; border: 1px solid hsl(var(--text-muted)); padding: 0.5rem; border-radius: 99px; color: hsl(var(--text-main)); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; margin-left: 0.5rem;">
+                <i class="theme-icon" data-lucide="moon" style="width: 1.25rem; height: 1.25rem;"></i>
+            </button>
         </div>
 
         <!-- Mobile Toggle Button -->
@@ -248,8 +266,14 @@
     <div id="mobile-overlay" class="mobile-overlay"></div>
     <div id="mobile-drawer" class="mobile-drawer">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem;">
-            <span class="brand" style="font-size: 1.25rem;">Menu</span>
-            <button id="mobile-close" style="background:none; border:none; color: hsl(var(--text-muted)); cursor:pointer;">
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <span style="font-weight: 800; color: hsl(var(--primary)); font-size: 1.2rem;">Menu</span>
+                <!-- Dark Mode Toggle Button (Mobile) -->
+                <button class="theme-toggle" style="background: transparent; border: 1px solid hsl(var(--text-muted)); padding: 0.4rem; border-radius: 99px; color: hsl(var(--text-main)); cursor: pointer; display: inline-flex; align-items: center; justify-content: center;">
+                    <i class="theme-icon" data-lucide="moon" style="width: 1.25rem; height: 1.25rem;"></i>
+                </button>
+            </div>
+            <button id="mobile-close" style="background:none; border:none; color: hsl(var(--text-muted)); cursor: pointer; padding: 0.5rem;">
                 <i data-lucide="x"></i>
             </button>
         </div>
@@ -285,10 +309,51 @@
         <p style="color: hsl(var(--text-muted))">&copy; {{ date('Y') }} Dudukbaca. Hak Cipta Dilindungi.</p>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/darkreader@4.9.92/darkreader.min.js"></script>
     <script>
         lucide.createIcons();
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Icons
+            lucide.createIcons();
+
+            // Dark Mode Toggle Logic (Multiple Buttons)
+            const themeToggles = document.querySelectorAll('.theme-toggle');
+            
+            // Check initial theme from localStorage
+            if (localStorage.getItem('theme') === 'dark') {
+                DarkReader.enable({ brightness: 100, contrast: 100, sepia: 0 });
+                setTimeout(() => {
+                    themeToggles.forEach(toggle => {
+                        const svg = toggle.querySelector('svg');
+                        if (svg) svg.outerHTML = '<i class="theme-icon" data-lucide="sun" style="width: 1.25rem; height: 1.25rem;"></i>';
+                    });
+                    lucide.createIcons();
+                }, 100);
+            }
+
+            themeToggles.forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    const isDark = DarkReader.isEnabled();
+                    if (isDark) {
+                        DarkReader.disable();
+                        localStorage.setItem('theme', 'light');
+                        themeToggles.forEach(btn => {
+                            const svg = btn.querySelector('svg');
+                            if (svg) svg.outerHTML = '<i class="theme-icon" data-lucide="moon" style="width: 1.25rem; height: 1.25rem;"></i>';
+                        });
+                    } else {
+                        DarkReader.enable({ brightness: 100, contrast: 100, sepia: 0 });
+                        localStorage.setItem('theme', 'dark');
+                        themeToggles.forEach(btn => {
+                            const svg = btn.querySelector('svg');
+                            if (svg) svg.outerHTML = '<i class="theme-icon" data-lucide="sun" style="width: 1.25rem; height: 1.25rem;"></i>';
+                        });
+                    }
+                    lucide.createIcons();
+                });
+            });
+
             // Mobile Menu Logic
             const mobileToggle = document.getElementById('mobile-toggle');
             const mobileClose = document.getElementById('mobile-close');

@@ -185,6 +185,7 @@ Route::middleware(['auth:admin', 'menu_access'])->prefix('admin')->name('admin.'
         // Reservation Settings
         Route::get('/reservations/settings', [\App\Http\Controllers\Admin\ReservationSettingController::class, 'index'])->name('reservations.settings');
         Route::post('/reservations/settings', [\App\Http\Controllers\Admin\ReservationSettingController::class, 'update'])->name('reservations.settings.update');
+        Route::post('/reservations/settings/bulk', [\App\Http\Controllers\Admin\ReservationSettingController::class, 'bulkUpdate'])->name('reservations.settings.bulk');
         
         Route::get('/rules', [\App\Http\Controllers\Admin\CirculationController::class, 'rules'])->name('rules');
     });

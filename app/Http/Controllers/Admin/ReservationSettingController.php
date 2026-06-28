@@ -29,6 +29,10 @@ class ReservationSettingController extends Controller
             });
         }
 
+        if ($request->has('filter_status') && $request->filter_status !== '') {
+            $query->where('is_reservable', $request->filter_status);
+        }
+
         $biblios = $query->orderBy($sortBy, $order)->paginate(20)->appends($request->all());
 
         return view('admin.circulation.reservation_settings', compact('biblios', 'max_reservations', 'sortBy', 'order'));
@@ -39,7 +43,8 @@ class ReservationSettingController extends Controller
         $request->validate([
             'max_reservations' => 'required|integer|min:1',
             'reservable_status' => 'nullable|array',
-            'reservable_status.*' => 'boolean'
+            'reservable_status.*' => 'boolean',
+            'bulk_action' => 'nullable|string'
         ]);
 
         \Illuminate\Support\Facades\DB::table('setting')->updateOrInsert(
@@ -47,9 +52,18 @@ class ReservationSettingController extends Controller
             ['setting_value' => $request->max_reservations]
         );
 
-        if ($request->has('reservable_status')) {
-            foreach ($request->reservable_status as $biblio_id => $status) {
-                Biblio::where('biblio_id', $biblio_id)->update(['is_reservable' => $status]);
+        if ($request->filled('bulk_action')) {
+            if ($request->bulk_action === 'enable_all') {
+                Biblio::query()->update(['is_reservable' => 1]);
+            } elseif ($request->bulk_action === 'disable_all') {
+                Biblio::query()->update(['is_reservable' => 0]);
+            }
+        } else {
+            // Hanya update halaman ini jika tidak ada bulk action
+            if ($request->has('reservable_status')) {
+                foreach ($request->reservable_status as $biblio_id => $status) {
+                    Biblio::where('biblio_id', $biblio_id)->update(['is_reservable' => $status]);
+                }
             }
         }
 

@@ -422,11 +422,16 @@
 
     <!-- Sidebar -->
     <aside class="sidebar">
-        <div class="sidebar-header">
+        <div class="sidebar-header" style="display: flex; flex-direction: column; gap: 1.25rem;">
             <a href="{{ route('admin.dashboard') }}" class="brand">
                 <img src="{{ asset('images/logo.png') }}" alt="Logo" style="height: 2.2rem; width: auto; object-fit: contain;">
                 Dudukbaca
             </a>
+            
+            <div style="position: relative;">
+                <i data-lucide="search" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); width: 1rem; height: 1rem; color: #64748b;"></i>
+                <input type="text" id="sidebarSearch" placeholder="Cari menu (cth: Sirkulasi)..." style="width: 100%; padding: 0.6rem 0.6rem 0.6rem 2.25rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2); color: white; outline: none; font-size: 0.85rem;" autocomplete="off">
+            </div>
         </div>
 
         <nav class="nav-menu">
@@ -1001,6 +1006,66 @@
             if (detailRow) {
                 detailRow.classList.toggle('open');
             }
+        }
+
+        // Sidebar Live Search Logic
+        const sidebarSearch = document.getElementById('sidebarSearch');
+        if (sidebarSearch) {
+            sidebarSearch.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                const allLinks = Array.from(document.querySelectorAll('.sidebar nav a.nav-item'));
+                const allDropdowns = document.querySelectorAll('.sidebar [x-data]');
+                const categories = document.querySelectorAll('.sidebar .nav-category');
+
+                if (query === '') {
+                    allLinks.forEach(link => link.style.display = 'flex');
+                    allDropdowns.forEach(d => {
+                        const btn = d.querySelector('button.nav-item');
+                        if (btn) btn.style.display = 'flex';
+                    });
+                    categories.forEach(c => c.style.display = 'block');
+                    return;
+                }
+
+                categories.forEach(c => c.style.display = 'none');
+
+                allDropdowns.forEach(dropdown => {
+                    const btn = dropdown.querySelector('button.nav-item');
+                    const links = Array.from(dropdown.querySelectorAll('a.nav-item'));
+                    
+                    let hasVisibleChild = false;
+                    links.forEach(link => {
+                        if (link.innerText.toLowerCase().includes(query)) {
+                            link.style.display = 'flex';
+                            hasVisibleChild = true;
+                        } else {
+                            link.style.display = 'none';
+                        }
+                    });
+
+                    if (btn && btn.innerText.toLowerCase().includes(query) && !hasVisibleChild) {
+                        btn.style.display = 'flex';
+                        links.forEach(link => link.style.display = 'flex'); 
+                        hasVisibleChild = true;
+                    } else if (btn) {
+                        btn.style.display = hasVisibleChild ? 'flex' : 'none';
+                    }
+
+                    if (hasVisibleChild && dropdown.__x) {
+                        dropdown.__x.$data.open = true; 
+                    }
+                });
+
+                allLinks.forEach(link => {
+                    if (!link.closest('[x-data]')) {
+                        if (link.innerText.toLowerCase().includes(query)) {
+                            link.style.display = 'flex';
+                        } else {
+                            link.style.display = 'none';
+                        }
+                    }
+                });
+            });
         }
     </script>
     

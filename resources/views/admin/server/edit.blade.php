@@ -13,14 +13,12 @@
     
     <div style="margin-bottom: 1.5rem;">
       <label class="form-label">Nama Server <span style="color: #ef4444;">*</span></label>
-      <input type="text" name="name" value="{{ $server->name }}" required
-        >
+      <input type="text" name="name" value="{{ $server->name }}" required class="form-input">
     </div>
 
     <div style="margin-bottom: 1.5rem;">
       <label class="form-label">URI Server <span style="color: #ef4444;">*</span></label>
-      <input type="text" name="uri" value="{{ $server->uri }}" required
-        >
+      <input type="text" name="uri" value="{{ $server->uri }}" required class="form-input">
     </div>
     
     <div style="margin-bottom: 1.5rem;">

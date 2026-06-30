@@ -39,7 +39,7 @@
             </thead>
             <tbody>
                 @forelse($suppliers as $item)
-                <tr style="border-bottom: 1px solid #e2e8f0;">
+                <tr data-href="{{ route('admin.supplier.edit', $item->supplier_id) }}" style="border-bottom: 1px solid #e2e8f0;">
                     <td style="padding: 1rem 1.5rem; color: #64748b;">{{ $item->supplier_id }}</td>
                     <td style="padding: 1rem 1.5rem; font-weight: 600; color: #1e293b;">{{ $item->supplier_name }}</td>
                     <td style="padding: 1rem 1.5rem; color: #334155;">{{ $item->contact }}</td>

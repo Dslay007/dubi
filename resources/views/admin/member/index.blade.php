@@ -127,7 +127,7 @@
             </thead>
             <tbody>
                 @forelse($members as $member)
-                <tr style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                <tr data-href="{{ route('admin.member.show', $member->member_id) }}" style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
                     <td style="padding: 1.25rem 1rem; text-align: center;">
                         <input type="checkbox" class="member-checkbox" value="{{ $member->member_id }}" style="width: 1.1rem; height: 1.1rem; cursor: pointer; accent-color: #3b82f6;">
                     </td>

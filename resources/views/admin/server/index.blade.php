@@ -37,7 +37,7 @@
             </thead>
             <tbody>
                 @forelse($servers as $item)
-                <tr style="border-bottom: 1px solid #e2e8f0;">
+                <tr data-href="{{ route('admin.server.edit', $item->server_id) }}" style="border-bottom: 1px solid #e2e8f0;">
                     <td style="padding: 1rem 1.5rem; font-weight: 600; color: #1e293b;">{{ $item->name }}</td>
                     <td style="padding: 1rem 1.5rem; color: #3b82f6;">{{ $item->uri }}</td>
                     <td style="padding: 1rem 1.5rem; color: #64748b;">{{ $item->server_type == 1 ? 'P2P' : 'Z39.50' }}</td>

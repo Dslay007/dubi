@@ -37,7 +37,7 @@
             </thead>
             <tbody>
                 @forelse($publishers as $publisher)
-                <tr style="border-bottom: 1px solid #e2e8f0;">
+                <tr data-href="{{ route('admin.publisher.edit', $publisher->publisher_id) }}" style="border-bottom: 1px solid #e2e8f0;">
                     <td style="padding: 1rem 1.5rem; font-weight: 600; color: #1e293b;">{{ $publisher->publisher_name }}</td>
                     <td style="padding: 1rem 1.5rem; color: #64748b;">{{ $publisher->last_update }}</td>
                     <td style="padding: 1rem 1.5rem; text-align: right;">

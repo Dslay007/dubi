@@ -38,7 +38,7 @@
             </thead>
             <tbody>
                 @forelse($authors as $author)
-                <tr style="border-bottom: 1px solid #e2e8f0;">
+                <tr data-href="{{ route('admin.author.edit', $author->author_id) }}" style="border-bottom: 1px solid #e2e8f0;">
                     <td style="padding: 1rem 1.5rem; font-weight: 600; color: #1e293b;">{{ $author->author_name }}</td>
                     <td style="padding: 1rem 1.5rem; color: #64748b;">{{ $author->author_year ?? '-' }}</td>
                     <td style="padding: 1rem 1.5rem; color: #64748b;">{{ $author->last_update }}</td>

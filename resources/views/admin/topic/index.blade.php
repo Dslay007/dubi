@@ -38,7 +38,7 @@
             </thead>
             <tbody>
                 @forelse($topics as $topic)
-                <tr style="border-bottom: 1px solid #e2e8f0;">
+                <tr data-href="{{ route('admin.topic.edit', $topic->topic_id) }}" style="border-bottom: 1px solid #e2e8f0;">
                     <td style="padding: 1rem 1.5rem; font-weight: 600; color: #1e293b;">{{ $topic->topic }}</td>
                     <td style="padding: 1rem 1.5rem; color: #334155;">
                         @switch($topic->topic_type)

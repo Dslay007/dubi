@@ -53,7 +53,7 @@
                 </thead>
                 <tbody>
                     @forelse($contents as $item)
-                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: 0.2s;" onmouseover="this.style.background='#f8fafc';" onmouseout="this.style.background='white';">
+                    <tr data-href="{{ route('admin.sistem.konten.edit', $item->content_path) }}" style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: 0.2s;" onmouseover="this.style.background='#f8fafc';" onmouseout="this.style.background='white';">
                         <td style="padding: 1rem 1.5rem; text-align: center;">
                             <input type="checkbox" name="ids[]" value="{{ $item->content_path }}" class="row-checkbox" style="width: 16px; height: 16px; cursor: pointer;">
                         </td>

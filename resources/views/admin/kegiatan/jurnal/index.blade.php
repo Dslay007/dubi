@@ -48,7 +48,7 @@
             </thead>
             <tbody style="font-size: 0.95rem;">
                 @forelse($jurnals as $jurnal)
-                <tr style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: background 0.2s;" onmouseover="this.style.background='rgba(248, 250, 252, 0.8)'" onmouseout="this.style.background='transparent'">
+                <tr data-href="{{ route('admin.kegiatan.jurnal.edit', $jurnal->id) }}" style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: background 0.2s;" onmouseover="this.style.background='rgba(248, 250, 252, 0.8)'" onmouseout="this.style.background='transparent'">
                     <td style="padding: 1.25rem 1.5rem;">
                         <div style="display: flex; align-items: center; gap: 1rem;">
                             @if($jurnal->cover_image)

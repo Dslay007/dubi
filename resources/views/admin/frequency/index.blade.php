@@ -39,7 +39,7 @@
             </thead>
             <tbody>
                 @forelse($frequencies as $item)
-                <tr style="border-bottom: 1px solid #e2e8f0;">
+                <tr data-href="{{ route('admin.frequency.edit', $item->frequency_id) }}" style="border-bottom: 1px solid #e2e8f0;">
                     <td style="padding: 1rem 1.5rem; color: #64748b;">{{ $item->frequency_id }}</td>
                     <td style="padding: 1rem 1.5rem; font-weight: 600; color: #1e293b;">{{ $item->frequency }}</td>
                     <td style="padding: 1rem 1.5rem; color: #334155;">{{ $item->time_increment }}</td>

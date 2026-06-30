@@ -30,7 +30,7 @@
             <tbody>
                 @forelse($users as $u)
                 @php $isActive = $u->is_active ?? 1; @endphp
-                <tr style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
+                <tr data-href="{{ route('admin.sistem.staff.edit', $u->user_id) }}" style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
                     <td style="padding: 1rem 1.5rem;">
                         <div style="display: flex; align-items: center; gap: 0.75rem;">
                             <div style="width: 2.5rem; height: 2.5rem; background: linear-gradient(135deg, {{ $u->user_id == 1 ? '#f59e0b, #d97706' : '#3b82f6, #6366f1' }}); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1rem; flex-shrink: 0; box-shadow: 0 4px 6px -1px {{ $u->user_id == 1 ? 'rgba(245, 158, 11, 0.3)' : 'rgba(59, 130, 246, 0.3)' }};">

@@ -25,7 +25,7 @@
             </thead>
             <tbody>
                 @forelse($forms as $form)
-                <tr style="border-bottom: 1px solid #e2e8f0;">
+                <tr data-href="{{ route('admin.acara.pendaftaran.edit', $form->id) }}" style="border-bottom: 1px solid #e2e8f0;">
                     <td style="padding: 1rem 1.5rem; text-align: center; display: flex; gap: 0.5rem; justify-content: center;">
                         <a href="{{ route('admin.acara.pendaftaran.edit', $form->id) }}" style="color: #3b82f6; text-decoration: none;" title="Edit Atribut Form">
                             <i data-lucide="edit" style="width: 1.1rem; height: 1.1rem;"></i>

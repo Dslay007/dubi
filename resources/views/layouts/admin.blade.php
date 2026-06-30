@@ -1069,6 +1069,59 @@
         }
     </script>
     
+    <script>
+        // Global Clickable Row Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const clickableRows = document.querySelectorAll('tr[data-href]');
+            
+            clickableRows.forEach(row => {
+                row.style.cursor = 'pointer';
+                row.title = 'Klik 2x untuk melihat detail';
+                
+                // Add hover effect dynamically if not already present
+                row.addEventListener('mouseenter', () => {
+                    row.dataset.originalBg = row.style.background || '';
+                    row.style.background = '#f8fafc'; // light gray for hover
+                });
+                
+                row.addEventListener('mouseleave', () => {
+                    row.style.background = row.dataset.originalBg || '';
+                });
+
+                // Single click just highlights it a bit more
+                row.addEventListener('click', (e) => {
+                    // Prevent triggering if clicking on buttons or links inside the row
+                    if (e.target.closest('a') || e.target.closest('button') || e.target.closest('input')) {
+                        return;
+                    }
+                    
+                    // Reset others
+                    clickableRows.forEach(r => {
+                        if (r !== row) {
+                            r.classList.remove('row-selected');
+                            r.style.background = r.dataset.originalBg || '';
+                        }
+                    });
+                    
+                    row.classList.toggle('row-selected');
+                    if (row.classList.contains('row-selected')) {
+                        row.style.background = '#e2e8f0'; // darker gray for selected
+                    } else {
+                        row.style.background = '#f8fafc'; // back to hover color
+                    }
+                });
+
+                // Double click navigates
+                row.addEventListener('dblclick', (e) => {
+                    if (e.target.closest('a') || e.target.closest('button') || e.target.closest('input')) {
+                        return;
+                    }
+                    window.location.href = row.dataset.href;
+                });
+            });
+        });
+    </script>
+
     @stack('scripts')
 </body>
 </html>

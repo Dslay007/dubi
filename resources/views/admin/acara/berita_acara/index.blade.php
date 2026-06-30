@@ -42,7 +42,7 @@
             </thead>
             <tbody>
                 @forelse($events as $event)
-                <tr style="border-bottom: 1px solid #e2e8f0;">
+                <tr data-href="{{ route('admin.acara.berita_acara.edit', $event->id) }}" style="border-bottom: 1px solid #e2e8f0;">
                     <td style="padding: 1rem 1.5rem; text-align: center;">
                         <a href="{{ route('admin.acara.berita_acara.edit', $event->id) }}" style="color: #3b82f6; text-decoration: none;" title="Edit">
                             <i data-lucide="edit" style="width: 1.1rem; height: 1.1rem;"></i>

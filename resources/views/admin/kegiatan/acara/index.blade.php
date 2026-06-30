@@ -26,7 +26,7 @@
             </thead>
             <tbody style="font-size: 0.95rem;">
                 @forelse($events as $event)
-                <tr style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: background 0.2s; {{ $event->is_active ? 'background: #eff6ff;' : '' }}" onmouseover="this.style.background='{{ $event->is_active ? '#e0f2fe' : 'rgba(248, 250, 252, 0.8)' }}'" onmouseout="this.style.background='{{ $event->is_active ? '#eff6ff' : 'transparent' }}'">
+                <tr data-href="{{ route('admin.kegiatan.acara.edit', $event->id) }}" style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: background 0.2s; {{ $event->is_active ? 'background: #eff6ff;' : '' }}" onmouseover="this.style.background='{{ $event->is_active ? '#e0f2fe' : 'rgba(248, 250, 252, 0.8)' }}'" onmouseout="this.style.background='{{ $event->is_active ? '#eff6ff' : 'transparent' }}'">
                     <td style="padding: 1rem 1.5rem;">
                         <div style="display: flex; align-items: center; gap: 1rem;">
                             @php

@@ -58,7 +58,7 @@
             </thead>
             <tbody>
                 @forelse($biblios as $biblio)
-                <tr style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                <tr data-href="{{ route('admin.biblio.edit', $biblio->biblio_id) }}" style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
                     <td style="padding: 1.25rem 1rem;">
                         @if($biblio->image)
                             <img src="{{ asset('images/docs/' . $biblio->image) }}" alt="Cover" style="width: 50px; height: 70px; object-fit: cover; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">

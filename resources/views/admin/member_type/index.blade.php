@@ -35,7 +35,7 @@
             </thead>
             <tbody>
                 @forelse($memberTypes as $type)
-                <tr style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                <tr data-href="{{ route('admin.member_type.edit', $type->member_type_id) }}" style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
                     <td style="padding: 1.25rem 1rem; font-weight: 700; color: #0f172a; font-size: 1rem;">
                         {{ $type->member_type_name }}
                     </td>

@@ -39,7 +39,7 @@
             </thead>
             <tbody>
                 @forelse($labels as $item)
-                <tr style="border-bottom: 1px solid #e2e8f0;">
+                <tr data-href="{{ route('admin.label.edit', $item->label_id) }}" style="border-bottom: 1px solid #e2e8f0;">
                     <td style="padding: 1rem 1.5rem; color: #64748b;">{{ $item->label_id }}</td>
                     <td style="padding: 1rem 1.5rem; font-weight: 600; color: #1e293b;">{{ $item->label_name }}</td>
                     <td style="padding: 1rem 1.5rem; color: #334155;">{{ $item->label_desc }}</td>

@@ -38,7 +38,7 @@
             </thead>
             <tbody>
                 @forelse($gmds as $gmd)
-                <tr style="border-bottom: 1px solid #e2e8f0;">
+                <tr data-href="{{ route('admin.gmd.edit', $gmd->gmd_id) }}" style="border-bottom: 1px solid #e2e8f0;">
                     <td style="padding: 1rem 1.5rem; font-weight: 600; color: #1e293b;">{{ $gmd->gmd_code }}</td>
                     <td style="padding: 1rem 1.5rem; color: #334155;">{{ $gmd->gmd_name }}</td>
                     <td style="padding: 1rem 1.5rem; color: #64748b;">{{ $gmd->last_update }}</td>

@@ -31,7 +31,7 @@
             </thead>
             <tbody>
                 @foreach($roles as $role)
-                <tr style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: 0.2s;" onmouseover="this.style.background='#f8fafc';" onmouseout="this.style.background='white';">
+                <tr data-href="{{ route('admin.sistem.role.edit', $role->group_id) }}" style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: 0.2s;" onmouseover="this.style.background='#f8fafc';" onmouseout="this.style.background='white';">
                     <td style="padding: 1.25rem 1.5rem;">
                         <div style="display: flex; align-items: center; gap: 0.75rem;">
                             <div style="width: 2.5rem; height: 2.5rem; background: {{ $role->group_id == 1 ? 'linear-gradient(135deg, #f59e0b, #d97706)' : '#f1f5f9' }}; color: {{ $role->group_id == 1 ? 'white' : '#64748b' }}; border-radius: 50%; display: flex; align-items: center; justify-content: center;">

@@ -52,7 +52,7 @@
             </thead>
             <tbody style="font-size: 0.95rem;">
                 @forelse($agendas as $agenda)
-                <tr style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: background 0.2s;" onmouseover="this.style.background='rgba(248, 250, 252, 0.8)'" onmouseout="this.style.background='transparent'">
+                <tr data-href="{{ route('admin.kegiatan.agenda.edit', $agenda->id) }}" style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: background 0.2s;" onmouseover="this.style.background='rgba(248, 250, 252, 0.8)'" onmouseout="this.style.background='transparent'">
                     <td style="padding: 1rem 1.5rem;">
                         <div style="font-weight: 600; color: #0f172a; margin-bottom: 0.25rem;">{{ $agenda->title }}</div>
                         <div style="font-size: 0.85rem; color: #64748b;">{{ Str::limit(strip_tags($agenda->description), 50) }}</div>

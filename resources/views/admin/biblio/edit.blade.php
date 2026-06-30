@@ -437,7 +437,7 @@
                     </thead>
                     <tbody>
                         @foreach($biblio->items as $item)
-                        <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                        <tr data-href="{{ route('admin.item.edit', $item->item_id) }}" style="border-bottom: 1px solid #f1f5f9; transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
                             <td style="padding: 0.75rem 1rem; font-family: monospace; font-weight: 600; color: #0f172a;">{{ $item->item_code }}</td>
                             <td style="padding: 0.75rem 1rem; color: #64748b; font-size: 0.9rem;">{{ $item->inventory_code ?? '-' }}</td>
                             <td style="padding: 0.75rem 1rem;">

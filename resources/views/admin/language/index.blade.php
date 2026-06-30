@@ -38,7 +38,7 @@
             </thead>
             <tbody>
                 @forelse($languages as $item)
-                <tr style="border-bottom: 1px solid #e2e8f0;">
+                <tr data-href="{{ route('admin.language.edit', $item->language_id) }}" style="border-bottom: 1px solid #e2e8f0;">
                     <td style="padding: 1rem 1.5rem; font-weight: 600; color: #1e293b;">{{ $item->language_id }}</td>
                     <td style="padding: 1rem 1.5rem; color: #334155;">{{ $item->language_name }}</td>
                     <td style="padding: 1rem 1.5rem; color: #64748b;">{{ $item->last_update }}</td>
